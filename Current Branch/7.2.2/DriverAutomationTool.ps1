@@ -39,14 +39,14 @@ param (
     Twitter:     @Modaly_IT
     Created:     2017-01-01
     Updated:     2023-10-01
-    
+
     Version history:
 	6.0.0 - (2018-03-29)	New verison. Graphical redesign, improved layout, HP individual driver downloads
 	6.0.1 - (2018-03-30)	Model matching fix
 	6.0.2 - (2018-04-03)	Package storage destination browse button fix
 							Duplicate DP/DPG fix
 	6.0.3 - (2018-04-06)	A couple of more code tweaks and fixes
-	6.0.4 - (2018-04-10)	Fix for Dell system links not being found for some models when downloading BIOS 
+	6.0.4 - (2018-04-10)	Fix for Dell system links not being found for some models when downloading BIOS
 							or driver packages.
 							DP & DPG's datagrid will now clear on each detection
 							Added the ability to provide a custom packages root folder structure or drop all
@@ -56,16 +56,16 @@ param (
 	6.0.6 - (2018-05-01)	Added support for Windows 10 build 1803 (HP)
 	6.0.7 - (2018-05-28)	Fix for HP driver / firmware catalogue - now single extract of the contained XML
 							Removed OS informationin BIOS packages description
-							Added Windows 10 build version to HP packages created via the custom package function 
-	6.0.8 - (2018-06-06)    HP SoftPaq packaging code changes. Fix for HP 1803 downloads and catalogue XML issuess. 
-							SCCM custom folder code optimisation. 
-							Bits enabled by default, can be disabled by setting the option manually and then closing 
-							the GUI to commit the save. 
-							Additional error handling.	
+							Added Windows 10 build version to HP packages created via the custom package function
+	6.0.8 - (2018-06-06)    HP SoftPaq packaging code changes. Fix for HP 1803 downloads and catalogue XML issuess.
+							SCCM custom folder code optimisation.
+							Bits enabled by default, can be disabled by setting the option manually and then closing
+							the GUI to commit the save.
+							Additional error handling.
 	6.0.9 - (2018-06-19)	Lenovo model lookup failure fix
 							Lenovo Windows 10 download matching workaround. Current download will use latest Windows 10 build
 							download link until build numbers are available in the XML
-							Data grid updates for both Models and Package Management sections to clearer highlight selected values 
+							Data grid updates for both Models and Package Management sections to clearer highlight selected values
 	6.0.9 - HF -(2018-08-02)	Hotfix for HP downloads
 	6.1.3 - (2018-10-22)	Resolved issue with Bits-Trasnfer module not loading on Windows Server 2012 R2
 							TLS set to 1.2
@@ -73,14 +73,14 @@ param (
 							Fix for some Dell models not finding the BIOS download link URL
 							Added additional MDT driver path options
 	6.1.5 - (2019-01-23)	HP BIOS download fix
-							Added move to Windows 10 1809 build in package management	
+							Added move to Windows 10 1809 build in package management
 							Manufacturer correction for Microsoft custom packages
 	6.1.6 - (2019-02-22)	Fix: Reset tool form issues resolved
 							Fix: Logging timezone issues resolved
 							Fix: Source package clean up issues resolved
 							Additional checking for MDT and ConfigMgr platforms
 							Removal of legacy code
-	6.1.7 - (2019-03-04)	Fix: Condition whereby not all selected models are saved within the XML settings file	
+	6.1.7 - (2019-03-04)	Fix: Condition whereby not all selected models are saved within the XML settings file
 	6.2.0 - (2019-04-29)	Now packaged as an MSI installer
 							Scaling changed to DPI to support high DPI (4K) screens
 							Added support for Windows 10 1903
@@ -108,13 +108,13 @@ param (
 							Added support for zipped driver packages
 	6.4.5 - (2020-09-03)	Updated Dell Flash64w download location in order to download latest available build
 							Fixed UI elements not disabling in the admin control
-							Fixed OS selection on initial load not disabling Dell if the previous OS selection was a Windows 10 
+							Fixed OS selection on initial load not disabling Dell if the previous OS selection was a Windows 10
 							build specific selection
 							Updated Find Model button to find but not select, and addded Find + Select button
 	6.4.6 - (2020-18-03)	Fixed Lenovo download link logic and added further output
 							Updated package creation for all packages just to include the SKU/BaseBoard values
 							Updated link within the tool to GitHub as Technet is being retired
-							Updated custom package creation to include Windows 10 1909		
+							Updated custom package creation to include Windows 10 1909
 	6.5.6 - (2021-08-21)	New: Support for Windows 10 21H1
 							New: External source feeds from GitHub for Manufacturer and Model support
 							New: Updated fallback logic for Microsoft Surface devices
@@ -153,7 +153,7 @@ function Get-ScriptDirectory {
 	}
 }
 
-# Set Temp & Log Location	
+# Set Temp & Log Location
 [string]$TempDirectory = Join-Path $(Get-ScriptDirectory) -ChildPath "Temp"
 [string]$LogDirectory = Join-Path $(Get-ScriptDirectory) -ChildPath "Logs"
 [string]$SettingsDirectory = Join-Path $(Get-ScriptDirectory) -ChildPath "Settings"
@@ -178,29 +178,29 @@ function Write-LogEntry {
 		[Parameter(HelpMessage = 'Variable for skipping verbose output to the output window')]
 		[switch]$WriteOutput
 	)
-	
+
 	# Determine log file location
 	$LogFilePath = Join-Path -Path $LogDirectory -ChildPath $FileName
-	
+
 	# Construct time stamp for log entry
 	$Time = -join @((Get-Date -Format "HH:mm:ss.fff"), " ", (Get-WmiObject -Class Win32_TimeZone | Select-Object -ExpandProperty Bias))
-	
+
 	# Construct date for log entry
 	$Date = (Get-Date -Format "MM-dd-yyyy")
-	
+
 	# Construct context for log entry
 	$Context = $([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)
-	
+
 	# Construct final log entry
 	$LogText = "<![LOG[$($Value)]LOG]!><time=""$($Time)"" date=""$($Date)"" component=""DriverAutomationTool"" context=""$($Context)"" type=""$($Severity)"" thread=""$($PID)"" file="""">"
-	
+
 	# Add value to log file
 	try {
 		Out-File -InputObject $LogText -Append -NoClobber -Encoding Default -FilePath $LogFilePath -ErrorAction Stop
 	} catch [System.Exception] {
 		Write-Warning -Message "[Warning] - Unable to append log entry to DriverAutomationTool.log file. Error message: $($_.Exception.Message)"
 	}
-	
+
 	# Write output section
 	if ($WriteOutput) {
 		# Stream to output window
@@ -216,7 +216,7 @@ function Write-ErrorOutput {
 		[parameter(Mandatory = $true)]
 		[int]$Severity
 	)
-	
+
 	Write-LogEntry -Value "======== Errors(s) Occurred ========" -Severity $Severity
 	Write-LogEntry -Value $Message -Severity $Severity
 	Write-LogEntry -Value " " -Severity $Severity
@@ -232,10 +232,10 @@ function Import-PSModules {
 		[parameter(Mandatory = $true)]
 		[string]$ModuleName
 	)
-	
+
 	if ($ModuleName -in $AvailableModules.Name) {
 		Write-LogEntry -Value "- Importing module $ModuleName" -Severity 1 -WriteOutput
-		Import-Module -Name $ModuleName 
+		Import-Module -Name $ModuleName
 	} else {
 		Write-LogEntry -Value "[Warning] - Unable to import/find $ModuleName. Please install the required module." -Severity 2
 	}
@@ -252,7 +252,7 @@ foreach ($Folder in $RequiredFolders) {
 		if ((Test-Path -Path $Folder) -eq $false) {
 			New-Item -Path $Folder -ItemType Dir | Out-Null
 			Write-LogEntry -Value "- Creating folder: $Folder" -Severity 1 -WriteOutput
-			
+
 		}
 	} catch {
 		Write-Warning "Error: $($_.Exception.Message)"; exit 1
@@ -317,7 +317,7 @@ function Show-MainForm_psf
 		}
 		else
 		{
-			$Assemblies = 'System.Windows.Forms', 'System.Drawing'  
+			$Assemblies = 'System.Windows.Forms', 'System.Drawing'
 
         }
 		Add-Type -ReferencedAssemblies $Assemblies -TypeDefinition @"
@@ -330,7 +330,7 @@ function Show-MainForm_psf
 	        {
                 public ProgressBarOverlay() : base() { SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true); }
 	            protected override void WndProc(ref Message m)
-	            { 
+	            {
 	                base.WndProc(ref m);
 	                if (m.Msg == 0x000F)// WM_PAINT
 	                {
@@ -354,7 +354,7 @@ function Show-MainForm_psf
                         }
 	                }
 	            }
-              
+
                 public string TextOverlay
                 {
                     get
@@ -376,7 +376,7 @@ function Show-MainForm_psf
 	}
 	catch
 	{
-		Add-Type -ReferencedAssemblies ('System.Windows.Forms') -TypeDefinition  @" 
+		Add-Type -ReferencedAssemblies ('System.Windows.Forms') -TypeDefinition  @"
 		using System;
 		using System.Windows.Forms;
 		using System.Reflection;
@@ -408,7 +408,7 @@ function Show-MainForm_psf
                     get { return fileDialog.InitialDirectory; }
                     set { fileDialog.InitialDirectory = value; }
                 }
-                
+
                 public string SelectedPath
                 {
                     get { return fileDialog.FileName; }
@@ -440,7 +440,7 @@ function Show-MainForm_psf
                 protected override bool RunDialog(IntPtr hwndOwner)
                 {
                     if (Environment.OSVersion.Version.Major >= 6)
-                    {      
+                    {
                         try
                         {
                             bool flag = false;
@@ -917,50 +917,50 @@ function Show-MainForm_psf
 	# User Generated Script
 	#----------------------------------------------
 	$MainForm_Load = {
-		
+
 	}
-	
+
 	$MainForm_Shown = {
-		
+
 		# Sleep for UI rendering
 		Start-Sleep -Milliseconds 750
-		
+
 		# Temp disable Intune functionality - OOB update for later release
 		$SelectionTabs.TabPages["IntuneTab"].Enabled = $false
 		$SelectionTabs.TabPages.Remove($IntuneTab)
-		
+
 		if ($PSCmdLet.ParameterSetName -eq "AzureProvisioning") {
-			
+
 			if (-not ([string]::IsNullOrEmpty($global:AzureAccountInfo.Context.Tenant.id))) {
 				Write-LogEntry -Value "- Azure Connection - Connected to tenant $($global:AzureAccountInfo.Context.Tenant.id)" -Severity 1 -WriteOutput
-				
+
 				# Enable Azure Controls
 				Enable-AzureStorageOptions
 				$SelectionTabs.SelectedTab = $IntuneBIOSControl
 				$IntuneControlTabs.SelectedTab = $Onboarding
-				
+
 			} else {
 				Write-LogEntry -Value "[Error] Azure Connection - Unable to establish connection" -Severity 3 -WriteOutput
 			}
 		}
-		
+
 		if ($PSCmdLet.ParameterSetName -ne "AzureProvisioning") {
 			Set-AzureContextDisplay
 		}
-		
+
 		# Get Registry Stored Prferences
 		Set-RegPreferences
-		
+
 		# Initialise Form
 		global:Write-LogEntry -Value "======== INITIALISING LOG FILE & CHECKING PREREQUISITES ========" -Severity 1
 		global:Write-LogEntry -Value "- Driver Automation Tool version - $ScriptRelease" -Severity 1
 		global:Write-LogEntry -Value "- Log File Location - $LogDirectory" -Severity 1
 		global:Write-LogEntry -Value "- Settings File Location - $SettingsDirectory" -Severity 1
 		global:Write-LogEntry -Value "- File Location - $TempDirectory" -Severity 1
-		
+
 		# Check for 7-Zip instllation
 		Set-7ZipOptions
-		
+
 		# Check for PowerShell 5.0
 		if ($PSVersionTable.PSVersion.Major -lt "5") {
 			$PreRequisiteFailure = $true
@@ -977,36 +977,36 @@ function Show-MainForm_psf
 			$SelectionTabs.TabPages["CustPkgTab"].Enabled = $false
 			$SelectionTabs.SelectedTab = $LogTab
 		}
-		
+
 		if ($PreRequisiteFailure -ne $true -and $PSCmdLet.ParameterSetName -ne "AzureProvisioning") {
-			# // Read Previously Selected Values	
+			# // Read Previously Selected Values
 			if ((Test-Path -Path $Global:SettingsDirectory\DATSettings.xml) -eq $true) {
 				Read-XMLSettings
 				Start-Sleep -Milliseconds 250
 			}
-			
+
 			if ($global:IntuneOnly -eq $true) {
 				$PlatformComboBox.Text = "Intune"
 			}
-			
+
 			# Set default distribution value
 			if ([string]::IsNullOrEmpty($DistributionPriorityCombo.Text)) {
 				$DistributionPriorityCombo.SelectedItem = "Low"
 			}
-			
+
 			# Set default compression value
 			if ([string]::IsNullOrEmpty($CompressionType.Text)) {
 				$CompressionType.SelectedItem = "ZIP"
 			}
-			
+
 			# Set Version Info
 			$Version.Text = $ScriptRelease
 			$BuildDate.Text = $ScriptBuildDate
-			
+
 			global:Write-LogEntry -Value "======== Detecting Deployment Platform ========" -Severity 1
-			
+
 			if (((Test-Path -Path $Global:SettingsDirectory\DATSettings.xml) -eq $true)) {
-				
+
 				switch ($Global:DATSettingsXML.Settings.DownloadSettings.DeploymentPlatform) {
 					"MDT"{
 						$ProgressListBox.ForeColor = "Black"
@@ -1025,18 +1025,18 @@ function Show-MainForm_psf
 					"Download Only"{
 						$ProgressListBox.ForeColor = "Black"
 						global:Write-LogEntry -Value "- Deployment Platform: $($Global:DATSettingsXML.Settings.DownloadSettings.DeploymentPlatform)" -Severity 1
-						
+
 					}
 					"Intune"{
 						$ProgressListBox.ForeColor = "Black"
 						global:Write-LogEntry -Value "- Deployment Platform: $($Global:DATSettingsXML.Settings.DownloadSettings.DeploymentPlatform)" -Severity 1
-						
+
 					}
 				}
-				
+
 			} else {
 				global:Write-LogEntry -Value "======== FIRST TIME RUN DETECTED ========" -Severity 1
-				
+
 				# Attempt ConfigMgr Site Code & MP Detection
 				global:Write-LogEntry -Value "-Checking WMI for ConfigMgr SMS_Authority Values" -Severity 1 -SkipGuiLog $true
 				try {
@@ -1044,7 +1044,7 @@ function Show-MainForm_psf
 					$SMSProvider = Get-WmiObject -Namespace root\ccm -Class SMS_ProviderLocation -ErrorAction SilentlyContinue | Where-Object {
 						$_.SiteCode -eq ($SCCMWMI.Name).TrimStart("SMS:")
 					} | Select-Object -ExpandProperty Machine
-					
+
 					if ($SCCMWMI.CurrentManagementPoint -ne $null) {
 						global:Write-LogEntry -Value "======== ConfigMgr Site Discovery ========" -Severity 1
 						if (-not ([string]::IsNullOrEmpty($SMSProvider))) {
@@ -1062,7 +1062,7 @@ function Show-MainForm_psf
 				} catch [System.Exception] {
 					global:Write-ErrorOutput -Message "Error: Unable to query ConfigMgr WMI namespace. Error message: $($_.Exception.Message)" -Severity 2
 				}
-				
+
 				# Set First Time Demo Mode
 				switch ($ConfigMgrDetected) {
 					$true {
@@ -1092,13 +1092,13 @@ function Show-MainForm_psf
 					}
 				}
 			}
-			
+
 			# Check PS Version Compatibilty
 			if ($PSVersionTable.PSVersion.Major -lt "3") {
 				global:Write-LogEntry -Value "======== COMPATIBILITY ISSUE DETECTED ========" -Severity 3
 				global:Write-ErrorOutput -Message "Error: PowerShell Version Incompatible - Please Update PS Installation" -Severity 3
 			}
-			
+
 			# Check for Internet Explorer .NET Components
 			if ((Test-Path -Path (Join-Path -Path "${env:ProgramFiles(x86)}" -ChildPath "Microsoft.NET\Primary Interop Assemblies\Microsoft.mshtml.dll")) -eq $false) {
 				global:Write-LogEntry -Value "======== COMPATIBILITY ISSUE DETECTED ========" -Severity 3
@@ -1111,7 +1111,7 @@ function Show-MainForm_psf
 			} else {
 				$global:LenovoDisable = $false
 			}
-			
+
 			if ($global:RunSilent -eq "True") {
 				global:Write-LogEntry -Value "Mode: Silent running switch enabled" -Severity 2 -SkipGuiLog $true
 				$ErrorActionPreference = "Stop"
@@ -1137,7 +1137,7 @@ function Show-MainForm_psf
 				}
 				Update-ModeList $SiteServerInput.Text $SiteCodeText.Text
 			}
-			
+
 			if ((Get-ScheduledTask | Where-Object {
 						$_.TaskName -eq 'Driver Automation Tool'
 					})) {
@@ -1154,9 +1154,9 @@ function Show-MainForm_psf
 			Update-PlatformOptions
 			$ModelResults.Text = "Found ($($MakeModelDataGrid.Rows.Count)) models"
 		}
-		
+
 	}
-	
+
 	$StartDownloadButton_Click = {
 		Invoke-RunningLog
 		global:Write-LogEntry -Value "- Validating all required selections have been made" -Severity 1
@@ -1170,22 +1170,22 @@ function Show-MainForm_psf
 			global:Write-ErrorOutput -Message "Error: Please make sure you have made all required selections" -Severity 2
 		}
 	}
-	
+
 	$ConnectConfigMgrButton_Click = {
 		$SiteServer = [string]$SiteServerInput.Text
 		$ProgressListBox.ForeColor = "Black"
 		global:Write-LogEntry -Value "======== Validating ConfigMgr Server Details ========" -Severity 1
 		Connect-ConfigMgr
 	}
-	
+
 	$ResetDATSettings_Click = {
 		# Reset Windows Form
-		
+
 		# Clear site code information
 		$SiteServerInput.Enabled = $true
 		$SiteServerInput.Text = $null
 		$SiteCodeText.Text = $null
-		
+
 		#$ProductListBox.Items.Clear()
 		$ProgressListBox.Items.Clear()
 		$PlatformComboBox.SelectedItem = $null
@@ -1193,19 +1193,19 @@ function Show-MainForm_psf
 		$DownloadComboBox.SelectedItem = $null
 		$DownloadComboBox.Enabled = $true
 		$SiteCodeText.Enabled = $false
-		
+
 		# Clear storage paths
 		$DownloadPathTextBox.Text = $null
 		$PackagePathTextBox.Text = $null
 		$PackagePathTextBox.Enabled = $true
 		$StartDownloadButton.Enabled = $false
-		
+
 		# Clear manufacturers
 		$DellCheckBox.Checked = $false
 		$HPCheckBox.Checked = $false
 		$LenovoCheckBox.Checked = $false
 		$MicrosoftCheckBox.Checked = $false
-		
+
 		# Clear data grids
 		if ($MakeModelDataGrid.Rows.Count -gt 0) {
 			$MakeModelDataGrid.Rows.Clear()
@@ -1213,22 +1213,22 @@ function Show-MainForm_psf
 		if ($HPSoftpaqDataGrid.Rows.Count -gt 0) {
 			$HPSoftpaqDataGrid.Rows.Clear()
 		}
-		
+
 		# Clear operating systems
 		$OSComboBox.SelectedItem = $null
 		$OSComboBox.Enabled = $true
 		$ArchitectureComboxBox.SelectedItem = $null
 		$ArchitectureComboxBox.Enabled = $true
-		
+
 		$SelectionTabs.SelectedTab = $MakeModelTab
 		$ProgressListBox.ForeColor = "Black"
 	}
-	
+
 	$FindModelsButton_Click = {
 		Find-AvailableModels
 		[int]$ModelCount = $MakeModelDataGrid.Rows.Count
 	}
-	
+
 	$UseProxyServerCheckbox_CheckedChanged = {
 		if ($UseProxyServerCheckbox.Checked -eq $true) {
 			$ProxyPswdInput.Enabled = $true
@@ -1240,52 +1240,52 @@ function Show-MainForm_psf
 			$ProxyServerInput.Enabled = $false
 		}
 	}
-	
+
 	$DownloadComboBox_SelectedIndexChanged = {
 		Set-CompatibilityOptions
 		Confirm-OSCompatibility
 	}
-	
+
 	$PlatformComboBox_SelectedIndexChanged = {
 		Update-PlatformOptions
-		
-		
+
+
 	}
-	
+
 	$MSEndpointMgrLink_LinkClicked = {
 		Start-Process "https://www.MSEndpointMgr.com/2017/03/01/driver-automation-tool/"
 	}
-	
+
 	$OSComboBox_SelectedIndexChanged = {
 		Confirm-OSCompatibility
 	}
-	
+
 	$buttonBrowseFolder_Click = {
 		if ($DownloadBrowseFolderDialogue.ShowDialog() -eq 'OK') {
 			$DownloadPathTextBox.Text = $DownloadBrowseFolderDialogue.SelectedPath
 		}
 	}
-	
+
 	$ScriptDirectoryBrowseButton_Click = {
 		if ($ScriptBrowseFolderDialogue.ShowDialog() -eq 'OK') {
 			$ScriptLocation.Text = $ScriptBrowseFolderDialogue.SelectedPath
 		}
 	}
-	
+
 	$ImportMDTPSButton_Click = {
 		Get-MDTEnvironment
 	}
-	
+
 	$MDTScriptBrowseButton_Click = {
 		if ($MDTScriptBrowse.ShowDialog() -eq 'OK') {
 			$MDTScriptTextBox.Text = $MDTScriptBrowse.SelectedPath
 		}
 	}
-	
+
 	$GitHubLaunchButton_Click = {
 		Start-Process "https://www.MSEndpointMgr.com/modern-driver-management/"
 	}
-	
+
 	$DeploymentShareGrid_SelectionChanged = {
 		foreach ($SelectedRow in $DeploymentShareGrid.SelectedRows) {
 			if ($SelectedRow.Cells[3].Value -ne $true) {
@@ -1297,32 +1297,32 @@ function Show-MainForm_psf
 			}
 		}
 	}
-	
+
 	$DeploymentShareGrid_CurrentCellDirtyStateChanged = {
 		$DeploymentShareGrid.CommitEdit('CurrentCellChange')
 	}
-	
+
 	$SelectAllButton_Click = {
 		for ($Row = 0; $Row -lt $PackageGrid.RowCount; $Row++) {
 			$PackageGrid.Rows[$Row].Cells[0].Value = $true
 		}
 	}
-	
+
 	$PackageTypeCombo_SelectedIndexChanged = {
 		Update-ConfigMgrPkgList
-	
+
 	}
-	
+
 	$DeploymentStateCombo_SelectedIndexChanged = {
 		Update-ConfigMgrPkgList
 	}
-	
+
 	$SelectNoneButton_Click = {
 		for ($Row = 0; $Row -lt $PackageGrid.RowCount; $Row++) {
 			$PackageGrid.Rows[$Row].Cells[0].Value = $false
 		}
 	}
-	
+
 	$ConfigMgrPkgActionCombo_SelectedIndexChanged = {
 		if (-not ([string]::IsNullOrEmpty($ConfigMgrPkgActionCombo.Text))) {
 			if ($ConfigMgrPkgActionCombo.Text -match "Patch") {
@@ -1330,9 +1330,9 @@ function Show-MainForm_psf
 			} else {
 				Move-ConfigMgrPkgs
 			}
-		}	
+		}
 	}
-	
+
 	$PackageGrid_CurrentCellDirtyStateChanged = {
 		for ($Row = 0; $Row -lt $PackageGrid.RowCount; $Row++) {
 			if ($PackageGrid.Rows[$Row].Cells[0].Value -eq $true) {
@@ -1343,55 +1343,55 @@ function Show-MainForm_psf
 		}
 		$PackageGrid.CommitEdit('CurrentCellChange')
 	}
-	
+
 	$DownloadBrowseButton_Click = {
 		if ($DownloadBrowseFolderDialogue.ShowDialog() -eq 'OK') {
 			$DownloadPathTextBox.Text = $DownloadBrowseFolderDialogue.SelectedPath
 		}
 	}
-	
+
 	$PackageBrowseButton_Click = {
 		if ($PackageBrowseFolderDialogue.ShowDialog() -eq 'OK') {
 			$PackagePathTextBox.Text = $PackageBrowseFolderDialogue.SelectedPath
 		}
 	}
-	
+
 	$CreatePackagesButton_Click = {
 		$SelectionTabs.SelectedTab = $LogTab
 		Create-CustomPkg
 	}
-	
+
 	$ImportCSVButton_Click = {
 		$CustomPkgDataGrid.Rows.Clear()
 		Set-MDTOptions -OptionsEnabled $true
 		Set-ConfigMgrOptions -OptionsEnabled $true
 		Import-CSVModels
 	}
-	
+
 	$CustomPkgDataGrid_CurrentCellDirtyStateChanged = {
 		$CustomPkgDataGrid.CommitEdit('CurrentCellChange')
 		#$ExtractDriverDir = Join-Path -Path "$($DownloadPathTextBox.Text)" -ChildPath "$($CustomPkgDataGrid.Rows[0].Cells[0].Value)\$($CustomPkgDataGrid.Rows[0].Cells[1].Value)\$($CustomPkgDataGrid.Rows[0].Cells[2].Value)\$($CustomPkgDataGrid.Rows[0].Cells[4].Value)-$($CustomPkgDataGrid.Rows[0].Cells[5].Value)-$($CustomPkgDataGrid.Rows[0].Cells[6].Value)"
 		#$CustomPkgDataGrid.Rows[0].Cells[7].Value = $ExtractDriverDir
 	}
-	
+
 	$CreateFallbackButton_Click = {
 		$SelectionTabs.SelectedTab = $LogTab
 		Create-DriverFBPkg
 	}
-	
+
 	$FallbackOSCombo_SelectedIndexChanged = {
 		Enable-DriverFBPkg
 	}
-	
+
 	$FallbackArcCombo_SelectedIndexChanged = {
 		Enable-DriverFBPkg
 	}
-	
+
 	$ScheduleJobButton_Click = {
 		$SelectionTabs.SelectedTab = $LogTab
 		# Test Active Directory Credentials
 		$CredentialVerified = Test-Credentials
-		
+
 		if ($CredentialVerified -eq $true) {
 			$UsernameTextBox.BackColor = 'White'
 			$PasswordTextBox.BackColor = 'White'
@@ -1399,12 +1399,12 @@ function Show-MainForm_psf
 			# Run scheduled job function
 			Schedule-Downloads
 		} else {
-			# Prompt User		
+			# Prompt User
 			$UsernameTextBox.BackColor = 'Yellow'
 			$PasswordTextBox.BackColor = 'Yellow'
 		}
 	}
-	
+
 	$ConnectWebServiceButton_Click = {
 		if ((![string]::IsNullOrEmpty($ConfigMgrWebURL.Text)) -and (![string]::IsNullOrEmpty($SecretKey.Text))) {
 			global:Write-LogEntry -Value "======== ConfigMgr WebService Diagnostics Running ========" -Severity 1
@@ -1414,7 +1414,7 @@ function Show-MainForm_psf
 			global:Write-ErrorOutput -Message "Error: Please ensure you enter the ConfigMgr WebService URL and the required Secret Key value." -Severity 3
 		}
 	}
-	
+
 	$MakeModelDataGrid_KeyPress = [System.Windows.Forms.KeyPressEventHandler]{
 		$MakeModelDataGrid.CurrentRow.Cells[0].Value = $true
 		for ($Row = 0; $Row -lt $MakeModelDataGrid.RowCount; $Row++) {
@@ -1425,8 +1425,8 @@ function Show-MainForm_psf
 			}
 		}
 	}
-	
-	
+
+
 	$MakeModelDataGrid_CurrentCellDirtyStateChanged = {
 		for ($Row = 0; $Row -lt $MakeModelDataGrid.RowCount; $Row++) {
 			if ($MakeModelDataGrid.Rows[$Row].Cells[0].Value -eq $true) {
@@ -1437,45 +1437,45 @@ function Show-MainForm_psf
 		}
 		$MakeModelDataGrid.CommitEdit('CurrentCellChange')
 	}
-	
+
 	$DPGGridView_CurrentCellDirtyStateChanged = {
 		$DPGGridView.CommitEdit('CurrentCellChange')
 	}
-	
+
 	$DPGridView_CurrentCellDirtyStateChanged = {
 		$DPGridView.CommitEdit('CurrentCellChange')
 	}
-	
+
 	$FindModel_Click = {
 		Search-ModelList
 	}
-	
+
 	$FindSoftPaq_Click = {
 		Search-HPDriverList
 	}
-	
+
 	$ClearModelSelection_Click = {
-		
+
 		# Show notification panel
 		$XMLLoading.Visible = $true
 		$XMLLoadingLabel.Text = "Clearing all model selections.."
 		$XMLLoadingLabel.Visible = $true
-		
+
 		Start-Sleep -Seconds 2
-		
+
 		for ($Row = 0; $Row -lt $MakeModelDataGrid.RowCount; $Row++) {
 			$MakeModelDataGrid.Rows[$Row].Selected = $false
 			$MakeModelDataGrid.Rows[$Row].Cells[6].Value = $null
 			$MakeModelDataGrid.Rows[$Row].Cells[0].Value = $false
 		}
 		$MakeModelDataGrid.Sort($MakeModelDataGrid.Columns[1], [System.ComponentModel.ListSortDirection]::Descending)
-		
+
 		# Hide notification panel
 		$XMLLoading.Visible = $false
 		$XMLLoadingLabel.Visible = $false
-		
+
 	}
-	
+
 	$PackageRoot_CheckedChanged = {
 		if ($PackageRoot.Checked -eq $true) {
 			$CustPackageDest.Enabled = $false
@@ -1485,7 +1485,7 @@ function Show-MainForm_psf
 			$SpecifyCustomPath.Enabled = $true
 		}
 	}
-	
+
 	$SpecifyCustomPath_CheckedChanged = {
 		if ($SpecifyCustomPath.Checked -eq $true) {
 			$CustPackageDest.Enabled = $true
@@ -1497,7 +1497,7 @@ function Show-MainForm_psf
 			$PackageRoot.Enabled = $true
 		}
 	}
-	
+
 	$PackageGrid_KeyPress = [System.Windows.Forms.KeyPressEventHandler]{
 		<#$PackageGrid.CurrentRow.Cells[0].Value = $true
 		for ($Row = 0; $Row -lt $PackageGrid.RowCount; $Row++) {
@@ -1508,9 +1508,9 @@ function Show-MainForm_psf
 			}
 		}#>
 	}
-	
+
 	$SelectAll_Click = {
-		
+
 		# Show notification panel
 		$XMLLoading.Visible = $true
 		$XMLLoadingLabel.Text = "Selecting ALL models"
@@ -1518,20 +1518,20 @@ function Show-MainForm_psf
 		$XMLDownloadStatus.Text = "Caution: Sufficient storage and time is required for this option"
 		$XMLDownloadStatus.Visible = $true
 		Start-Sleep -Seconds 3
-		
+
 		for ($Row = 0; $Row -lt $MakeModelDataGrid.RowCount; $Row++) {
 			$MakeModelDataGrid.Rows[$Row].Cells[0].Value = $true
 			$MakeModelDataGrid.Rows[$Row].Selected = $true
 		}
 		$MakeModelDataGrid.Sort($MakeModelDataGrid.Columns[1], [System.ComponentModel.ListSortDirection]::Descending)
-		
+
 		# Hide notification panel
 		$XMLLoading.Visible = $false
 		$XMLLoadingLabel.Visible = $false
 		$XMLDownloadStatus.Visible = $false
-		
+
 	}
-	
+
 	$CustomPkgDataGrid_CellContentClick = [System.Windows.Forms.DataGridViewCellEventHandler]{
 		if (($CustomPkgDataGrid.CurrentRow.Cells["Browse"].Selected) -or ($CustomPkgDataGrid.CurrentRow.Cells[7].Selected)) {
 			if ($CustomPackageBrowse.ShowDialog() -eq 'OK') {
@@ -1539,7 +1539,7 @@ function Show-MainForm_psf
 			}
 		}
 	}
-	
+
 	$CustomExtractButton_Click = {
 		global:Write-LogEntry -Value "======== Extracting Local System Drivers ========" -Severity 1
 		$PkgImporting.Visible = $true
@@ -1571,7 +1571,7 @@ function Show-MainForm_psf
 			global:Write-LogEntry -Value "$($_.Exception.Message)" -Severity 2
 		}
 	}
-	
+
 	$ImportExtractedDriveButton_Click = {
 		$CustomPkgDataGrid.Rows.Clear()
 		$ImportXMLFileBrowse = New-Object system.windows.forms.openfiledialog
@@ -1581,7 +1581,7 @@ function Show-MainForm_psf
 		$ImportXMLFileName = $ImportXMLFileBrowse.FileName
 		Read-XMLFile -XMLFile $ImportXMLFileName
 	}
-	
+
 	$QuerySystemButton_Click = {
 		$CustomPkgDataGrid.Rows.Clear()
 		global:Write-LogEntry -Value "======== Querying Local System ========" -Severity 1
@@ -1589,7 +1589,7 @@ function Show-MainForm_psf
 		$CurrentSystemOS = Get-CIMInstance -ClassName Win32_OperatingSystem -NameSpace root\CIMV2 | select -Property OSArchitecture, Version, Caption
 		$CurrentModel = Get-CIMInstance -ClassName Win32_ComputerSystem -NameSpace root\CIMV2 | select -Property Manufacturer, Model, SystemSKUNumber
 		$BaseBoardProduct = (Get-CIMInstance -ClassName MS_SystemInformation -NameSpace root\WMI).BaseBoardProduct
-		
+
 		switch -wildcard ($CurrentModel.Manufacturer) {
 			"*Dell*" {
 				$ExtractMake = "Dell"
@@ -1608,7 +1608,7 @@ function Show-MainForm_psf
 				$ExtractSKU = (Get-CIMInstance -ClassName MS_SystemInformation -NameSpace root\WMI).BaseBoardProduct
 			}
 		}
-		
+
 		switch -wildcard ($CurrentSystemOS.Caption) {
 			"*Windows 10*" {
 				$OSRelease = [version]"10.0"
@@ -1627,7 +1627,7 @@ function Show-MainForm_psf
 				$OSName = "Windows 7"
 			}
 		}
-		
+
 		switch -wildcard ($CurrentSystemOS.OSArchitecture) {
 			"64*" {
 				$OSArchitecture = "x64"
@@ -1642,16 +1642,16 @@ function Show-MainForm_psf
 				})
 			$OSName = $OSName + " $Windows10Build"
 		}
-		
+
 		global:Write-LogEntry -Value "$($Product): Model detected $($CurrentModel.Make) $($CurrentModel.Model)" -Severity 1
 		global:Write-LogEntry -Value "$($Product): Operating system detected $OSName $OSArchitecture" -Severity 1
-		
+
 		$ExtractDriverDir = Join-Path -Path "$($DownloadPathTextBox.Text)" -ChildPath "$ExtractMake\$($CurrentModel.Model)\$OSName-$OSArchitecture"
 		$CustomPkgDataGrid.Rows.Add($ExtractMake, $CurrentModel.Model, $ExtractSKU, $CustomPkgPlatform.SelectedItem, $OSName, $OSArchitecture, "ENTER VERSION NUMBER", $ExtractDriverDir)
 		$QuerySystemButton.Enabled = $false
 		$CustomExtractButton.Enabled = $true
 	}
-	
+
 	$DPGridView_KeyPress = [System.Windows.Forms.KeyPressEventHandler]{
 		for ($Row = 0; $Row -lt $DPGridView.RowCount; $Row++) {
 			if (($DPGridView.Rows[$Row].Selected -eq $true) -and ($DPGridView.Rows[$Row].Cells[0].Value -eq $true)) {
@@ -1661,7 +1661,7 @@ function Show-MainForm_psf
 			}
 		}
 	}
-	
+
 	$DPGGridView_KeyPress = [System.Windows.Forms.KeyPressEventHandler]{
 		for ($Row = 0; $Row -lt $DPGGridView.RowCount; $Row++) {
 			if (($DPGGridView.Rows[$Row].Selected -eq $true) -and ($DPGGridView.Rows[$Row].Cells[0].Value -eq $true)) {
@@ -1671,35 +1671,35 @@ function Show-MainForm_psf
 			}
 		}
 	}
-	
+
 	$DPGridView_CurrentCellDirtyStateChanged = {
 		$DPGridView.CommitEdit('CurrentCellChange')
 	}
-	
+
 	$DPGGridView_CurrentCellDirtyStateChanged = {
 		$DPGGridView.CommitEdit('CurrentCellChange')
 	}
-	
+
 	$HideCommonSettings_CheckedChanged = {
 		Set-AdminControl -TabValue "SettingsTab" -CheckedValue $HideCommonSettings.Checked
 	}
-	
+
 	$HideConfigPkgMgmt_CheckedChanged = {
 		Set-AdminControl -TabValue "ConfigMgrDriverTab" -CheckedValue $HideConfigPkgMgmt.Checked
 	}
-	
+
 	$HideWebService_CheckedChanged = {
 		Set-AdminControl -TabValue "ConfigMgrWebSVCVisible" -CheckedValue $HideWebService.Checked
 	}
-	
+
 	$HideCustomCreation_CheckedChanged = {
 		Set-AdminControl -TabValue "CustPkgTab" -CheckedValue $HideCustomCreation.Checked
 	}
-	
+
 	$HideMDT_CheckedChanged = {
 		Set-AdminControl -TabValue "MDTSettingsVisible" -CheckedValue $HideMDT.Checked
 	}
-	
+
 	$CustomPkgPlatform_SelectedIndexChanged = {
 		$QuerySystemButton.Enabled = $true
 		$ImportExtractedDriveButton.Enabled = $true
@@ -1722,91 +1722,91 @@ function Show-MainForm_psf
 	$LenovoCheckBox_CheckedChanged = {
 		Enable-FindModels
 	}
-	
+
 	$DellCheckBox_CheckedChanged = {
 		Enable-FindModels
 	}
-	
+
 	$HPCheckBox_CheckedChanged = {
 		Enable-FindModels
 	}
-	
+
 	$MicrosoftCheckBox_CheckedChanged = {
 		Enable-FindModels
 	}
-	
+
 	$FindModelsButton_EnabledChanged = {
 		if ($FindModelsButton.Enabled -eq $true) {
 			$SearchSelectionState = $true
 		} else {
 			$SearchSelectionState = $false
 		}
-		
+
 		# Set search selection controls
 		$SelectAll.Enabled = $SearchSelectionState
 		$ClearModelSelection.Enabled = $SearchSelectionState
 	}
-	
+
 	$MSEndpointMgrLogo_Click = {
 		Start-Process "https://www.MSEndpointMgr.com"
 	}
-	
+
 	$MakeModelDataGrid_RowsAdded = [System.Windows.Forms.DataGridViewRowsAddedEventHandler]{
 		$SelectAll.Enabled = $true
 		$ClearModelSelection.Enabled = $true
 	}
-	
+
 	$ModelSearchText_KeyDown = [System.Windows.Forms.KeyEventHandler]{
 		if (($_.KeyCode -eq "Enter") -and (-not ([string]::IsNullOrEmpty($ModelSearchText.Text)))) {
 			Search-ModelList
 		}
 	}
-	
+
 	$HPSearchText_KeyDown = [System.Windows.Forms.KeyEventHandler]{
 		if (($_.KeyCode -eq "Enter") -and (-not ([string]::IsNullOrEmpty($HPSearchText.Text)))) {
 			Search-HPDriverList
 		}
 	}
-	
+
 	$FindModel_MouseEnter = {
 		$FindModel.BackColor = 'Maroon'
 		$FindModel.ForeColor = 'White'
 	}
-	
+
 	$FindModel_MouseLeave = {
 		$FindModel.BackColor = 'Silver'
 		$FindModel.ForeColor = 'Black'
-		
+
 	}
-	
+
 	$FindModelsButton_MouseEnter = {
 		$FindModelsButton.BackColor = 'Maroon'
 	}
-	
+
 	$FindModelsButton_MouseLeave = {
 		$FindModelsButton.BackColor = '64,64,64'
 	}
-	
+
 	$DownloadComboBox_TextChanged = {
 		#Confirm-OSCompatibility
 	}
-	
+
 	$OSComboBox_EnabledChanged = {
 		#Confirm-OSCompatibility
 	}
-	
+
 	$OSComboBox_TextChanged = {
 		#Confirm-OSCompatibility
 	}
-	
+
 	$buttonConnectGraphAPI_Click = {
 		$GraphAuthStatus.Text = "Connecting"
 		$GraphAuthToken = Get-MSIntuneAuthToken -TenantName $AADTenantName.Text -ClientID $AADAppID.Text -ClientSecret $APPSecret.Text
 		$global:ManagedApps = Get-ManagedApps
 		Get-ManagedDevices
-		
+
 	}
-	
+
 	$RefreshIntuneModels_Click = {
 		if (($global:Authentication -ne $null) -and ($global:Authentication.ExpiresOn -gt (Get-Date))) {
 			global:Write-LogEntry -Value "Graph API: Refreshing Devices" -Severity 1
@@ -1818,39 +1818,39 @@ function Show-MainForm_psf
 			Get-ManagedDevices
 		}
 	}
-	
+
 	$FindModelSelect_Click = {
 		Search-ModelList -FindAndSelect $true
 	}
-	
+
 	$HPCatalogModels_SelectedIndexChanged = {
 		Get-HPSoftPaqDrivers
 	}
-	
+
 	$SelectAllSoftPaqs_Click = {
 		Update-DataGrid -Action SelectAll -GridViewName $HPSoftpaqDataGrid
 	}
-	
+
 	$ClearSoftPaqSelections_Click = {
 		Update-DataGrid -Action ClearSelection -GridViewName $HPSoftpaqDataGrid
 	}
-	
+
 	$HPSoftpaqDataGrid_CurrentCellDirtyStateChanged = {
 		$HPSoftpaqDataGrid.CommitEdit('CurrentCellChange')
 	}
-	
+
 	$ResetSoftPaqSelection_Click = {
 		Update-DataGrid -Action ClearSelection -GridViewName $HPSoftpaqDataGrid
 		$HPSoftpaqDataGrid.CommitEdit('CurrentCellChange')
 	}
-	
+
 	$MainForm_FormClosing = [System.Windows.Forms.FormClosingEventHandler]{
-		
+
 		$PackageGrid.EndEdit
 		$DeploymentShareGrid.EndEdit
 		$DeploymentShareGrid.Refresh
 		$MakeModelDataGrid.EndEdit
-		
+
 		global:Write-LogEntry -Value "======== Cleaning Up Temporary Files ========" -Severity 1
 		global:Write-LogEntry -Value "- Removing Temp Folders & Source XML/CAB Files" -Severity 1 -SkipGuiLog $true
 		# Clean Up Temp Driver Folders
@@ -1859,12 +1859,12 @@ function Show-MainForm_psf
 		Get-ChildItem -Path $global:TempDirectory -Recurse -File | Where-Object {
 			($_.Name -match ".cab") -or ($_.Name -match ".xml") -and ($_.CreationTime -lt (Get-Date).AddDays(-7))
 		} | Remove-Item -Force
-		
+
 		if ($global:NoXMLOutput -eq $false) {
 			Write-XMLSettings
 			global:Write-LogEntry -Value "- Updating DATSettings.XML file" -Severity 1 -SkipGuiLog $true
 		}
-		
+
 		# Copy XML for silent running
 		if ((Get-ScheduledTask | Where-Object {
 					$_.TaskName -eq 'Driver Automation Tool'
@@ -1876,33 +1876,33 @@ function Show-MainForm_psf
 			Copy-Item -Path (Join-Path $SettingsDirectory "DATSettings.XML") -Destination (Join-Path (Get-ScheduledTask -TaskName "Driver Automation Tool" | Select-Object -ExpandProperty Actions).WorkingDirectory "\Settings\DATSettings.XML") -Force
 			global:Write-LogEntry -Value "- Updating scheduled DATSettings.XML file" -Severity 1 -SkipGuiLog $true
 		}
-		
+
 		# Remove set variables
 		Remove-Variables
-		
+
 		# Close DriverAutomationTool Process
 		Get-Process -Name "DriverAutomationTool*" | Stop-Process -Force
 	}
-	
+
 	$DownloadSoftPaqs_Click = {
-		
+
 		# Set log as focus and start job
 		Invoke-RunningLog
-		
+
 		# Set default value
 		$global:HPSoftPaqDownloads = 0
-		
+
 		# Count selected SoftPaqs
 		for ($Row = 0; $Row -lt $HPSoftpaqDataGrid.RowCount; $Row++) {
 			if ($HPSoftpaqDataGrid.Rows[$Row].Cells[0].Value -eq $true) {
 				$global:HPSoftPaqDownloads++
 			}
 		}
-		
+
 		# Call download function
 		Invoke-Downloads -DownloadJobType OEMDriverPackages
 	}
-	
+
 	$PackageCompressionCheckBox_CheckedChanged = {
 		if ($PackageCompressionCheckBox.CheckState -eq $False) {
 			$CompressionType.Enabled = $false
@@ -1913,7 +1913,7 @@ function Show-MainForm_psf
 			}
 		}
 	}
-	
+
 	$PackageCompressionCheckBox_EnabledChanged = {
 		if ($PackageCompressionCheckBox.Enabled -eq $False) {
 			$CompressionType.Enabled = $false
@@ -1921,24 +1921,24 @@ function Show-MainForm_psf
 			$CompressionType.Enabled = $true
 		}
 	}
-	
+
 	$RefreshSoftPaqSelection_Click = {
 		Get-HPSoftPaqDrivers
 	}
-	
+
 	$ArchitectureComboxBox_SelectedIndexChanged = {
 		Confirm-OSCompatibility
 	}
-	
+
 	$ClearCustomGrid_Click = {
 		$CustomPkgDataGrid.Rows.Clear()
-		
+
 	}
-	
+
 	$ConnectAzure_Click = {
 		selectsubscription
 	}
-	
+
 	$SubscriptionCombo_SelectedValueChanged = {
 		Set-AzureContext
 		$ResourceGroups = Get-AzResourceGroup
@@ -1947,7 +1947,7 @@ function Show-MainForm_psf
 			$ResourceGroupCombo.Items.Add($ResourceGroup.ResourceGroupName)
 		}
 	}
-	
+
 	$ResourceGroupCombo_SelectedValueChanged = {
 		$CapableLocations = Get-AzLocation | Where-Object {
 			$_.Providers -contains "Microsoft.Storage"
@@ -1958,7 +1958,7 @@ function Show-MainForm_psf
 		}
 		#$SubscriptionCombo.Enabled = $false
 	}
-	
+
 	$ValidateStorage_Click = {
 		$NameCheck = Get-AzStorageAccountNameAvailability -Name $($StorageLocationInput.Text)
 		if ($NameCheck.NameAvailable -eq "True") {
@@ -1969,7 +1969,7 @@ function Show-MainForm_psf
 			$StorageVerifiedLabel.Text = "Please try a different storage account name"
 		}
 	}
-	
+
 	$LocationCombo_SelectedIndexChanged = {
 		if (-not ([string]::IsNullOrEmpty($LocationCombo.Text))) {
 			$ResourceGroupCombo.Enabled = $false
@@ -1977,35 +1977,35 @@ function Show-MainForm_psf
 			$ValidateStorage.Enabled = $true
 		}
 	}
-	
+
 	$ResetIntuneControl_Click = {
 		Enable-AzureStorageOptions
 	}
-	
+
 	$CreateAzureStorage_Click = {
-		
+
 		$StorageVerifiedLabel.Text = "Creating Azure storage.. Please wait.."
-		
+
 		$StorageAccountName = $StorageLocationInput.Text
 		$storageAccountRG = $ResourceGroupCombo.Text
 		$Location = $LocationCombo.Text
 		$ContainerName = "datxmls"
-		
+
 		# Create storage account
 		New-AzStorageAccount -Name $StorageAccountName -Location $location -ResourceGroupName $storageAccountRG -SkuName Standard_LRS -Kind Storage
 		$StorageVerifiedLabel.Text = "Storage account name verified"
 		[Boolean]$result = $true
-		
+
 		$StorageAccountKey = (Get-AzStorageAccountKey -Name $StorageAccountName -ResourceGroupName $storageAccountRG)[0].Value
 		$StorageContext = New-AzStorageContext -StorageAccountName $storageAccountName -StorageAccountKey $StorageAccountKey
 		$StorageContainer = New-AzStorageContainer -Name $ContainerName -Permission Blob -Context $StorageContext
-		
-		# Store data in Registry or files 
+
+		# Store data in Registry or files
 		$SecureKey = New-Object Byte[] 32
 		[Security.Cryptography.RNGCryptoServiceProvider]::Create().GetBytes($SecureKey)
 		$secureStorageAccountKey = ConvertTo-SecureString $StorageAccountKey -AsPlainText -Force
 		$encryptedStorageAccountKey = ConvertFrom-SecureString -Key $SecureKey $SecureStorageAccountKey
-		
+
 		New-Item -Path $global:RegistryPath -Name DAT -Force
 		New-ItemProperty -Path $global:RegistryPath -Name "key" -Value $SecureKey -PropertyType Binary -Force
 		New-ItemProperty -Path $global:RegistryPath -Name "StorageAccountKey" -Value $encryptedStorageAccountKey -PropertyType String -Force
@@ -2017,11 +2017,11 @@ function Show-MainForm_psf
 		New-ItemProperty -Path $global:RegistryPath -Name "SubscriptionName" -Value $SubscriptionCombo.Text -PropertyType String -Force
 		New-ItemProperty -Path $global:RegistryPath -Name "SubscriptionID" -Value (Get-AzSubscription -SubscriptionName "$($SubscriptionCombo.Text)" | Select-Object -ExpandProperty ID) -PropertyType String -Force
 		New-ItemProperty -Path $global:RegistryPath -Name "TenantID" -Value $((Get-AzContext).Tenant.ID) -PropertyType String -Force
-		
+
 		$LocationCombo.Enabled = $false
 		$ValidateStorage.Enabled = $false
 		$StorageLocationInput.Enabled = $false
-		
+
 		Set-AzureContextDisplay
 		$StorageVerifiedLabel.Text = "Successfully provisioned in Azure"
 		if ($StorageVerifiedLabel.Text -match "Successfully") {
@@ -2029,9 +2029,9 @@ function Show-MainForm_psf
 			$CreateAzureStorage.Enabled = $false
 		}
 	}
-	
+
 	$SubscriptionCombo_SelectedIndexChanged = {
-		
+
 		Set-AzureContext
 		$ResourceGroups = Get-AzResourceGroup
 		$ResourceGroupCombo.Items.Clear()
@@ -2039,13 +2039,13 @@ function Show-MainForm_psf
 			$ResourceGroupCombo.Items.Add($ResourceGroup.ResourceGroupName)
 		}
 		if (-not ([string]::IsNullOrEmpty($SubscriptionCombo.SelectedText))) {
-	
+
 		}
-		
+
 	}
-	
+
 	$ResourceGroupCombo_SelectedIndexChanged = {
-	
+
 		$CapableLocations = Get-AzLocation | Where-Object {
 			$_.Providers -contains "Microsoft.Storage"
 		} | Select-Object DisplayName, Location
@@ -2056,97 +2056,97 @@ function Show-MainForm_psf
 		if ($LocationCombo.Items.Count -gt 1) {
 			$SubscriptionCombo.Enabled = $false
 		}
-	
+
 	}
-	
+
 	$GitHubLaunch_Click = {
 		Start-Process "https://github.com/maurice-daly/DriverAutomationTool"
-		
+
 	}
-	
+
 	$UpdateDAT_Click = {
-		
+
 		<#
 		# Update scriptblock
 		$UpdateDAT = {
 			Param ($PatchURL)
-			
+
 			# Determine running location and stop process prior to download of update
 			$InstallationPath = Get-Process DriverAutomationTool | Select-Object -ExpandProperty Path
 			Get-Process DriverAutomationTool | Stop-Process -Force
 			Start-Sleep -Seconds 2
-			
+
 			# Download latest version via Bits
 			$PatchDownload = Start-BitsTransfer -DisplayName "DriverAutomationToolPatch" -Source $PatchURL -Destination $InstallationPath
-			
+
 			# Restart DriverAutomation Tool
 			Start-Process -FilePath $InstallationPath
 		}
-		
+
 		# Start update process as a background job
 		global:Write-LogEntry -Value "======== Update In Progress ========" -Severity 2
 		global:Write-LogEntry -Value "Update: Starting background job to update to the latest build release from $PatchURL" -Severity 1
 		Start-Job -Name "DriverAutomationTool-Patch" -ScriptBlock $UpdateDAT -ArgumentList ($PatchURL)
 		#>
-		
+
 		Start-Process -FilePath (Join-Path $(Get-ScriptDirectory) -ChildPath "Update-DriverAutomationTool.exe")
 	}
-	
-	
-	
+
+
+
 	$IntuneControlTabs_SelectedIndexChanged = {
 		#TODO: Place custom script here
-		
+
 	}
-	
+
 	$buttonPushLatestToProduction_Click = {
 		# Go to logs tab
 		$SelectionTabs.SelectedTab = $LogTab
 		Write-XMLLogicPackage -XMLType BIOS -PackageType Intune -PushType Latest
-		
+
 	}
-	
+
 	$buttonPushPilotToProduction_Click = {
 		$SelectionTabs.SelectedTab = $LogTab
 		Write-XMLLogicPackage -XMLType BIOS -PackageType Intune -Distribute -PushType Pilot
-		
+
 	}
-	
+
 	$buttonPushProductionUpdate_Click = {
 		$SelectionTabs.SelectedTab = $LogTab
 		Write-XMLLogicPackage -XMLType BIOS -PackageType Intune -PushType Production
-		
+
 	}
-	
+
 	$buttonRefreshAzureXMLValue_Click = {
 		if (-not ([string]::IsNullOrEmpty($BCStorageURLDetails))) {
 			Get-IntuneBIOSControlValues
 		} else {
 			global:Write-LogEntry -Value "DAT XML storage URL is not configured. Please re-run using the AzureProvisioning switch." -Severity 2
-		}	
+		}
 	}
-	
+
 	$buttonPushLatestToPilot_Click = {
 		$SelectionTabs.SelectedTab = $LogTab
 		Write-XMLLogicPackage -XMLType BIOS -PackageType Intune -PushType Latest
 	}
-	
+
 	$SelectAllIntuneBIOS_Click={
 		for ($Row = 0; $Row -lt $IntuneBIOSDataGrid.RowCount; $Row++) {
 			$IntuneBIOSDataGrid.Rows[$Row].Cells[0].Value = $true
 			$IntuneBIOSDataGrid.Rows[$Row].Selected = $true
 		}
-		
+
 	}
-	
+
 	$SelectNoIntuneBIOS_Click={
 		for ($Row = 0; $Row -lt $IntuneBIOSDataGrid.RowCount; $Row++) {
 			$IntuneBIOSDataGrid.Rows[$Row].Cells[0].Value = $false
 			$IntuneBIOSDataGrid.Rows[$Row].Selected = $false
 		}
-		
+
 	}
-	
+
 	$PackageGrid_CellContentClick = [System.Windows.Forms.DataGridViewCellEventHandler]{
 		if ($PackageGrid.CurrentRow.Cells[5].Selected) {
 			if ($CustomPackageBrowse.ShowDialog() -eq 'OK') {
@@ -2155,18 +2155,18 @@ function Show-MainForm_psf
 			}
 		}
 	}
-	
+
 	$buttonConnectToAzure_Click = {
 		$global:AzureAccountInfo = Connect-AZAccount -ErrorAction Stop -WarningAction SilentlyContinue
 		global:Write-LogEntry -Value "[Azure Connection Process]" -Severity 1 -WriteOutput
 		if (-not ([string]::IsNullOrEmpty($global:AzureAccountInfo.Context.Tenant.id))) {
 			global:Write-LogEntry -Value "- Azure Connection - Connected to tenant $($global:AzureAccountInfo.Context.Tenant.id)" -Severity 1 -WriteOutput
-			
+
 			# Enable Azure Controls
 			Enable-AzureStorageOptions
 			$SelectionTabs.SelectedTab = $IntuneBIOSControl
 			$IntuneControlTabs.SelectedTab = $Onboarding
-			
+
 		} else {
 			global:Write-LogEntry -Value "[Error] Azure Connection - Unable to establish connection" -Severity 3 -WriteOutput
 		}
@@ -2174,7 +2174,7 @@ function Show-MainForm_psf
 		Set-AzureContextDisplay
 		global:Write-LogEntry -Value "[Azure Connection Process Completed]" -Severity 1 -WriteOutput
 	}
-	
+
 	$CustomPkgType_SelectedIndexChanged={
 		switch ($CustomPkgType.Text) {
 			"Driver" {
@@ -2197,18 +2197,18 @@ function Show-MainForm_psf
 			}
 		}
 	}
-	
+
 	# --End User Generated Script--
 	#----------------------------------------------
 	#region Generated Events
 	#----------------------------------------------
-	
+
 	$Form_StateCorrection_Load=
 	{
 		#Correct the initial state of the form to prevent the .Net maximized form issue
 		$MainForm.WindowState = $InitialFormWindowState
 	}
-	
+
 	$Form_StoreValues_Closing=
 	{
 		#Store the control values
@@ -2374,7 +2374,7 @@ function Show-MainForm_psf
 		$script:MainForm_checkboxUseAProxyServer = $checkboxUseAProxyServer.Checked
 	}
 
-	
+
 	$Form_Cleanup_FormClosed=
 	{
 		#Remove all event handlers from the controls
@@ -2587,7 +2587,7 @@ function Show-MainForm_psf
 	$MainForm.Controls.Add($StartDownloadButton)
 	$MainForm.AutoScaleDimensions = New-Object System.Drawing.SizeF(96, 96)
 	$MainForm.AutoScaleMode = 'Dpi'
-	$MainForm.BackColor = [System.Drawing.Color]::Gray 
+	$MainForm.BackColor = [System.Drawing.Color]::Gray
 	$MainForm.ClientSize = New-Object System.Drawing.Size(1281, 806)
 	$MainForm.Cursor = 'Default'
 	$MainForm.Font = [System.Drawing.Font]::new('Microsoft Sans Serif', '8.25', [System.Drawing.FontStyle]'Bold')
@@ -6591,7 +6591,7 @@ AAAA///////////wAAAAAAAA/////////////////8AAAAD///////////4AAAAAAAf/////////
 	$LogoPanel.Controls.Add($MSEndpointMgrLogo)
 	$LogoPanel.Controls.Add($DescriptionText)
 	$LogoPanel.Anchor = 'Top, Left, Right'
-	$LogoPanel.BackColor = [System.Drawing.Color]::White 
+	$LogoPanel.BackColor = [System.Drawing.Color]::White
 	$LogoPanel.Location = New-Object System.Drawing.Point(0, 0)
 	$LogoPanel.Name = 'LogoPanel'
 	$LogoPanel.Size = New-Object System.Drawing.Size(1297, 122)
@@ -6600,7 +6600,7 @@ AAAA///////////wAAAAAAAA/////////////////8AAAAD///////////4AAAAAAAf/////////
 	# AutomationLabel
 	#
 	$AutomationLabel.Anchor = 'Right'
-	$AutomationLabel.BackColor = [System.Drawing.Color]::White 
+	$AutomationLabel.BackColor = [System.Drawing.Color]::White
 	$AutomationLabel.Font = [System.Drawing.Font]::new('Calibri', '18', [System.Drawing.FontStyle]'Bold')
 	$AutomationLabel.ForeColor = [System.Drawing.Color]::FromArgb(255, 122, 0, 0)
 	$AutomationLabel.Location = New-Object System.Drawing.Point(807, 21)
@@ -6614,7 +6614,7 @@ AAAA///////////wAAAAAAAA/////////////////8AAAAD///////////4AAAAAAAf/////////
 	#
 	# MSEndpointMgrLogo
 	#
-	$MSEndpointMgrLogo.BackColor = [System.Drawing.Color]::White 
+	$MSEndpointMgrLogo.BackColor = [System.Drawing.Color]::White
 	#region Binary Data
 	$Formatter_binaryFomatter = New-Object System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
 	$System_IO_MemoryStream = New-Object System.IO.MemoryStream (,[byte[]][System.Convert]::FromBase64String('
@@ -6983,7 +6983,7 @@ AKACgAoAKACgAoAKAP/ZCw=='))
 	# DescriptionText
 	#
 	$DescriptionText.Anchor = 'Right'
-	$DescriptionText.BackColor = [System.Drawing.Color]::White 
+	$DescriptionText.BackColor = [System.Drawing.Color]::White
 	$DescriptionText.BorderStyle = 'None'
 	$DescriptionText.Font = [System.Drawing.Font]::new('Calibri', '12')
 	$DescriptionText.Location = New-Object System.Drawing.Point(696, 53)
@@ -7029,7 +7029,7 @@ AKACgAoAKACgAoAKAP/ZCw=='))
 	$MakeModelTab.Controls.Add($MakeModelTabLabel)
 	$MakeModelTab.Controls.Add($PlatformPanel)
 	$MakeModelTab.AutoScroll = $True
-	$MakeModelTab.BackColor = [System.Drawing.Color]::Gray 
+	$MakeModelTab.BackColor = [System.Drawing.Color]::Gray
 	$MakeModelTab.Location = New-Object System.Drawing.Point(4, 48)
 	$MakeModelTab.Margin = '4, 4, 4, 4'
 	$MakeModelTab.Name = 'MakeModelTab'
@@ -7041,7 +7041,7 @@ AKACgAoAKACgAoAKAP/ZCw=='))
 	#
 	# MakeModelIcon
 	#
-	$MakeModelIcon.BackColor = [System.Drawing.Color]::Gray 
+	$MakeModelIcon.BackColor = [System.Drawing.Color]::Gray
 	#region Binary Data
 	$Formatter_binaryFomatter = New-Object System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
 	$System_IO_MemoryStream = New-Object System.IO.MemoryStream (,[byte[]][System.Convert]::FromBase64String('
@@ -7087,7 +7087,7 @@ AABJRU5ErkJgggs='))
 	# MakeModelTabLabel
 	#
 	$MakeModelTabLabel.Font = [System.Drawing.Font]::new('Calibri', '18', [System.Drawing.FontStyle]'Bold')
-	$MakeModelTabLabel.ForeColor = [System.Drawing.Color]::White 
+	$MakeModelTabLabel.ForeColor = [System.Drawing.Color]::White
 	$MakeModelTabLabel.Location = New-Object System.Drawing.Point(90, 24)
 	$MakeModelTabLabel.Name = 'MakeModelTabLabel'
 	$MakeModelTabLabel.Size = New-Object System.Drawing.Size(541, 56)
@@ -7102,7 +7102,7 @@ AABJRU5ErkJgggs='))
 	$PlatformPanel.Controls.Add($DeploymentGroupBox)
 	$PlatformPanel.Controls.Add($ManufacturerSelectionGroup)
 	$PlatformPanel.Anchor = 'Top, Bottom, Left, Right'
-	$PlatformPanel.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$PlatformPanel.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$PlatformPanel.Location = New-Object System.Drawing.Point(0, 83)
 	$PlatformPanel.Name = 'PlatformPanel'
 	$PlatformPanel.Size = New-Object System.Drawing.Size(1248, 504)
@@ -7132,7 +7132,7 @@ AABJRU5ErkJgggs='))
 	$ModelDriverTab.Controls.Add($labelSearchModels)
 	$ModelDriverTab.Controls.Add($ModelSearchText)
 	$ModelDriverTab.Controls.Add($MakeModelDataGrid)
-	$ModelDriverTab.BackColor = [System.Drawing.Color]::Silver 
+	$ModelDriverTab.BackColor = [System.Drawing.Color]::Silver
 	$ModelDriverTab.Location = New-Object System.Drawing.Point(4, 28)
 	$ModelDriverTab.Margin = '4, 4, 4, 4'
 	$ModelDriverTab.Name = 'ModelDriverTab'
@@ -7148,7 +7148,7 @@ AABJRU5ErkJgggs='))
 	$FindModelSelect.Enabled = $False
 	$FindModelSelect.FlatStyle = 'Popup'
 	$FindModelSelect.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$FindModelSelect.ForeColor = [System.Drawing.Color]::White 
+	$FindModelSelect.ForeColor = [System.Drawing.Color]::White
 	$FindModelSelect.Location = New-Object System.Drawing.Point(481, 9)
 	$FindModelSelect.Name = 'FindModelSelect'
 	$FindModelSelect.Size = New-Object System.Drawing.Size(126, 27)
@@ -7166,7 +7166,7 @@ AABJRU5ErkJgggs='))
 	$SelectAll.Enabled = $False
 	$SelectAll.FlatStyle = 'Popup'
 	$SelectAll.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$SelectAll.ForeColor = [System.Drawing.Color]::White 
+	$SelectAll.ForeColor = [System.Drawing.Color]::White
 	$SelectAll.Location = New-Object System.Drawing.Point(898, 7)
 	$SelectAll.Name = 'SelectAll'
 	$SelectAll.Size = New-Object System.Drawing.Size(157, 27)
@@ -7194,7 +7194,7 @@ AABJRU5ErkJgggs='))
 	#
 	$XMLDownloadStatus.Anchor = 'Top, Bottom, Left'
 	$XMLDownloadStatus.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$XMLDownloadStatus.ForeColor = [System.Drawing.Color]::White 
+	$XMLDownloadStatus.ForeColor = [System.Drawing.Color]::White
 	$XMLDownloadStatus.Location = New-Object System.Drawing.Point(0, 50)
 	$XMLDownloadStatus.Name = 'XMLDownloadStatus'
 	$XMLDownloadStatus.Size = New-Object System.Drawing.Size(446, 40)
@@ -7207,7 +7207,7 @@ AABJRU5ErkJgggs='))
 	#
 	$XMLLoadingLabel.Anchor = 'Top, Bottom, Left'
 	$XMLLoadingLabel.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$XMLLoadingLabel.ForeColor = [System.Drawing.Color]::White 
+	$XMLLoadingLabel.ForeColor = [System.Drawing.Color]::White
 	$XMLLoadingLabel.Location = New-Object System.Drawing.Point(3, 0)
 	$XMLLoadingLabel.MinimumSize = New-Object System.Drawing.Size(0, 100)
 	$XMLLoadingLabel.Name = 'XMLLoadingLabel'
@@ -7289,14 +7289,14 @@ AABJRU5ErkJgggs='))
 	$MakeModelDataGrid.Anchor = 'Top, Bottom, Left, Right'
 	$MakeModelDataGrid.AutoSizeColumnsMode = 'AllCells'
 	$MakeModelDataGrid.AutoSizeRowsMode = 'AllCells'
-	$MakeModelDataGrid.BackgroundColor = [System.Drawing.Color]::White 
+	$MakeModelDataGrid.BackgroundColor = [System.Drawing.Color]::White
 	$System_Windows_Forms_DataGridViewCellStyle_1 = New-Object 'System.Windows.Forms.DataGridViewCellStyle'
 	$System_Windows_Forms_DataGridViewCellStyle_1.Alignment = 'MiddleLeft'
-	$System_Windows_Forms_DataGridViewCellStyle_1.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$System_Windows_Forms_DataGridViewCellStyle_1.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$System_Windows_Forms_DataGridViewCellStyle_1.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$System_Windows_Forms_DataGridViewCellStyle_1.ForeColor = [System.Drawing.SystemColors]::WindowText 
-	$System_Windows_Forms_DataGridViewCellStyle_1.SelectionBackColor = [System.Drawing.SystemColors]::Highlight 
-	$System_Windows_Forms_DataGridViewCellStyle_1.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText 
+	$System_Windows_Forms_DataGridViewCellStyle_1.ForeColor = [System.Drawing.SystemColors]::WindowText
+	$System_Windows_Forms_DataGridViewCellStyle_1.SelectionBackColor = [System.Drawing.SystemColors]::Highlight
+	$System_Windows_Forms_DataGridViewCellStyle_1.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText
 	$System_Windows_Forms_DataGridViewCellStyle_1.WrapMode = 'True'
 	$MakeModelDataGrid.ColumnHeadersDefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_1
 	$MakeModelDataGrid.ColumnHeadersHeight = 30
@@ -7310,28 +7310,28 @@ AABJRU5ErkJgggs='))
 	[void]$MakeModelDataGrid.Columns.Add($SearchResult)
 	$System_Windows_Forms_DataGridViewCellStyle_2 = New-Object 'System.Windows.Forms.DataGridViewCellStyle'
 	$System_Windows_Forms_DataGridViewCellStyle_2.Alignment = 'MiddleLeft'
-	$System_Windows_Forms_DataGridViewCellStyle_2.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$System_Windows_Forms_DataGridViewCellStyle_2.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$System_Windows_Forms_DataGridViewCellStyle_2.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$System_Windows_Forms_DataGridViewCellStyle_2.ForeColor = [System.Drawing.SystemColors]::ControlText 
-	$System_Windows_Forms_DataGridViewCellStyle_2.SelectionBackColor = [System.Drawing.Color]::Maroon 
-	$System_Windows_Forms_DataGridViewCellStyle_2.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText 
+	$System_Windows_Forms_DataGridViewCellStyle_2.ForeColor = [System.Drawing.SystemColors]::ControlText
+	$System_Windows_Forms_DataGridViewCellStyle_2.SelectionBackColor = [System.Drawing.Color]::Maroon
+	$System_Windows_Forms_DataGridViewCellStyle_2.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText
 	$System_Windows_Forms_DataGridViewCellStyle_2.WrapMode = 'False'
 	$MakeModelDataGrid.DefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_2
-	$MakeModelDataGrid.GridColor = [System.Drawing.Color]::WhiteSmoke 
+	$MakeModelDataGrid.GridColor = [System.Drawing.Color]::WhiteSmoke
 	$MakeModelDataGrid.Location = New-Object System.Drawing.Point(0, 44)
 	$MakeModelDataGrid.Name = 'MakeModelDataGrid'
 	$System_Windows_Forms_DataGridViewCellStyle_3 = New-Object 'System.Windows.Forms.DataGridViewCellStyle'
 	$System_Windows_Forms_DataGridViewCellStyle_3.Alignment = 'MiddleLeft'
-	$System_Windows_Forms_DataGridViewCellStyle_3.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$System_Windows_Forms_DataGridViewCellStyle_3.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$System_Windows_Forms_DataGridViewCellStyle_3.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$System_Windows_Forms_DataGridViewCellStyle_3.ForeColor = [System.Drawing.Color]::Black 
-	$System_Windows_Forms_DataGridViewCellStyle_3.SelectionBackColor = [System.Drawing.Color]::Maroon 
-	$System_Windows_Forms_DataGridViewCellStyle_3.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText 
+	$System_Windows_Forms_DataGridViewCellStyle_3.ForeColor = [System.Drawing.Color]::Black
+	$System_Windows_Forms_DataGridViewCellStyle_3.SelectionBackColor = [System.Drawing.Color]::Maroon
+	$System_Windows_Forms_DataGridViewCellStyle_3.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText
 	$System_Windows_Forms_DataGridViewCellStyle_3.WrapMode = 'True'
 	$MakeModelDataGrid.RowHeadersDefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_3
 	$MakeModelDataGrid.RowHeadersVisible = $False
 	$MakeModelDataGrid.RowHeadersWidth = 20
-	$MakeModelDataGrid.RowTemplate.DefaultCellStyle.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$MakeModelDataGrid.RowTemplate.DefaultCellStyle.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$MakeModelDataGrid.RowTemplate.Height = 24
 	$MakeModelDataGrid.SelectionMode = 'FullRowSelect'
 	$MakeModelDataGrid.Size = New-Object System.Drawing.Size(1228, 254)
@@ -7347,7 +7347,7 @@ AABJRU5ErkJgggs='))
 	$OSGroup.Controls.Add($ArchitectureCheckBox)
 	$OSGroup.Controls.Add($OperatingSysLabel)
 	$OSGroup.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$OSGroup.ForeColor = [System.Drawing.Color]::Black 
+	$OSGroup.ForeColor = [System.Drawing.Color]::Black
 	$OSGroup.Location = New-Object System.Drawing.Point(420, 5)
 	$OSGroup.Name = 'OSGroup'
 	$OSGroup.Size = New-Object System.Drawing.Size(305, 163)
@@ -7358,11 +7358,11 @@ AABJRU5ErkJgggs='))
 	#
 	# ArchitectureComboxBox
 	#
-	$ArchitectureComboxBox.BackColor = [System.Drawing.Color]::White 
+	$ArchitectureComboxBox.BackColor = [System.Drawing.Color]::White
 	$ArchitectureComboxBox.Cursor = 'Hand'
 	$ArchitectureComboxBox.DropDownStyle = 'DropDownList'
 	$ArchitectureComboxBox.Font = [System.Drawing.Font]::new('Segoe UI', '10')
-	$ArchitectureComboxBox.ForeColor = [System.Drawing.Color]::Black 
+	$ArchitectureComboxBox.ForeColor = [System.Drawing.Color]::Black
 	$ArchitectureComboxBox.FormattingEnabled = $True
 	[void]$ArchitectureComboxBox.Items.Add('64 bit')
 	[void]$ArchitectureComboxBox.Items.Add('32 bit')
@@ -7375,11 +7375,11 @@ AABJRU5ErkJgggs='))
 	#
 	# OSComboBox
 	#
-	$OSComboBox.BackColor = [System.Drawing.Color]::White 
+	$OSComboBox.BackColor = [System.Drawing.Color]::White
 	$OSComboBox.Cursor = 'Hand'
 	$OSComboBox.DropDownStyle = 'DropDownList'
 	$OSComboBox.Font = [System.Drawing.Font]::new('Segoe UI', '10')
-	$OSComboBox.ForeColor = [System.Drawing.Color]::Black 
+	$OSComboBox.ForeColor = [System.Drawing.Color]::Black
 	$OSComboBox.FormattingEnabled = $True
 	[void]$OSComboBox.Items.Add('Windows 11 22H2')
 	[void]$OSComboBox.Items.Add('Windows 11 21H2')
@@ -7410,7 +7410,7 @@ AABJRU5ErkJgggs='))
 	#
 	$ArchitectureCheckBox.AutoSize = $True
 	$ArchitectureCheckBox.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$ArchitectureCheckBox.ForeColor = [System.Drawing.Color]::Black 
+	$ArchitectureCheckBox.ForeColor = [System.Drawing.Color]::Black
 	$ArchitectureCheckBox.Location = New-Object System.Drawing.Point(22, 95)
 	$ArchitectureCheckBox.Margin = '4, 0, 4, 0'
 	$ArchitectureCheckBox.Name = 'ArchitectureCheckBox'
@@ -7423,7 +7423,7 @@ AABJRU5ErkJgggs='))
 	#
 	$OperatingSysLabel.AutoSize = $True
 	$OperatingSysLabel.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$OperatingSysLabel.ForeColor = [System.Drawing.Color]::Black 
+	$OperatingSysLabel.ForeColor = [System.Drawing.Color]::Black
 	$OperatingSysLabel.Location = New-Object System.Drawing.Point(22, 41)
 	$OperatingSysLabel.Margin = '4, 0, 4, 0'
 	$OperatingSysLabel.Name = 'OperatingSysLabel'
@@ -7440,7 +7440,7 @@ AABJRU5ErkJgggs='))
 	$DeploymentGroupBox.Controls.Add($DownloadTypeLabel)
 	$DeploymentGroupBox.FlatStyle = 'Flat'
 	$DeploymentGroupBox.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$DeploymentGroupBox.ForeColor = [System.Drawing.Color]::Black 
+	$DeploymentGroupBox.ForeColor = [System.Drawing.Color]::Black
 	$DeploymentGroupBox.Location = New-Object System.Drawing.Point(11, 5)
 	$DeploymentGroupBox.Name = 'DeploymentGroupBox'
 	$DeploymentGroupBox.Size = New-Object System.Drawing.Size(403, 163)
@@ -7451,11 +7451,11 @@ AABJRU5ErkJgggs='))
 	#
 	# DownloadComboBox
 	#
-	$DownloadComboBox.BackColor = [System.Drawing.Color]::White 
+	$DownloadComboBox.BackColor = [System.Drawing.Color]::White
 	$DownloadComboBox.Cursor = 'Hand'
 	$DownloadComboBox.DropDownStyle = 'DropDownList'
 	$DownloadComboBox.Font = [System.Drawing.Font]::new('Segoe UI', '10')
-	$DownloadComboBox.ForeColor = [System.Drawing.Color]::Black 
+	$DownloadComboBox.ForeColor = [System.Drawing.Color]::Black
 	$DownloadComboBox.FormattingEnabled = $True
 	[void]$DownloadComboBox.Items.Add('Drivers')
 	[void]$DownloadComboBox.Items.Add('BIOS')
@@ -7470,11 +7470,11 @@ AABJRU5ErkJgggs='))
 	#
 	# PlatformComboBox
 	#
-	$PlatformComboBox.BackColor = [System.Drawing.Color]::White 
+	$PlatformComboBox.BackColor = [System.Drawing.Color]::White
 	$PlatformComboBox.Cursor = 'Hand'
 	$PlatformComboBox.DropDownStyle = 'DropDownList'
 	$PlatformComboBox.Font = [System.Drawing.Font]::new('Segoe UI', '10')
-	$PlatformComboBox.ForeColor = [System.Drawing.Color]::Black 
+	$PlatformComboBox.ForeColor = [System.Drawing.Color]::Black
 	$PlatformComboBox.FormattingEnabled = $True
 	[void]$PlatformComboBox.Items.Add('ConfigMgr - Driver Pkg')
 	[void]$PlatformComboBox.Items.Add('ConfigMgr - Standard Pkg')
@@ -7495,9 +7495,9 @@ AABJRU5ErkJgggs='))
 	# SelectDeployLabel
 	#
 	$SelectDeployLabel.AutoSize = $True
-	$SelectDeployLabel.BackColor = [System.Drawing.Color]::Transparent 
+	$SelectDeployLabel.BackColor = [System.Drawing.Color]::Transparent
 	$SelectDeployLabel.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$SelectDeployLabel.ForeColor = [System.Drawing.Color]::Black 
+	$SelectDeployLabel.ForeColor = [System.Drawing.Color]::Black
 	$SelectDeployLabel.Location = New-Object System.Drawing.Point(32, 41)
 	$SelectDeployLabel.Margin = '4, 0, 4, 0'
 	$SelectDeployLabel.Name = 'SelectDeployLabel'
@@ -7510,7 +7510,7 @@ AABJRU5ErkJgggs='))
 	#
 	$DownloadTypeLabel.AutoSize = $True
 	$DownloadTypeLabel.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$DownloadTypeLabel.ForeColor = [System.Drawing.Color]::Black 
+	$DownloadTypeLabel.ForeColor = [System.Drawing.Color]::Black
 	$DownloadTypeLabel.Location = New-Object System.Drawing.Point(32, 96)
 	$DownloadTypeLabel.Margin = '4, 0, 4, 0'
 	$DownloadTypeLabel.Name = 'DownloadTypeLabel'
@@ -7528,7 +7528,7 @@ AABJRU5ErkJgggs='))
 	$ManufacturerSelectionGroup.Controls.Add($DellCheckBox)
 	$ManufacturerSelectionGroup.Anchor = 'Top, Left, Right'
 	$ManufacturerSelectionGroup.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$ManufacturerSelectionGroup.ForeColor = [System.Drawing.Color]::Black 
+	$ManufacturerSelectionGroup.ForeColor = [System.Drawing.Color]::Black
 	$ManufacturerSelectionGroup.Location = New-Object System.Drawing.Point(731, 5)
 	$ManufacturerSelectionGroup.Name = 'ManufacturerSelectionGroup'
 	$ManufacturerSelectionGroup.Size = New-Object System.Drawing.Size(511, 163)
@@ -7543,7 +7543,7 @@ AABJRU5ErkJgggs='))
 	$FindModelsButton.Cursor = 'Hand'
 	$FindModelsButton.FlatStyle = 'Popup'
 	$FindModelsButton.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$FindModelsButton.ForeColor = [System.Drawing.Color]::White 
+	$FindModelsButton.ForeColor = [System.Drawing.Color]::White
 	$FindModelsButton.Location = New-Object System.Drawing.Point(214, 52)
 	$FindModelsButton.Margin = '4, 3, 4, 3'
 	$FindModelsButton.Name = 'FindModelsButton'
@@ -7561,7 +7561,7 @@ AABJRU5ErkJgggs='))
 	#
 	$MicrosoftCheckBox.Cursor = 'Hand'
 	$MicrosoftCheckBox.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$MicrosoftCheckBox.ForeColor = [System.Drawing.Color]::Black 
+	$MicrosoftCheckBox.ForeColor = [System.Drawing.Color]::Black
 	$MicrosoftCheckBox.Location = New-Object System.Drawing.Point(24, 125)
 	$MicrosoftCheckBox.Name = 'MicrosoftCheckBox'
 	$MicrosoftCheckBox.Size = New-Object System.Drawing.Size(124, 24)
@@ -7575,7 +7575,7 @@ AABJRU5ErkJgggs='))
 	#
 	$HPCheckBox.Cursor = 'Hand'
 	$HPCheckBox.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$HPCheckBox.ForeColor = [System.Drawing.Color]::Black 
+	$HPCheckBox.ForeColor = [System.Drawing.Color]::Black
 	$HPCheckBox.Location = New-Object System.Drawing.Point(24, 95)
 	$HPCheckBox.Name = 'HPCheckBox'
 	$HPCheckBox.Size = New-Object System.Drawing.Size(183, 24)
@@ -7589,7 +7589,7 @@ AABJRU5ErkJgggs='))
 	#
 	$LenovoCheckBox.Cursor = 'Hand'
 	$LenovoCheckBox.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$LenovoCheckBox.ForeColor = [System.Drawing.Color]::Black 
+	$LenovoCheckBox.ForeColor = [System.Drawing.Color]::Black
 	$LenovoCheckBox.Location = New-Object System.Drawing.Point(24, 67)
 	$LenovoCheckBox.Name = 'LenovoCheckBox'
 	$LenovoCheckBox.Size = New-Object System.Drawing.Size(104, 22)
@@ -7603,7 +7603,7 @@ AABJRU5ErkJgggs='))
 	#
 	$DellCheckBox.Cursor = 'Hand'
 	$DellCheckBox.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$DellCheckBox.ForeColor = [System.Drawing.Color]::Black 
+	$DellCheckBox.ForeColor = [System.Drawing.Color]::Black
 	$DellCheckBox.Location = New-Object System.Drawing.Point(24, 37)
 	$DellCheckBox.Name = 'DellCheckBox'
 	$DellCheckBox.Size = New-Object System.Drawing.Size(104, 24)
@@ -7618,7 +7618,7 @@ AABJRU5ErkJgggs='))
 	$OEMCatalogs.Controls.Add($tabcontrol2)
 	$OEMCatalogs.Controls.Add($picturebox3)
 	$OEMCatalogs.Controls.Add($OEMDriverLabel)
-	$OEMCatalogs.BackColor = [System.Drawing.Color]::Gray 
+	$OEMCatalogs.BackColor = [System.Drawing.Color]::Gray
 	$OEMCatalogs.Location = New-Object System.Drawing.Point(4, 48)
 	$OEMCatalogs.Name = 'OEMCatalogs'
 	$OEMCatalogs.Size = New-Object System.Drawing.Size(1248, 587)
@@ -7652,7 +7652,7 @@ AABJRU5ErkJgggs='))
 	$HPCatalog.Controls.Add($SoftpaqSearchCatalog)
 	$HPCatalog.Controls.Add($HPSearchText)
 	$HPCatalog.Controls.Add($HPSoftpaqDataGrid)
-	$HPCatalog.BackColor = [System.Drawing.Color]::Silver 
+	$HPCatalog.BackColor = [System.Drawing.Color]::Silver
 	$HPCatalog.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
 	$HPCatalog.Location = New-Object System.Drawing.Point(4, 28)
 	$HPCatalog.Margin = '4, 4, 4, 4'
@@ -7680,11 +7680,11 @@ AABJRU5ErkJgggs='))
 	#
 	$DownloadSoftPaqs.Anchor = 'Bottom, Right'
 	$DownloadSoftPaqs.AutoEllipsis = $True
-	$DownloadSoftPaqs.BackColor = [System.Drawing.Color]::Maroon 
+	$DownloadSoftPaqs.BackColor = [System.Drawing.Color]::Maroon
 	$DownloadSoftPaqs.Enabled = $False
 	$DownloadSoftPaqs.FlatStyle = 'Popup'
 	$DownloadSoftPaqs.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$DownloadSoftPaqs.ForeColor = [System.Drawing.Color]::White 
+	$DownloadSoftPaqs.ForeColor = [System.Drawing.Color]::White
 	$DownloadSoftPaqs.Location = New-Object System.Drawing.Point(989, 423)
 	$DownloadSoftPaqs.Name = 'DownloadSoftPaqs'
 	$DownloadSoftPaqs.Size = New-Object System.Drawing.Size(226, 30)
@@ -7716,7 +7716,7 @@ AABJRU5ErkJgggs='))
 	$SelectAllSoftPaqs.Enabled = $False
 	$SelectAllSoftPaqs.FlatStyle = 'Popup'
 	$SelectAllSoftPaqs.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$SelectAllSoftPaqs.ForeColor = [System.Drawing.Color]::White 
+	$SelectAllSoftPaqs.ForeColor = [System.Drawing.Color]::White
 	$SelectAllSoftPaqs.Location = New-Object System.Drawing.Point(29, 426)
 	$SelectAllSoftPaqs.Name = 'SelectAllSoftPaqs'
 	$SelectAllSoftPaqs.Size = New-Object System.Drawing.Size(157, 30)
@@ -7743,7 +7743,7 @@ AABJRU5ErkJgggs='))
 	#
 	$HPSoftPaqGridStatus.Anchor = 'Top, Bottom, Left'
 	$HPSoftPaqGridStatus.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$HPSoftPaqGridStatus.ForeColor = [System.Drawing.Color]::White 
+	$HPSoftPaqGridStatus.ForeColor = [System.Drawing.Color]::White
 	$HPSoftPaqGridStatus.Location = New-Object System.Drawing.Point(0, 50)
 	$HPSoftPaqGridStatus.Name = 'HPSoftPaqGridStatus'
 	$HPSoftPaqGridStatus.Size = New-Object System.Drawing.Size(446, 18)
@@ -7756,7 +7756,7 @@ AABJRU5ErkJgggs='))
 	#
 	$HPSoftpaqGridNotice.Anchor = 'Top, Bottom, Left'
 	$HPSoftpaqGridNotice.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$HPSoftpaqGridNotice.ForeColor = [System.Drawing.Color]::White 
+	$HPSoftpaqGridNotice.ForeColor = [System.Drawing.Color]::White
 	$HPSoftpaqGridNotice.Location = New-Object System.Drawing.Point(3, 25)
 	$HPSoftpaqGridNotice.Name = 'HPSoftpaqGridNotice'
 	$HPSoftpaqGridNotice.Size = New-Object System.Drawing.Size(446, 21)
@@ -7841,14 +7841,14 @@ AABJRU5ErkJgggs='))
 	$HPSoftpaqDataGrid.Anchor = 'Top, Bottom, Left, Right'
 	$HPSoftpaqDataGrid.AutoSizeColumnsMode = 'AllCells'
 	$HPSoftpaqDataGrid.AutoSizeRowsMode = 'AllCells'
-	$HPSoftpaqDataGrid.BackgroundColor = [System.Drawing.Color]::WhiteSmoke 
+	$HPSoftpaqDataGrid.BackgroundColor = [System.Drawing.Color]::WhiteSmoke
 	$System_Windows_Forms_DataGridViewCellStyle_4 = New-Object 'System.Windows.Forms.DataGridViewCellStyle'
 	$System_Windows_Forms_DataGridViewCellStyle_4.Alignment = 'MiddleLeft'
-	$System_Windows_Forms_DataGridViewCellStyle_4.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$System_Windows_Forms_DataGridViewCellStyle_4.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$System_Windows_Forms_DataGridViewCellStyle_4.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$System_Windows_Forms_DataGridViewCellStyle_4.ForeColor = [System.Drawing.SystemColors]::WindowText 
-	$System_Windows_Forms_DataGridViewCellStyle_4.SelectionBackColor = [System.Drawing.SystemColors]::Highlight 
-	$System_Windows_Forms_DataGridViewCellStyle_4.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText 
+	$System_Windows_Forms_DataGridViewCellStyle_4.ForeColor = [System.Drawing.SystemColors]::WindowText
+	$System_Windows_Forms_DataGridViewCellStyle_4.SelectionBackColor = [System.Drawing.SystemColors]::Highlight
+	$System_Windows_Forms_DataGridViewCellStyle_4.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText
 	$System_Windows_Forms_DataGridViewCellStyle_4.WrapMode = 'True'
 	$HPSoftpaqDataGrid.ColumnHeadersDefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_4
 	$HPSoftpaqDataGrid.ColumnHeadersHeight = 30
@@ -7867,28 +7867,28 @@ AABJRU5ErkJgggs='))
 	[void]$HPSoftpaqDataGrid.Columns.Add($SupportedBuild)
 	$System_Windows_Forms_DataGridViewCellStyle_5 = New-Object 'System.Windows.Forms.DataGridViewCellStyle'
 	$System_Windows_Forms_DataGridViewCellStyle_5.Alignment = 'MiddleLeft'
-	$System_Windows_Forms_DataGridViewCellStyle_5.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$System_Windows_Forms_DataGridViewCellStyle_5.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$System_Windows_Forms_DataGridViewCellStyle_5.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$System_Windows_Forms_DataGridViewCellStyle_5.ForeColor = [System.Drawing.SystemColors]::ControlText 
-	$System_Windows_Forms_DataGridViewCellStyle_5.SelectionBackColor = [System.Drawing.Color]::Maroon 
-	$System_Windows_Forms_DataGridViewCellStyle_5.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText 
+	$System_Windows_Forms_DataGridViewCellStyle_5.ForeColor = [System.Drawing.SystemColors]::ControlText
+	$System_Windows_Forms_DataGridViewCellStyle_5.SelectionBackColor = [System.Drawing.Color]::Maroon
+	$System_Windows_Forms_DataGridViewCellStyle_5.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText
 	$System_Windows_Forms_DataGridViewCellStyle_5.WrapMode = 'False'
 	$HPSoftpaqDataGrid.DefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_5
-	$HPSoftpaqDataGrid.GridColor = [System.Drawing.Color]::WhiteSmoke 
+	$HPSoftpaqDataGrid.GridColor = [System.Drawing.Color]::WhiteSmoke
 	$HPSoftpaqDataGrid.Location = New-Object System.Drawing.Point(0, 54)
 	$HPSoftpaqDataGrid.Name = 'HPSoftpaqDataGrid'
 	$System_Windows_Forms_DataGridViewCellStyle_6 = New-Object 'System.Windows.Forms.DataGridViewCellStyle'
 	$System_Windows_Forms_DataGridViewCellStyle_6.Alignment = 'MiddleLeft'
-	$System_Windows_Forms_DataGridViewCellStyle_6.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$System_Windows_Forms_DataGridViewCellStyle_6.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$System_Windows_Forms_DataGridViewCellStyle_6.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$System_Windows_Forms_DataGridViewCellStyle_6.ForeColor = [System.Drawing.Color]::Black 
-	$System_Windows_Forms_DataGridViewCellStyle_6.SelectionBackColor = [System.Drawing.Color]::Maroon 
-	$System_Windows_Forms_DataGridViewCellStyle_6.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText 
+	$System_Windows_Forms_DataGridViewCellStyle_6.ForeColor = [System.Drawing.Color]::Black
+	$System_Windows_Forms_DataGridViewCellStyle_6.SelectionBackColor = [System.Drawing.Color]::Maroon
+	$System_Windows_Forms_DataGridViewCellStyle_6.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText
 	$System_Windows_Forms_DataGridViewCellStyle_6.WrapMode = 'True'
 	$HPSoftpaqDataGrid.RowHeadersDefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_6
 	$HPSoftpaqDataGrid.RowHeadersVisible = $False
 	$HPSoftpaqDataGrid.RowHeadersWidth = 31
-	$HPSoftpaqDataGrid.RowTemplate.DefaultCellStyle.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$HPSoftpaqDataGrid.RowTemplate.DefaultCellStyle.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$HPSoftpaqDataGrid.RowTemplate.Height = 24
 	$HPSoftpaqDataGrid.SelectionMode = 'FullRowSelect'
 	$HPSoftpaqDataGrid.Size = New-Object System.Drawing.Size(1229, 359)
@@ -7897,7 +7897,7 @@ AABJRU5ErkJgggs='))
 	#
 	# picturebox3
 	#
-	$picturebox3.BackColor = [System.Drawing.Color]::Gray 
+	$picturebox3.BackColor = [System.Drawing.Color]::Gray
 	#region Binary Data
 	$Formatter_binaryFomatter = New-Object System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
 	$System_IO_MemoryStream = New-Object System.IO.MemoryStream (,[byte[]][System.Convert]::FromBase64String('
@@ -7943,7 +7943,7 @@ AABJRU5ErkJgggs='))
 	# OEMDriverLabel
 	#
 	$OEMDriverLabel.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '16', [System.Drawing.FontStyle]'Bold')
-	$OEMDriverLabel.ForeColor = [System.Drawing.Color]::White 
+	$OEMDriverLabel.ForeColor = [System.Drawing.Color]::White
 	$OEMDriverLabel.Location = New-Object System.Drawing.Point(90, 24)
 	$OEMDriverLabel.Name = 'OEMDriverLabel'
 	$OEMDriverLabel.Size = New-Object System.Drawing.Size(541, 56)
@@ -7956,7 +7956,7 @@ AABJRU5ErkJgggs='))
 	$CommonTab.Controls.Add($tabcontrol1)
 	$CommonTab.Controls.Add($picturebox2)
 	$CommonTab.Controls.Add($labelCommonSettings)
-	$CommonTab.BackColor = [System.Drawing.Color]::Gray 
+	$CommonTab.BackColor = [System.Drawing.Color]::Gray
 	$CommonTab.Location = New-Object System.Drawing.Point(4, 48)
 	$CommonTab.Name = 'CommonTab'
 	$CommonTab.Size = New-Object System.Drawing.Size(1248, 587)
@@ -7979,7 +7979,7 @@ AABJRU5ErkJgggs='))
 	# tabpage1
 	#
 	$tabpage1.Controls.Add($StoageGroupBox)
-	$tabpage1.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$tabpage1.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$tabpage1.Location = New-Object System.Drawing.Point(4, 28)
 	$tabpage1.Name = 'tabpage1'
 	$tabpage1.Padding = '3, 3, 3, 3'
@@ -7996,7 +7996,7 @@ AABJRU5ErkJgggs='))
 	$StoageGroupBox.Controls.Add($DownloadBrowseButton)
 	$StoageGroupBox.Controls.Add($DownloadPathTextBox)
 	$StoageGroupBox.Anchor = 'Top, Bottom, Left, Right'
-	$StoageGroupBox.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$StoageGroupBox.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$StoageGroupBox.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
 	$StoageGroupBox.Location = New-Object System.Drawing.Point(11, 16)
 	$StoageGroupBox.Name = 'StoageGroupBox'
@@ -8008,10 +8008,10 @@ AABJRU5ErkJgggs='))
 	#
 	# textbox8
 	#
-	$textbox8.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$textbox8.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$textbox8.BorderStyle = 'None'
 	$textbox8.Font = [System.Drawing.Font]::new('Calibri', '12')
-	$textbox8.ForeColor = [System.Drawing.Color]::Black 
+	$textbox8.ForeColor = [System.Drawing.Color]::Black
 	$textbox8.Location = New-Object System.Drawing.Point(22, 278)
 	$textbox8.Multiline = $True
 	$textbox8.Name = 'textbox8'
@@ -8023,10 +8023,10 @@ AABJRU5ErkJgggs='))
 	#
 	# textbox7
 	#
-	$textbox7.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$textbox7.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$textbox7.BorderStyle = 'None'
 	$textbox7.Font = [System.Drawing.Font]::new('Calibri', '12')
-	$textbox7.ForeColor = [System.Drawing.Color]::Black 
+	$textbox7.ForeColor = [System.Drawing.Color]::Black
 	$textbox7.Location = New-Object System.Drawing.Point(22, 224)
 	$textbox7.Multiline = $True
 	$textbox7.Name = 'textbox7'
@@ -8038,10 +8038,10 @@ AABJRU5ErkJgggs='))
 	#
 	# StoragePathInstruction
 	#
-	$StoragePathInstruction.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$StoragePathInstruction.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$StoragePathInstruction.BorderStyle = 'None'
 	$StoragePathInstruction.Font = [System.Drawing.Font]::new('Calibri', '12')
-	$StoragePathInstruction.ForeColor = [System.Drawing.Color]::Black 
+	$StoragePathInstruction.ForeColor = [System.Drawing.Color]::Black
 	$StoragePathInstruction.Location = New-Object System.Drawing.Point(22, 50)
 	$StoragePathInstruction.Multiline = $True
 	$StoragePathInstruction.Name = 'StoragePathInstruction'
@@ -8055,7 +8055,7 @@ AABJRU5ErkJgggs='))
 	#
 	$DownloadLabel.AutoSize = $True
 	$DownloadLabel.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$DownloadLabel.ForeColor = [System.Drawing.Color]::Black 
+	$DownloadLabel.ForeColor = [System.Drawing.Color]::Black
 	$DownloadLabel.Location = New-Object System.Drawing.Point(22, 126)
 	$DownloadLabel.Margin = '4, 0, 4, 0'
 	$DownloadLabel.Name = 'DownloadLabel'
@@ -8069,7 +8069,7 @@ AABJRU5ErkJgggs='))
 	$DownloadBrowseButton.BackColor = [System.Drawing.Color]::FromArgb(255, 64, 64, 64)
 	$DownloadBrowseButton.FlatStyle = 'Popup'
 	$DownloadBrowseButton.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$DownloadBrowseButton.ForeColor = [System.Drawing.Color]::White 
+	$DownloadBrowseButton.ForeColor = [System.Drawing.Color]::White
 	$DownloadBrowseButton.Location = New-Object System.Drawing.Point(461, 161)
 	$DownloadBrowseButton.Margin = '4, 4, 4, 4'
 	$DownloadBrowseButton.Name = 'DownloadBrowseButton'
@@ -8084,7 +8084,7 @@ AABJRU5ErkJgggs='))
 	#
 	$DownloadPathTextBox.AutoCompleteMode = 'SuggestAppend'
 	$DownloadPathTextBox.AutoCompleteSource = 'FileSystemDirectories'
-	$DownloadPathTextBox.BackColor = [System.Drawing.Color]::White 
+	$DownloadPathTextBox.BackColor = [System.Drawing.Color]::White
 	$DownloadPathTextBox.Font = [System.Drawing.Font]::new('Calibri', '12')
 	$DownloadPathTextBox.Location = New-Object System.Drawing.Point(22, 161)
 	$DownloadPathTextBox.Margin = '4, 4, 4, 4'
@@ -8097,7 +8097,7 @@ AABJRU5ErkJgggs='))
 	#
 	$tabpage2.Controls.Add($SchedulingGroupBox)
 	$tabpage2.Controls.Add($ProxyGroupBox)
-	$tabpage2.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$tabpage2.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$tabpage2.Location = New-Object System.Drawing.Point(4, 28)
 	$tabpage2.Name = 'tabpage2'
 	$tabpage2.Padding = '3, 3, 3, 3'
@@ -8130,10 +8130,10 @@ AABJRU5ErkJgggs='))
 	#
 	# SchedulingInstruction
 	#
-	$SchedulingInstruction.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$SchedulingInstruction.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$SchedulingInstruction.BorderStyle = 'None'
 	$SchedulingInstruction.Font = [System.Drawing.Font]::new('Calibri', '12')
-	$SchedulingInstruction.ForeColor = [System.Drawing.Color]::Black 
+	$SchedulingInstruction.ForeColor = [System.Drawing.Color]::Black
 	$SchedulingInstruction.Location = New-Object System.Drawing.Point(17, 57)
 	$SchedulingInstruction.Multiline = $True
 	$SchedulingInstruction.Name = 'SchedulingInstruction'
@@ -8156,7 +8156,7 @@ AABJRU5ErkJgggs='))
 	#
 	# UsernameTextBox
 	#
-	$UsernameTextBox.BackColor = [System.Drawing.Color]::White 
+	$UsernameTextBox.BackColor = [System.Drawing.Color]::White
 	$UsernameTextBox.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '9', [System.Drawing.FontStyle]'Bold')
 	$UsernameTextBox.Location = New-Object System.Drawing.Point(227, 259)
 	$UsernameTextBox.Margin = '2, 2, 2, 2'
@@ -8166,7 +8166,7 @@ AABJRU5ErkJgggs='))
 	#
 	# TimeComboBox
 	#
-	$TimeComboBox.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$TimeComboBox.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$TimeComboBox.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '9', [System.Drawing.FontStyle]'Bold')
 	$TimeComboBox.FormatString = 't'
 	$TimeComboBox.FormattingEnabled = $True
@@ -8202,14 +8202,14 @@ AABJRU5ErkJgggs='))
 	#
 	# ScheduleJobButton
 	#
-	$ScheduleJobButton.BackColor = [System.Drawing.Color]::DimGray 
+	$ScheduleJobButton.BackColor = [System.Drawing.Color]::DimGray
 	$ScheduleJobButton.Cursor = 'Hand'
-	$ScheduleJobButton.FlatAppearance.BorderColor = [System.Drawing.Color]::DarkGray 
+	$ScheduleJobButton.FlatAppearance.BorderColor = [System.Drawing.Color]::DarkGray
 	$ScheduleJobButton.FlatAppearance.MouseDownBackColor = [System.Drawing.Color]::FromArgb(255, 37, 37, 37)
-	$ScheduleJobButton.FlatAppearance.MouseOverBackColor = [System.Drawing.Color]::Gray 
+	$ScheduleJobButton.FlatAppearance.MouseOverBackColor = [System.Drawing.Color]::Gray
 	$ScheduleJobButton.FlatStyle = 'Flat'
 	$ScheduleJobButton.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$ScheduleJobButton.ForeColor = [System.Drawing.Color]::White 
+	$ScheduleJobButton.ForeColor = [System.Drawing.Color]::White
 	$ScheduleJobButton.Location = New-Object System.Drawing.Point(227, 340)
 	$ScheduleJobButton.Name = 'ScheduleJobButton'
 	$ScheduleJobButton.Size = New-Object System.Drawing.Size(216, 31)
@@ -8222,7 +8222,7 @@ AABJRU5ErkJgggs='))
 	# ScheduleUserName
 	#
 	$ScheduleUserName.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$ScheduleUserName.ForeColor = [System.Drawing.Color]::Black 
+	$ScheduleUserName.ForeColor = [System.Drawing.Color]::Black
 	$ScheduleUserName.Location = New-Object System.Drawing.Point(111, 264)
 	$ScheduleUserName.Name = 'ScheduleUserName'
 	$ScheduleUserName.Size = New-Object System.Drawing.Size(108, 16)
@@ -8234,7 +8234,7 @@ AABJRU5ErkJgggs='))
 	# SchedulePassword
 	#
 	$SchedulePassword.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$SchedulePassword.ForeColor = [System.Drawing.Color]::Black 
+	$SchedulePassword.ForeColor = [System.Drawing.Color]::Black
 	$SchedulePassword.Location = New-Object System.Drawing.Point(111, 305)
 	$SchedulePassword.Name = 'SchedulePassword'
 	$SchedulePassword.Size = New-Object System.Drawing.Size(106, 16)
@@ -8245,7 +8245,7 @@ AABJRU5ErkJgggs='))
 	#
 	# PasswordTextBox
 	#
-	$PasswordTextBox.BackColor = [System.Drawing.Color]::White 
+	$PasswordTextBox.BackColor = [System.Drawing.Color]::White
 	$PasswordTextBox.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '9', [System.Drawing.FontStyle]'Bold')
 	$PasswordTextBox.Location = New-Object System.Drawing.Point(227, 298)
 	$PasswordTextBox.Margin = '2, 2, 2, 2'
@@ -8257,7 +8257,7 @@ AABJRU5ErkJgggs='))
 	# ScheduleLocation
 	#
 	$ScheduleLocation.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$ScheduleLocation.ForeColor = [System.Drawing.Color]::Black 
+	$ScheduleLocation.ForeColor = [System.Drawing.Color]::Black
 	$ScheduleLocation.Location = New-Object System.Drawing.Point(73, 221)
 	$ScheduleLocation.Name = 'ScheduleLocation'
 	$ScheduleLocation.Size = New-Object System.Drawing.Size(148, 20)
@@ -8269,7 +8269,7 @@ AABJRU5ErkJgggs='))
 	# ScheduleTime
 	#
 	$ScheduleTime.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$ScheduleTime.ForeColor = [System.Drawing.Color]::Black 
+	$ScheduleTime.ForeColor = [System.Drawing.Color]::Black
 	$ScheduleTime.Location = New-Object System.Drawing.Point(159, 187)
 	$ScheduleTime.Name = 'ScheduleTime'
 	$ScheduleTime.Size = New-Object System.Drawing.Size(58, 16)
@@ -8282,7 +8282,7 @@ AABJRU5ErkJgggs='))
 	#
 	$ScriptLocation.AutoCompleteMode = 'SuggestAppend'
 	$ScriptLocation.AutoCompleteSource = 'FileSystemDirectories'
-	$ScriptLocation.BackColor = [System.Drawing.Color]::White 
+	$ScriptLocation.BackColor = [System.Drawing.Color]::White
 	$ScriptLocation.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '9', [System.Drawing.FontStyle]'Bold')
 	$ScriptLocation.Location = New-Object System.Drawing.Point(227, 220)
 	$ScriptLocation.Margin = '2, 2, 2, 2'
@@ -8313,7 +8313,7 @@ AABJRU5ErkJgggs='))
 	# UseProxyServerCheckbox
 	#
 	$UseProxyServerCheckbox.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$UseProxyServerCheckbox.ForeColor = [System.Drawing.Color]::Black 
+	$UseProxyServerCheckbox.ForeColor = [System.Drawing.Color]::Black
 	$UseProxyServerCheckbox.Location = New-Object System.Drawing.Point(59, 159)
 	$UseProxyServerCheckbox.Margin = '4, 4, 4, 4'
 	$UseProxyServerCheckbox.Name = 'UseProxyServerCheckbox'
@@ -8326,10 +8326,10 @@ AABJRU5ErkJgggs='))
 	#
 	# ProxyServerText
 	#
-	$ProxyServerText.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$ProxyServerText.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$ProxyServerText.BorderStyle = 'None'
 	$ProxyServerText.Font = [System.Drawing.Font]::new('Calibri', '12')
-	$ProxyServerText.ForeColor = [System.Drawing.Color]::Black 
+	$ProxyServerText.ForeColor = [System.Drawing.Color]::Black
 	$ProxyServerText.Location = New-Object System.Drawing.Point(10, 47)
 	$ProxyServerText.Multiline = $True
 	$ProxyServerText.Name = 'ProxyServerText'
@@ -8337,16 +8337,16 @@ AABJRU5ErkJgggs='))
 	$ProxyServerText.Size = New-Object System.Drawing.Size(542, 155)
 	$ProxyServerText.TabIndex = 103
 	$ProxyServerText.TabStop = $False
-	$ProxyServerText.Text = 'Proxy server support is provided here. 
+	$ProxyServerText.Text = 'Proxy server support is provided here.
 
 To set your proxy specify the server and port number along with a username and password. Proxy authentication and other settings can also be set inside the script.'
 	#
 	# labelProxyServer
 	#
 	$labelProxyServer.AutoSize = $True
-	$labelProxyServer.BackColor = [System.Drawing.Color]::Transparent 
+	$labelProxyServer.BackColor = [System.Drawing.Color]::Transparent
 	$labelProxyServer.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$labelProxyServer.ForeColor = [System.Drawing.Color]::Black 
+	$labelProxyServer.ForeColor = [System.Drawing.Color]::Black
 	$labelProxyServer.Location = New-Object System.Drawing.Point(59, 226)
 	$labelProxyServer.Margin = '4, 0, 4, 0'
 	$labelProxyServer.Name = 'labelProxyServer'
@@ -8357,10 +8357,10 @@ To set your proxy specify the server and port number along with a username and p
 	#
 	# ProxyPswdInput
 	#
-	$ProxyPswdInput.BackColor = [System.Drawing.Color]::White 
+	$ProxyPswdInput.BackColor = [System.Drawing.Color]::White
 	$ProxyPswdInput.Enabled = $False
 	$ProxyPswdInput.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$ProxyPswdInput.ForeColor = [System.Drawing.Color]::Black 
+	$ProxyPswdInput.ForeColor = [System.Drawing.Color]::Black
 	$ProxyPswdInput.Location = New-Object System.Drawing.Point(216, 299)
 	$ProxyPswdInput.Margin = '4, 3, 4, 3'
 	$ProxyPswdInput.Name = 'ProxyPswdInput'
@@ -8372,9 +8372,9 @@ To set your proxy specify the server and port number along with a username and p
 	# labelPassword
 	#
 	$labelPassword.AutoSize = $True
-	$labelPassword.BackColor = [System.Drawing.Color]::Transparent 
+	$labelPassword.BackColor = [System.Drawing.Color]::Transparent
 	$labelPassword.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$labelPassword.ForeColor = [System.Drawing.Color]::Black 
+	$labelPassword.ForeColor = [System.Drawing.Color]::Black
 	$labelPassword.Location = New-Object System.Drawing.Point(59, 308)
 	$labelPassword.Margin = '4, 0, 4, 0'
 	$labelPassword.Name = 'labelPassword'
@@ -8385,10 +8385,10 @@ To set your proxy specify the server and port number along with a username and p
 	#
 	# ProxyServerInput
 	#
-	$ProxyServerInput.BackColor = [System.Drawing.Color]::White 
+	$ProxyServerInput.BackColor = [System.Drawing.Color]::White
 	$ProxyServerInput.Enabled = $False
 	$ProxyServerInput.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$ProxyServerInput.ForeColor = [System.Drawing.Color]::Black 
+	$ProxyServerInput.ForeColor = [System.Drawing.Color]::Black
 	$ProxyServerInput.Location = New-Object System.Drawing.Point(216, 221)
 	$ProxyServerInput.Margin = '4, 3, 4, 3'
 	$ProxyServerInput.Name = 'ProxyServerInput'
@@ -8399,9 +8399,9 @@ To set your proxy specify the server and port number along with a username and p
 	# labelUsername
 	#
 	$labelUsername.AutoSize = $True
-	$labelUsername.BackColor = [System.Drawing.Color]::Transparent 
+	$labelUsername.BackColor = [System.Drawing.Color]::Transparent
 	$labelUsername.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$labelUsername.ForeColor = [System.Drawing.Color]::Black 
+	$labelUsername.ForeColor = [System.Drawing.Color]::Black
 	$labelUsername.Location = New-Object System.Drawing.Point(59, 267)
 	$labelUsername.Margin = '4, 0, 4, 0'
 	$labelUsername.Name = 'labelUsername'
@@ -8412,10 +8412,10 @@ To set your proxy specify the server and port number along with a username and p
 	#
 	# ProxyUserInput
 	#
-	$ProxyUserInput.BackColor = [System.Drawing.Color]::White 
+	$ProxyUserInput.BackColor = [System.Drawing.Color]::White
 	$ProxyUserInput.Enabled = $False
 	$ProxyUserInput.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$ProxyUserInput.ForeColor = [System.Drawing.Color]::Black 
+	$ProxyUserInput.ForeColor = [System.Drawing.Color]::Black
 	$ProxyUserInput.Location = New-Object System.Drawing.Point(216, 261)
 	$ProxyUserInput.Margin = '4, 3, 4, 3'
 	$ProxyUserInput.Name = 'ProxyUserInput'
@@ -8426,7 +8426,7 @@ To set your proxy specify the server and port number along with a username and p
 	#
 	$tabpage3.Controls.Add($AdminControlsInstruction)
 	$tabpage3.Controls.Add($groupbox4)
-	$tabpage3.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$tabpage3.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$tabpage3.Location = New-Object System.Drawing.Point(4, 28)
 	$tabpage3.Name = 'tabpage3'
 	$tabpage3.Size = New-Object System.Drawing.Size(1315, 543)
@@ -8435,10 +8435,10 @@ To set your proxy specify the server and port number along with a username and p
 	#
 	# AdminControlsInstruction
 	#
-	$AdminControlsInstruction.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$AdminControlsInstruction.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$AdminControlsInstruction.BorderStyle = 'None'
 	$AdminControlsInstruction.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$AdminControlsInstruction.ForeColor = [System.Drawing.Color]::Black 
+	$AdminControlsInstruction.ForeColor = [System.Drawing.Color]::Black
 	$AdminControlsInstruction.Location = New-Object System.Drawing.Point(17, 18)
 	$AdminControlsInstruction.Multiline = $True
 	$AdminControlsInstruction.Name = 'AdminControlsInstruction'
@@ -8480,10 +8480,10 @@ To set your proxy specify the server and port number along with a username and p
 	#
 	# textbox6
 	#
-	$textbox6.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$textbox6.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$textbox6.BorderStyle = 'None'
 	$textbox6.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '9.75', [System.Drawing.FontStyle]'Bold')
-	$textbox6.ForeColor = [System.Drawing.Color]::Black 
+	$textbox6.ForeColor = [System.Drawing.Color]::Black
 	$textbox6.Location = New-Object System.Drawing.Point(41, 58)
 	$textbox6.Multiline = $True
 	$textbox6.Name = 'textbox6'
@@ -8496,7 +8496,7 @@ To set your proxy specify the server and port number along with a username and p
 	# HideCommonSettings
 	#
 	$HideCommonSettings.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '9', [System.Drawing.FontStyle]'Bold')
-	$HideCommonSettings.ForeColor = [System.Drawing.Color]::DarkRed 
+	$HideCommonSettings.ForeColor = [System.Drawing.Color]::DarkRed
 	$HideCommonSettings.Location = New-Object System.Drawing.Point(25, 28)
 	$HideCommonSettings.Name = 'HideCommonSettings'
 	$HideCommonSettings.Size = New-Object System.Drawing.Size(334, 24)
@@ -8508,7 +8508,7 @@ To set your proxy specify the server and port number along with a username and p
 	# HideCustomCreation
 	#
 	$HideCustomCreation.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '9')
-	$HideCustomCreation.ForeColor = [System.Drawing.Color]::Black 
+	$HideCustomCreation.ForeColor = [System.Drawing.Color]::Black
 	$HideCustomCreation.Location = New-Object System.Drawing.Point(25, 169)
 	$HideCustomCreation.Name = 'HideCustomCreation'
 	$HideCustomCreation.Size = New-Object System.Drawing.Size(334, 24)
@@ -8521,7 +8521,7 @@ To set your proxy specify the server and port number along with a username and p
 	# HideConfigPkgMgmt
 	#
 	$HideConfigPkgMgmt.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '9')
-	$HideConfigPkgMgmt.ForeColor = [System.Drawing.Color]::Black 
+	$HideConfigPkgMgmt.ForeColor = [System.Drawing.Color]::Black
 	$HideConfigPkgMgmt.Location = New-Object System.Drawing.Point(25, 109)
 	$HideConfigPkgMgmt.Name = 'HideConfigPkgMgmt'
 	$HideConfigPkgMgmt.Size = New-Object System.Drawing.Size(334, 24)
@@ -8534,7 +8534,7 @@ To set your proxy specify the server and port number along with a username and p
 	# HideWebService
 	#
 	$HideWebService.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '9')
-	$HideWebService.ForeColor = [System.Drawing.Color]::Black 
+	$HideWebService.ForeColor = [System.Drawing.Color]::Black
 	$HideWebService.Location = New-Object System.Drawing.Point(25, 139)
 	$HideWebService.Name = 'HideWebService'
 	$HideWebService.Size = New-Object System.Drawing.Size(334, 24)
@@ -8547,7 +8547,7 @@ To set your proxy specify the server and port number along with a username and p
 	# HideMDT
 	#
 	$HideMDT.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '9')
-	$HideMDT.ForeColor = [System.Drawing.Color]::Black 
+	$HideMDT.ForeColor = [System.Drawing.Color]::Black
 	$HideMDT.Location = New-Object System.Drawing.Point(25, 199)
 	$HideMDT.Name = 'HideMDT'
 	$HideMDT.Size = New-Object System.Drawing.Size(334, 24)
@@ -8607,7 +8607,7 @@ rkJgggs='))
 	#
 	$labelCommonSettings.AutoSize = $True
 	$labelCommonSettings.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '16', [System.Drawing.FontStyle]'Bold')
-	$labelCommonSettings.ForeColor = [System.Drawing.Color]::White 
+	$labelCommonSettings.ForeColor = [System.Drawing.Color]::White
 	$labelCommonSettings.Location = New-Object System.Drawing.Point(90, 24)
 	$labelCommonSettings.Name = 'labelCommonSettings'
 	$labelCommonSettings.Size = New-Object System.Drawing.Size(186, 35)
@@ -8621,7 +8621,7 @@ rkJgggs='))
 	$ConfigMgrTab.Controls.Add($labelConfigurationManager)
 	$ConfigMgrTab.Controls.Add($SettingsTabs)
 	$ConfigMgrTab.Controls.Add($SettingsPanel)
-	$ConfigMgrTab.BackColor = [System.Drawing.Color]::Gray 
+	$ConfigMgrTab.BackColor = [System.Drawing.Color]::Gray
 	$ConfigMgrTab.Location = New-Object System.Drawing.Point(4, 48)
 	$ConfigMgrTab.Name = 'ConfigMgrTab'
 	$ConfigMgrTab.Size = New-Object System.Drawing.Size(1248, 587)
@@ -8678,7 +8678,7 @@ rkJgggs='))
 	#
 	$labelConfigurationManager.AutoSize = $True
 	$labelConfigurationManager.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '16', [System.Drawing.FontStyle]'Bold')
-	$labelConfigurationManager.ForeColor = [System.Drawing.Color]::White 
+	$labelConfigurationManager.ForeColor = [System.Drawing.Color]::White
 	$labelConfigurationManager.Location = New-Object System.Drawing.Point(90, 24)
 	$labelConfigurationManager.Name = 'labelConfigurationManager'
 	$labelConfigurationManager.Size = New-Object System.Drawing.Size(328, 35)
@@ -8703,7 +8703,7 @@ rkJgggs='))
 	#
 	$ConfigMgrDPOptionsTab.Controls.Add($PackageCreation)
 	$ConfigMgrDPOptionsTab.Controls.Add($groupbox1)
-	$ConfigMgrDPOptionsTab.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$ConfigMgrDPOptionsTab.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$ConfigMgrDPOptionsTab.Location = New-Object System.Drawing.Point(4, 26)
 	$ConfigMgrDPOptionsTab.Name = 'ConfigMgrDPOptionsTab'
 	$ConfigMgrDPOptionsTab.Size = New-Object System.Drawing.Size(1234, 477)
@@ -8735,7 +8735,7 @@ rkJgggs='))
 	$PackageCreation.Controls.Add($PackageRoot)
 	$PackageCreation.Anchor = 'Top, Bottom, Left, Right'
 	$PackageCreation.Font = [System.Drawing.Font]::new('Segoe UI', '9.75', [System.Drawing.FontStyle]'Bold')
-	$PackageCreation.ForeColor = [System.Drawing.Color]::Black 
+	$PackageCreation.ForeColor = [System.Drawing.Color]::Black
 	$PackageCreation.Location = New-Object System.Drawing.Point(563, 3)
 	$PackageCreation.Name = 'PackageCreation'
 	$PackageCreation.Size = New-Object System.Drawing.Size(637, 475)
@@ -8746,10 +8746,10 @@ rkJgggs='))
 	#
 	# textbox9
 	#
-	$textbox9.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$textbox9.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$textbox9.BorderStyle = 'None'
 	$textbox9.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$textbox9.ForeColor = [System.Drawing.Color]::Black 
+	$textbox9.ForeColor = [System.Drawing.Color]::Black
 	$textbox9.Location = New-Object System.Drawing.Point(41, 409)
 	$textbox9.Multiline = $True
 	$textbox9.Name = 'textbox9'
@@ -8762,7 +8762,7 @@ rkJgggs='))
 	# CreateXMLLogicPackage
 	#
 	$CreateXMLLogicPackage.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$CreateXMLLogicPackage.ForeColor = [System.Drawing.Color]::Maroon 
+	$CreateXMLLogicPackage.ForeColor = [System.Drawing.Color]::Maroon
 	$CreateXMLLogicPackage.Location = New-Object System.Drawing.Point(45, 383)
 	$CreateXMLLogicPackage.Name = 'CreateXMLLogicPackage'
 	$CreateXMLLogicPackage.Size = New-Object System.Drawing.Size(264, 24)
@@ -8775,7 +8775,7 @@ rkJgggs='))
 	#
 	$ZipFormatLabel.AutoSize = $True
 	$ZipFormatLabel.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$ZipFormatLabel.ForeColor = [System.Drawing.Color]::Black 
+	$ZipFormatLabel.ForeColor = [System.Drawing.Color]::Black
 	$ZipFormatLabel.Location = New-Object System.Drawing.Point(355, 324)
 	$ZipFormatLabel.Margin = '4, 0, 4, 0'
 	$ZipFormatLabel.Name = 'ZipFormatLabel'
@@ -8799,10 +8799,10 @@ rkJgggs='))
 	#
 	# ZipCompressionText
 	#
-	$ZipCompressionText.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$ZipCompressionText.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$ZipCompressionText.BorderStyle = 'None'
 	$ZipCompressionText.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$ZipCompressionText.ForeColor = [System.Drawing.Color]::Black 
+	$ZipCompressionText.ForeColor = [System.Drawing.Color]::Black
 	$ZipCompressionText.Location = New-Object System.Drawing.Point(41, 348)
 	$ZipCompressionText.Multiline = $True
 	$ZipCompressionText.Name = 'ZipCompressionText'
@@ -8815,7 +8815,7 @@ rkJgggs='))
 	# PackageCompressionCheckBox
 	#
 	$PackageCompressionCheckBox.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$PackageCompressionCheckBox.ForeColor = [System.Drawing.Color]::Maroon 
+	$PackageCompressionCheckBox.ForeColor = [System.Drawing.Color]::Maroon
 	$PackageCompressionCheckBox.Location = New-Object System.Drawing.Point(45, 324)
 	$PackageCompressionCheckBox.Name = 'PackageCompressionCheckBox'
 	$PackageCompressionCheckBox.Size = New-Object System.Drawing.Size(264, 24)
@@ -8828,10 +8828,10 @@ rkJgggs='))
 	#
 	# CleanSourceText
 	#
-	$CleanSourceText.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$CleanSourceText.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$CleanSourceText.BorderStyle = 'None'
 	$CleanSourceText.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$CleanSourceText.ForeColor = [System.Drawing.Color]::Black 
+	$CleanSourceText.ForeColor = [System.Drawing.Color]::Black
 	$CleanSourceText.Location = New-Object System.Drawing.Point(352, 286)
 	$CleanSourceText.Multiline = $True
 	$CleanSourceText.Name = 'CleanSourceText'
@@ -8844,7 +8844,7 @@ rkJgggs='))
 	# RemoveDriverSourceCheckbox
 	#
 	$RemoveDriverSourceCheckbox.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$RemoveDriverSourceCheckbox.ForeColor = [System.Drawing.Color]::Black 
+	$RemoveDriverSourceCheckbox.ForeColor = [System.Drawing.Color]::Black
 	$RemoveDriverSourceCheckbox.Location = New-Object System.Drawing.Point(355, 263)
 	$RemoveDriverSourceCheckbox.Name = 'RemoveDriverSourceCheckbox'
 	$RemoveDriverSourceCheckbox.Size = New-Object System.Drawing.Size(260, 24)
@@ -8855,10 +8855,10 @@ rkJgggs='))
 	#
 	# RemoveBIOSText
 	#
-	$RemoveBIOSText.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$RemoveBIOSText.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$RemoveBIOSText.BorderStyle = 'None'
 	$RemoveBIOSText.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$RemoveBIOSText.ForeColor = [System.Drawing.Color]::Black 
+	$RemoveBIOSText.ForeColor = [System.Drawing.Color]::Black
 	$RemoveBIOSText.Location = New-Object System.Drawing.Point(41, 285)
 	$RemoveBIOSText.Multiline = $True
 	$RemoveBIOSText.Name = 'RemoveBIOSText'
@@ -8872,7 +8872,7 @@ rkJgggs='))
 	#
 	$RemoveLegacyBIOSCheckbox.Enabled = $False
 	$RemoveLegacyBIOSCheckbox.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$RemoveLegacyBIOSCheckbox.ForeColor = [System.Drawing.Color]::Black 
+	$RemoveLegacyBIOSCheckbox.ForeColor = [System.Drawing.Color]::Black
 	$RemoveLegacyBIOSCheckbox.Location = New-Object System.Drawing.Point(45, 263)
 	$RemoveLegacyBIOSCheckbox.Name = 'RemoveLegacyBIOSCheckbox'
 	$RemoveLegacyBIOSCheckbox.Size = New-Object System.Drawing.Size(264, 24)
@@ -8883,10 +8883,10 @@ rkJgggs='))
 	#
 	# CleanUpText
 	#
-	$CleanUpText.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$CleanUpText.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$CleanUpText.BorderStyle = 'None'
 	$CleanUpText.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$CleanUpText.ForeColor = [System.Drawing.Color]::Black 
+	$CleanUpText.ForeColor = [System.Drawing.Color]::Black
 	$CleanUpText.Location = New-Object System.Drawing.Point(352, 219)
 	$CleanUpText.Multiline = $True
 	$CleanUpText.Name = 'CleanUpText'
@@ -8900,7 +8900,7 @@ rkJgggs='))
 	#
 	$CleanUnusedCheckBox.Enabled = $False
 	$CleanUnusedCheckBox.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$CleanUnusedCheckBox.ForeColor = [System.Drawing.Color]::Black 
+	$CleanUnusedCheckBox.ForeColor = [System.Drawing.Color]::Black
 	$CleanUnusedCheckBox.Location = New-Object System.Drawing.Point(355, 199)
 	$CleanUnusedCheckBox.Name = 'CleanUnusedCheckBox'
 	$CleanUnusedCheckBox.Size = New-Object System.Drawing.Size(226, 24)
@@ -8911,10 +8911,10 @@ rkJgggs='))
 	#
 	# RemoveSuperText
 	#
-	$RemoveSuperText.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$RemoveSuperText.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$RemoveSuperText.BorderStyle = 'None'
 	$RemoveSuperText.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$RemoveSuperText.ForeColor = [System.Drawing.Color]::Black 
+	$RemoveSuperText.ForeColor = [System.Drawing.Color]::Black
 	$RemoveSuperText.Location = New-Object System.Drawing.Point(41, 220)
 	$RemoveSuperText.Multiline = $True
 	$RemoveSuperText.Name = 'RemoveSuperText'
@@ -8928,7 +8928,7 @@ rkJgggs='))
 	#
 	$RemoveLegacyDriverCheckbox.Enabled = $False
 	$RemoveLegacyDriverCheckbox.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$RemoveLegacyDriverCheckbox.ForeColor = [System.Drawing.Color]::Black 
+	$RemoveLegacyDriverCheckbox.ForeColor = [System.Drawing.Color]::Black
 	$RemoveLegacyDriverCheckbox.Location = New-Object System.Drawing.Point(45, 199)
 	$RemoveLegacyDriverCheckbox.Name = 'RemoveLegacyDriverCheckbox'
 	$RemoveLegacyDriverCheckbox.Size = New-Object System.Drawing.Size(264, 24)
@@ -8941,7 +8941,7 @@ rkJgggs='))
 	#
 	$PackageBrowseButton.BackColor = [System.Drawing.Color]::FromArgb(255, 64, 64, 64)
 	$PackageBrowseButton.FlatStyle = 'Popup'
-	$PackageBrowseButton.ForeColor = [System.Drawing.Color]::White 
+	$PackageBrowseButton.ForeColor = [System.Drawing.Color]::White
 	$PackageBrowseButton.Location = New-Object System.Drawing.Point(441, 65)
 	$PackageBrowseButton.Margin = '4, 4, 4, 4'
 	$PackageBrowseButton.Name = 'PackageBrowseButton'
@@ -8956,7 +8956,7 @@ rkJgggs='))
 	#
 	$PackagePathLabel.AutoSize = $True
 	$PackagePathLabel.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$PackagePathLabel.ForeColor = [System.Drawing.Color]::Black 
+	$PackagePathLabel.ForeColor = [System.Drawing.Color]::Black
 	$PackagePathLabel.Location = New-Object System.Drawing.Point(39, 35)
 	$PackagePathLabel.Margin = '4, 0, 4, 0'
 	$PackagePathLabel.Name = 'PackagePathLabel'
@@ -8969,7 +8969,7 @@ rkJgggs='))
 	#
 	$PackagePathTextBox.AutoCompleteMode = 'SuggestAppend'
 	$PackagePathTextBox.AutoCompleteSource = 'FileSystemDirectories'
-	$PackagePathTextBox.BackColor = [System.Drawing.Color]::White 
+	$PackagePathTextBox.BackColor = [System.Drawing.Color]::White
 	$PackagePathTextBox.Font = [System.Drawing.Font]::new('Segoe UI', '11.25')
 	$PackagePathTextBox.Location = New-Object System.Drawing.Point(40, 65)
 	$PackagePathTextBox.Margin = '4, 4, 4, 4'
@@ -8982,7 +8982,7 @@ rkJgggs='))
 	#
 	$CustPackageDest.AutoCompleteMode = 'SuggestAppend'
 	$CustPackageDest.AutoCompleteSource = 'FileSystemDirectories'
-	$CustPackageDest.BackColor = [System.Drawing.Color]::White 
+	$CustPackageDest.BackColor = [System.Drawing.Color]::White
 	$CustPackageDest.Enabled = $False
 	$CustPackageDest.Font = [System.Drawing.Font]::new('Segoe UI', '11.25')
 	$CustPackageDest.Location = New-Object System.Drawing.Point(355, 147)
@@ -8995,7 +8995,7 @@ rkJgggs='))
 	# SpecifyCustomPath
 	#
 	$SpecifyCustomPath.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$SpecifyCustomPath.ForeColor = [System.Drawing.Color]::Black 
+	$SpecifyCustomPath.ForeColor = [System.Drawing.Color]::Black
 	$SpecifyCustomPath.Location = New-Object System.Drawing.Point(355, 116)
 	$SpecifyCustomPath.Name = 'SpecifyCustomPath'
 	$SpecifyCustomPath.Size = New-Object System.Drawing.Size(242, 24)
@@ -9007,10 +9007,10 @@ rkJgggs='))
 	#
 	# textbox4
 	#
-	$textbox4.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$textbox4.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$textbox4.BorderStyle = 'None'
 	$textbox4.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$textbox4.ForeColor = [System.Drawing.Color]::Black 
+	$textbox4.ForeColor = [System.Drawing.Color]::Black
 	$textbox4.Location = New-Object System.Drawing.Point(41, 139)
 	$textbox4.Multiline = $True
 	$textbox4.Name = 'textbox4'
@@ -9023,7 +9023,7 @@ rkJgggs='))
 	# PackageRoot
 	#
 	$PackageRoot.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$PackageRoot.ForeColor = [System.Drawing.Color]::Black 
+	$PackageRoot.ForeColor = [System.Drawing.Color]::Black
 	$PackageRoot.Location = New-Object System.Drawing.Point(45, 116)
 	$PackageRoot.Name = 'PackageRoot'
 	$PackageRoot.Size = New-Object System.Drawing.Size(219, 24)
@@ -9064,10 +9064,10 @@ rkJgggs='))
 	#
 	# ConfigMgrImport
 	#
-	$ConfigMgrImport.BackColor = [System.Drawing.Color]::White 
+	$ConfigMgrImport.BackColor = [System.Drawing.Color]::White
 	$ConfigMgrImport.DropDownStyle = 'DropDownList'
 	$ConfigMgrImport.Font = [System.Drawing.Font]::new('Microsoft Sans Serif', '9.75')
-	$ConfigMgrImport.ForeColor = [System.Drawing.Color]::Black 
+	$ConfigMgrImport.ForeColor = [System.Drawing.Color]::Black
 	$ConfigMgrImport.FormattingEnabled = $True
 	[void]$ConfigMgrImport.Items.Add('Yes')
 	[void]$ConfigMgrImport.Items.Add('No')
@@ -9080,7 +9080,7 @@ rkJgggs='))
 	#
 	$labelSelectKnownModels.AutoSize = $True
 	$labelSelectKnownModels.Font = [System.Drawing.Font]::new('Microsoft Sans Serif', '9.75', [System.Drawing.FontStyle]'Bold')
-	$labelSelectKnownModels.ForeColor = [System.Drawing.Color]::Black 
+	$labelSelectKnownModels.ForeColor = [System.Drawing.Color]::Black
 	$labelSelectKnownModels.Location = New-Object System.Drawing.Point(30, 281)
 	$labelSelectKnownModels.Name = 'labelSelectKnownModels'
 	$labelSelectKnownModels.Size = New-Object System.Drawing.Size(138, 20)
@@ -9090,10 +9090,10 @@ rkJgggs='))
 	#
 	# ConifgSiteInstruction
 	#
-	$ConifgSiteInstruction.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$ConifgSiteInstruction.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$ConifgSiteInstruction.BorderStyle = 'None'
 	$ConifgSiteInstruction.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$ConifgSiteInstruction.ForeColor = [System.Drawing.Color]::Black 
+	$ConifgSiteInstruction.ForeColor = [System.Drawing.Color]::Black
 	$ConifgSiteInstruction.Location = New-Object System.Drawing.Point(9, 44)
 	$ConifgSiteInstruction.Multiline = $True
 	$ConifgSiteInstruction.Name = 'ConifgSiteInstruction'
@@ -9111,7 +9111,7 @@ Note: Please ensure that you have the Configuration Manager Console installed an
 	$ConnectConfigMgrButton.BackColor = [System.Drawing.Color]::FromArgb(255, 64, 64, 64)
 	$ConnectConfigMgrButton.FlatStyle = 'Flat'
 	$ConnectConfigMgrButton.Font = [System.Drawing.Font]::new('Microsoft Sans Serif', '9.75', [System.Drawing.FontStyle]'Bold')
-	$ConnectConfigMgrButton.ForeColor = [System.Drawing.Color]::White 
+	$ConnectConfigMgrButton.ForeColor = [System.Drawing.Color]::White
 	$ConnectConfigMgrButton.Location = New-Object System.Drawing.Point(201, 366)
 	$ConnectConfigMgrButton.Margin = '4, 3, 4, 3'
 	$ConnectConfigMgrButton.Name = 'ConnectConfigMgrButton'
@@ -9124,11 +9124,11 @@ Note: Please ensure that you have the Configuration Manager Console installed an
 	#
 	# SiteCodeText
 	#
-	$SiteCodeText.BackColor = [System.Drawing.Color]::White 
+	$SiteCodeText.BackColor = [System.Drawing.Color]::White
 	$SiteCodeText.CharacterCasing = 'Upper'
 	$SiteCodeText.Enabled = $False
 	$SiteCodeText.Font = [System.Drawing.Font]::new('Microsoft Sans Serif', '9.75')
-	$SiteCodeText.ForeColor = [System.Drawing.Color]::Black 
+	$SiteCodeText.ForeColor = [System.Drawing.Color]::Black
 	$SiteCodeText.Location = New-Object System.Drawing.Point(201, 220)
 	$SiteCodeText.Margin = '4, 3, 4, 3'
 	$SiteCodeText.Name = 'SiteCodeText'
@@ -9138,9 +9138,9 @@ Note: Please ensure that you have the Configuration Manager Console installed an
 	#
 	# SiteServerInput
 	#
-	$SiteServerInput.BackColor = [System.Drawing.Color]::White 
+	$SiteServerInput.BackColor = [System.Drawing.Color]::White
 	$SiteServerInput.Font = [System.Drawing.Font]::new('Microsoft Sans Serif', '9.75')
-	$SiteServerInput.ForeColor = [System.Drawing.Color]::Black 
+	$SiteServerInput.ForeColor = [System.Drawing.Color]::Black
 	$SiteServerInput.Location = New-Object System.Drawing.Point(201, 167)
 	$SiteServerInput.Margin = '4, 3, 4, 3'
 	$SiteServerInput.Name = 'SiteServerInput'
@@ -9150,9 +9150,9 @@ Note: Please ensure that you have the Configuration Manager Console installed an
 	# SiteServerLabel
 	#
 	$SiteServerLabel.AutoSize = $True
-	$SiteServerLabel.BackColor = [System.Drawing.Color]::Transparent 
+	$SiteServerLabel.BackColor = [System.Drawing.Color]::Transparent
 	$SiteServerLabel.Font = [System.Drawing.Font]::new('Microsoft Sans Serif', '9.75', [System.Drawing.FontStyle]'Bold')
-	$SiteServerLabel.ForeColor = [System.Drawing.Color]::Black 
+	$SiteServerLabel.ForeColor = [System.Drawing.Color]::Black
 	$SiteServerLabel.Location = New-Object System.Drawing.Point(88, 174)
 	$SiteServerLabel.Margin = '4, 0, 4, 0'
 	$SiteServerLabel.Name = 'SiteServerLabel'
@@ -9164,9 +9164,9 @@ Note: Please ensure that you have the Configuration Manager Console installed an
 	# SiteCodeLabel
 	#
 	$SiteCodeLabel.AutoSize = $True
-	$SiteCodeLabel.BackColor = [System.Drawing.Color]::Transparent 
+	$SiteCodeLabel.BackColor = [System.Drawing.Color]::Transparent
 	$SiteCodeLabel.Font = [System.Drawing.Font]::new('Microsoft Sans Serif', '9.75', [System.Drawing.FontStyle]'Bold')
-	$SiteCodeLabel.ForeColor = [System.Drawing.Color]::Black 
+	$SiteCodeLabel.ForeColor = [System.Drawing.Color]::Black
 	$SiteCodeLabel.Location = New-Object System.Drawing.Point(96, 227)
 	$SiteCodeLabel.Margin = '4, 0, 4, 0'
 	$SiteCodeLabel.Name = 'SiteCodeLabel'
@@ -9179,7 +9179,7 @@ Note: Please ensure that you have the Configuration Manager Console installed an
 	#
 	$PackageOptionsTab.Controls.Add($DPGroupBox)
 	$PackageOptionsTab.Controls.Add($FallbackPkgGroup)
-	$PackageOptionsTab.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$PackageOptionsTab.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$PackageOptionsTab.Location = New-Object System.Drawing.Point(4, 26)
 	$PackageOptionsTab.Name = 'PackageOptionsTab'
 	$PackageOptionsTab.Padding = '3, 3, 3, 3'
@@ -9209,7 +9209,7 @@ Note: Please ensure that you have the Configuration Manager Console installed an
 	$EnableBinaryDifCheckBox.Checked = $True
 	$EnableBinaryDifCheckBox.CheckState = 'Checked'
 	$EnableBinaryDifCheckBox.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$EnableBinaryDifCheckBox.ForeColor = [System.Drawing.Color]::Black 
+	$EnableBinaryDifCheckBox.ForeColor = [System.Drawing.Color]::Black
 	$EnableBinaryDifCheckBox.Location = New-Object System.Drawing.Point(880, 155)
 	$EnableBinaryDifCheckBox.Name = 'EnableBinaryDifCheckBox'
 	$EnableBinaryDifCheckBox.Size = New-Object System.Drawing.Size(295, 25)
@@ -9223,7 +9223,7 @@ Note: Please ensure that you have the Configuration Manager Console installed an
 	$PriorityLabel.Anchor = 'Bottom, Left'
 	$PriorityLabel.AutoSize = $True
 	$PriorityLabel.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$PriorityLabel.ForeColor = [System.Drawing.Color]::Black 
+	$PriorityLabel.ForeColor = [System.Drawing.Color]::Black
 	$PriorityLabel.Location = New-Object System.Drawing.Point(880, 92)
 	$PriorityLabel.Name = 'PriorityLabel'
 	$PriorityLabel.Size = New-Object System.Drawing.Size(48, 21)
@@ -9234,7 +9234,7 @@ Note: Please ensure that you have the Configuration Manager Console installed an
 	# DistributionPriorityCombo
 	#
 	$DistributionPriorityCombo.Anchor = 'Bottom, Left'
-	$DistributionPriorityCombo.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$DistributionPriorityCombo.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$DistributionPriorityCombo.DropDownStyle = 'DropDownList'
 	$DistributionPriorityCombo.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '9', [System.Drawing.FontStyle]'Bold')
 	$DistributionPriorityCombo.FormattingEnabled = $True
@@ -9262,7 +9262,7 @@ Note: Please ensure that you have the Configuration Manager Console installed an
 	# DPointTab
 	#
 	$DPointTab.Controls.Add($DPGridView)
-	$DPointTab.BackColor = [System.Drawing.Color]::Gray 
+	$DPointTab.BackColor = [System.Drawing.Color]::Gray
 	$DPointTab.Location = New-Object System.Drawing.Point(4, 26)
 	$DPointTab.Margin = '4, 4, 4, 4'
 	$DPointTab.Name = 'DPointTab'
@@ -9275,21 +9275,21 @@ Note: Please ensure that you have the Configuration Manager Console installed an
 	#
 	$DPGridView.AllowUserToAddRows = $False
 	$DPGridView.AllowUserToDeleteRows = $False
-	$DPGridView.BackgroundColor = [System.Drawing.Color]::White 
+	$DPGridView.BackgroundColor = [System.Drawing.Color]::White
 	$DPGridView.ColumnHeadersHeightSizeMode = 'AutoSize'
 	[void]$DPGridView.Columns.Add($DPSelected)
 	[void]$DPGridView.Columns.Add($DPName)
 	$System_Windows_Forms_DataGridViewCellStyle_7 = New-Object 'System.Windows.Forms.DataGridViewCellStyle'
 	$System_Windows_Forms_DataGridViewCellStyle_7.Alignment = 'MiddleLeft'
-	$System_Windows_Forms_DataGridViewCellStyle_7.BackColor = [System.Drawing.SystemColors]::Window 
+	$System_Windows_Forms_DataGridViewCellStyle_7.BackColor = [System.Drawing.SystemColors]::Window
 	$System_Windows_Forms_DataGridViewCellStyle_7.Font = [System.Drawing.Font]::new('Segoe UI', '9.75', [System.Drawing.FontStyle]'Bold')
-	$System_Windows_Forms_DataGridViewCellStyle_7.ForeColor = [System.Drawing.SystemColors]::ControlText 
-	$System_Windows_Forms_DataGridViewCellStyle_7.SelectionBackColor = [System.Drawing.Color]::Maroon 
-	$System_Windows_Forms_DataGridViewCellStyle_7.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText 
+	$System_Windows_Forms_DataGridViewCellStyle_7.ForeColor = [System.Drawing.SystemColors]::ControlText
+	$System_Windows_Forms_DataGridViewCellStyle_7.SelectionBackColor = [System.Drawing.Color]::Maroon
+	$System_Windows_Forms_DataGridViewCellStyle_7.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText
 	$System_Windows_Forms_DataGridViewCellStyle_7.WrapMode = 'False'
 	$DPGridView.DefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_7
 	$DPGridView.Dock = 'Fill'
-	$DPGridView.GridColor = [System.Drawing.Color]::WhiteSmoke 
+	$DPGridView.GridColor = [System.Drawing.Color]::WhiteSmoke
 	$DPGridView.Location = New-Object System.Drawing.Point(3, 3)
 	$DPGridView.Margin = '4, 4, 4, 4'
 	$DPGridView.Name = 'DPGridView'
@@ -9303,7 +9303,7 @@ Note: Please ensure that you have the Configuration Manager Console installed an
 	# DPGroupTab
 	#
 	$DPGroupTab.Controls.Add($DPGGridView)
-	$DPGroupTab.BackColor = [System.Drawing.Color]::Gray 
+	$DPGroupTab.BackColor = [System.Drawing.Color]::Gray
 	$DPGroupTab.Location = New-Object System.Drawing.Point(4, 26)
 	$DPGroupTab.Margin = '4, 4, 4, 4'
 	$DPGroupTab.Name = 'DPGroupTab'
@@ -9316,13 +9316,13 @@ Note: Please ensure that you have the Configuration Manager Console installed an
 	#
 	$DPGGridView.AllowUserToAddRows = $False
 	$DPGGridView.AllowUserToDeleteRows = $False
-	$DPGGridView.BackgroundColor = [System.Drawing.Color]::WhiteSmoke 
+	$DPGGridView.BackgroundColor = [System.Drawing.Color]::WhiteSmoke
 	$DPGGridView.ColumnHeadersHeightSizeMode = 'AutoSize'
 	[void]$DPGGridView.Columns.Add($DPGSelected)
 	[void]$DPGGridView.Columns.Add($DPGName)
 	$DPGGridView.DefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_7
 	$DPGGridView.Dock = 'Fill'
-	$DPGGridView.GridColor = [System.Drawing.Color]::WhiteSmoke 
+	$DPGGridView.GridColor = [System.Drawing.Color]::WhiteSmoke
 	$DPGGridView.Location = New-Object System.Drawing.Point(3, 3)
 	$DPGGridView.Margin = '4, 4, 4, 4'
 	$DPGGridView.Name = 'DPGGridView'
@@ -9345,7 +9345,7 @@ Note: Please ensure that you have the Configuration Manager Console installed an
 	$FallbackPkgGroup.Controls.Add($CreateFallbackButton)
 	$FallbackPkgGroup.Anchor = 'Bottom, Left, Right'
 	$FallbackPkgGroup.Font = [System.Drawing.Font]::new('Segoe UI', '9.75', [System.Drawing.FontStyle]'Bold')
-	$FallbackPkgGroup.ForeColor = [System.Drawing.Color]::Black 
+	$FallbackPkgGroup.ForeColor = [System.Drawing.Color]::Black
 	$FallbackPkgGroup.Location = New-Object System.Drawing.Point(12, 377)
 	$FallbackPkgGroup.Name = 'FallbackPkgGroup'
 	$FallbackPkgGroup.Size = New-Object System.Drawing.Size(1216, 151)
@@ -9357,7 +9357,7 @@ Note: Please ensure that you have the Configuration Manager Console installed an
 	# FallbackManufacturer
 	#
 	$FallbackManufacturer.Anchor = 'Bottom, Left'
-	$FallbackManufacturer.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$FallbackManufacturer.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$FallbackManufacturer.DropDownStyle = 'DropDownList'
 	$FallbackManufacturer.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '9', [System.Drawing.FontStyle]'Bold')
 	$FallbackManufacturer.FormattingEnabled = $True
@@ -9376,7 +9376,7 @@ Note: Please ensure that you have the Configuration Manager Console installed an
 	$ManufacturerLabel.Anchor = 'Bottom, Left'
 	$ManufacturerLabel.AutoSize = $True
 	$ManufacturerLabel.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$ManufacturerLabel.ForeColor = [System.Drawing.Color]::Black 
+	$ManufacturerLabel.ForeColor = [System.Drawing.Color]::Black
 	$ManufacturerLabel.Location = New-Object System.Drawing.Point(483, 30)
 	$ManufacturerLabel.Margin = '4, 0, 4, 0'
 	$ManufacturerLabel.Name = 'ManufacturerLabel'
@@ -9388,10 +9388,10 @@ Note: Please ensure that you have the Configuration Manager Console installed an
 	# FallbackDesc
 	#
 	$FallbackDesc.Anchor = 'Bottom, Left'
-	$FallbackDesc.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$FallbackDesc.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$FallbackDesc.BorderStyle = 'None'
 	$FallbackDesc.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$FallbackDesc.ForeColor = [System.Drawing.Color]::Black 
+	$FallbackDesc.ForeColor = [System.Drawing.Color]::Black
 	$FallbackDesc.Location = New-Object System.Drawing.Point(25, 41)
 	$FallbackDesc.Multiline = $True
 	$FallbackDesc.Name = 'FallbackDesc'
@@ -9404,7 +9404,7 @@ Note: Please ensure that you have the Configuration Manager Console installed an
 	# FallbackArcCombo
 	#
 	$FallbackArcCombo.Anchor = 'Bottom, Left'
-	$FallbackArcCombo.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$FallbackArcCombo.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$FallbackArcCombo.DropDownStyle = 'DropDownList'
 	$FallbackArcCombo.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '9', [System.Drawing.FontStyle]'Bold')
 	$FallbackArcCombo.FormattingEnabled = $True
@@ -9419,7 +9419,7 @@ Note: Please ensure that you have the Configuration Manager Console installed an
 	# FallbackOSCombo
 	#
 	$FallbackOSCombo.Anchor = 'Bottom, Left'
-	$FallbackOSCombo.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$FallbackOSCombo.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$FallbackOSCombo.DropDownStyle = 'DropDownList'
 	$FallbackOSCombo.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '9', [System.Drawing.FontStyle]'Bold')
 	$FallbackOSCombo.FormattingEnabled = $True
@@ -9436,7 +9436,7 @@ Note: Please ensure that you have the Configuration Manager Console installed an
 	$ArchitectureLabel.Anchor = 'Bottom, Left'
 	$ArchitectureLabel.AutoSize = $True
 	$ArchitectureLabel.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$ArchitectureLabel.ForeColor = [System.Drawing.Color]::Black 
+	$ArchitectureLabel.ForeColor = [System.Drawing.Color]::Black
 	$ArchitectureLabel.Location = New-Object System.Drawing.Point(880, 27)
 	$ArchitectureLabel.Margin = '4, 0, 4, 0'
 	$ArchitectureLabel.Name = 'ArchitectureLabel'
@@ -9450,7 +9450,7 @@ Note: Please ensure that you have the Configuration Manager Console installed an
 	$OperatingSystemLabel.Anchor = 'Bottom, Left'
 	$OperatingSystemLabel.AutoSize = $True
 	$OperatingSystemLabel.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$OperatingSystemLabel.ForeColor = [System.Drawing.Color]::Black 
+	$OperatingSystemLabel.ForeColor = [System.Drawing.Color]::Black
 	$OperatingSystemLabel.Location = New-Object System.Drawing.Point(459, 73)
 	$OperatingSystemLabel.Margin = '4, 0, 4, 0'
 	$OperatingSystemLabel.Name = 'OperatingSystemLabel'
@@ -9466,7 +9466,7 @@ Note: Please ensure that you have the Configuration Manager Console installed an
 	$CreateFallbackButton.Enabled = $False
 	$CreateFallbackButton.FlatStyle = 'Flat'
 	$CreateFallbackButton.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$CreateFallbackButton.ForeColor = [System.Drawing.Color]::White 
+	$CreateFallbackButton.ForeColor = [System.Drawing.Color]::White
 	$CreateFallbackButton.Location = New-Object System.Drawing.Point(880, 70)
 	$CreateFallbackButton.Margin = '4, 3, 4, 3'
 	$CreateFallbackButton.Name = 'CreateFallbackButton'
@@ -9480,7 +9480,7 @@ Note: Please ensure that you have the Configuration Manager Console installed an
 	# SettingsPanel
 	#
 	$SettingsPanel.Anchor = 'Top, Bottom, Left, Right'
-	$SettingsPanel.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$SettingsPanel.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$SettingsPanel.Location = New-Object System.Drawing.Point(0, 83)
 	$SettingsPanel.Name = 'SettingsPanel'
 	$SettingsPanel.Size = New-Object System.Drawing.Size(1246, 507)
@@ -9492,7 +9492,7 @@ Note: Please ensure that you have the Configuration Manager Console installed an
 	$MDTTab.Controls.Add($MDTSettingsIcon)
 	$MDTTab.Controls.Add($DeploymentShareGrid)
 	$MDTTab.Controls.Add($MDTSettingsPanel)
-	$MDTTab.BackColor = [System.Drawing.Color]::Gray 
+	$MDTTab.BackColor = [System.Drawing.Color]::Gray
 	$MDTTab.Location = New-Object System.Drawing.Point(4, 48)
 	$MDTTab.Name = 'MDTTab'
 	$MDTTab.Size = New-Object System.Drawing.Size(1248, 587)
@@ -9503,7 +9503,7 @@ Note: Please ensure that you have the Configuration Manager Console installed an
 	#
 	$MDTTabLabel.AutoSize = $True
 	$MDTTabLabel.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '16', [System.Drawing.FontStyle]'Bold')
-	$MDTTabLabel.ForeColor = [System.Drawing.Color]::White 
+	$MDTTabLabel.ForeColor = [System.Drawing.Color]::White
 	$MDTTabLabel.Location = New-Object System.Drawing.Point(90, 24)
 	$MDTTabLabel.Name = 'MDTTabLabel'
 	$MDTTabLabel.Size = New-Object System.Drawing.Size(406, 35)
@@ -9562,15 +9562,15 @@ rkJgggs='))
 	$DeploymentShareGrid.AllowUserToAddRows = $False
 	$DeploymentShareGrid.AllowUserToDeleteRows = $False
 	$DeploymentShareGrid.Anchor = 'Top, Bottom, Left, Right'
-	$DeploymentShareGrid.BackgroundColor = [System.Drawing.Color]::White 
+	$DeploymentShareGrid.BackgroundColor = [System.Drawing.Color]::White
 	$DeploymentShareGrid.BorderStyle = 'None'
 	$System_Windows_Forms_DataGridViewCellStyle_8 = New-Object 'System.Windows.Forms.DataGridViewCellStyle'
 	$System_Windows_Forms_DataGridViewCellStyle_8.Alignment = 'MiddleLeft'
-	$System_Windows_Forms_DataGridViewCellStyle_8.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$System_Windows_Forms_DataGridViewCellStyle_8.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$System_Windows_Forms_DataGridViewCellStyle_8.Font = [System.Drawing.Font]::new('Segoe UI', '10')
-	$System_Windows_Forms_DataGridViewCellStyle_8.ForeColor = [System.Drawing.SystemColors]::WindowText 
-	$System_Windows_Forms_DataGridViewCellStyle_8.SelectionBackColor = [System.Drawing.SystemColors]::Highlight 
-	$System_Windows_Forms_DataGridViewCellStyle_8.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText 
+	$System_Windows_Forms_DataGridViewCellStyle_8.ForeColor = [System.Drawing.SystemColors]::WindowText
+	$System_Windows_Forms_DataGridViewCellStyle_8.SelectionBackColor = [System.Drawing.SystemColors]::Highlight
+	$System_Windows_Forms_DataGridViewCellStyle_8.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText
 	$System_Windows_Forms_DataGridViewCellStyle_8.WrapMode = 'True'
 	$DeploymentShareGrid.ColumnHeadersDefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_8
 	$DeploymentShareGrid.ColumnHeadersHeight = 30
@@ -9581,27 +9581,27 @@ rkJgggs='))
 	[void]$DeploymentShareGrid.Columns.Add($Description)
 	$System_Windows_Forms_DataGridViewCellStyle_9 = New-Object 'System.Windows.Forms.DataGridViewCellStyle'
 	$System_Windows_Forms_DataGridViewCellStyle_9.Alignment = 'MiddleLeft'
-	$System_Windows_Forms_DataGridViewCellStyle_9.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$System_Windows_Forms_DataGridViewCellStyle_9.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$System_Windows_Forms_DataGridViewCellStyle_9.Font = [System.Drawing.Font]::new('Segoe UI', '10')
-	$System_Windows_Forms_DataGridViewCellStyle_9.ForeColor = [System.Drawing.SystemColors]::ControlText 
-	$System_Windows_Forms_DataGridViewCellStyle_9.SelectionBackColor = [System.Drawing.Color]::Maroon 
-	$System_Windows_Forms_DataGridViewCellStyle_9.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText 
+	$System_Windows_Forms_DataGridViewCellStyle_9.ForeColor = [System.Drawing.SystemColors]::ControlText
+	$System_Windows_Forms_DataGridViewCellStyle_9.SelectionBackColor = [System.Drawing.Color]::Maroon
+	$System_Windows_Forms_DataGridViewCellStyle_9.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText
 	$System_Windows_Forms_DataGridViewCellStyle_9.WrapMode = 'False'
 	$DeploymentShareGrid.DefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_9
-	$DeploymentShareGrid.GridColor = [System.Drawing.Color]::WhiteSmoke 
+	$DeploymentShareGrid.GridColor = [System.Drawing.Color]::WhiteSmoke
 	$DeploymentShareGrid.Location = New-Object System.Drawing.Point(0, 323)
 	$DeploymentShareGrid.Name = 'DeploymentShareGrid'
 	$System_Windows_Forms_DataGridViewCellStyle_10 = New-Object 'System.Windows.Forms.DataGridViewCellStyle'
 	$System_Windows_Forms_DataGridViewCellStyle_10.Alignment = 'MiddleLeft'
-	$System_Windows_Forms_DataGridViewCellStyle_10.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$System_Windows_Forms_DataGridViewCellStyle_10.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$System_Windows_Forms_DataGridViewCellStyle_10.Font = [System.Drawing.Font]::new('Segoe UI', '10')
-	$System_Windows_Forms_DataGridViewCellStyle_10.ForeColor = [System.Drawing.Color]::Black 
-	$System_Windows_Forms_DataGridViewCellStyle_10.SelectionBackColor = [System.Drawing.Color]::Maroon 
-	$System_Windows_Forms_DataGridViewCellStyle_10.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText 
+	$System_Windows_Forms_DataGridViewCellStyle_10.ForeColor = [System.Drawing.Color]::Black
+	$System_Windows_Forms_DataGridViewCellStyle_10.SelectionBackColor = [System.Drawing.Color]::Maroon
+	$System_Windows_Forms_DataGridViewCellStyle_10.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText
 	$System_Windows_Forms_DataGridViewCellStyle_10.WrapMode = 'True'
 	$DeploymentShareGrid.RowHeadersDefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_10
 	$DeploymentShareGrid.RowHeadersVisible = $False
-	$DeploymentShareGrid.RowTemplate.DefaultCellStyle.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$DeploymentShareGrid.RowTemplate.DefaultCellStyle.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$DeploymentShareGrid.RowTemplate.Height = 24
 	$DeploymentShareGrid.Size = New-Object System.Drawing.Size(1226, 328)
 	$DeploymentShareGrid.TabIndex = 0
@@ -9613,7 +9613,7 @@ rkJgggs='))
 	$MDTSettingsPanel.Controls.Add($FolderStructureGroup)
 	$MDTSettingsPanel.Controls.Add($MDTScriptGroup)
 	$MDTSettingsPanel.Anchor = 'Top, Left, Right'
-	$MDTSettingsPanel.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$MDTSettingsPanel.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$MDTSettingsPanel.Location = New-Object System.Drawing.Point(0, 83)
 	$MDTSettingsPanel.Name = 'MDTSettingsPanel'
 	$MDTSettingsPanel.Size = New-Object System.Drawing.Size(1247, 404)
@@ -9627,7 +9627,7 @@ rkJgggs='))
 	$FolderStructureGroup.Controls.Add($FolderStructureLabel)
 	$FolderStructureGroup.Anchor = 'Bottom, Left, Right'
 	$FolderStructureGroup.Font = [System.Drawing.Font]::new('Segoe UI', '9.75', [System.Drawing.FontStyle]'Bold')
-	$FolderStructureGroup.ForeColor = [System.Drawing.Color]::Black 
+	$FolderStructureGroup.ForeColor = [System.Drawing.Color]::Black
 	$FolderStructureGroup.Location = New-Object System.Drawing.Point(727, 12)
 	$FolderStructureGroup.Name = 'FolderStructureGroup'
 	$FolderStructureGroup.Size = New-Object System.Drawing.Size(506, 222)
@@ -9638,7 +9638,7 @@ rkJgggs='))
 	#
 	# MDTDriverStructureCombo
 	#
-	$MDTDriverStructureCombo.BackColor = [System.Drawing.Color]::White 
+	$MDTDriverStructureCombo.BackColor = [System.Drawing.Color]::White
 	$MDTDriverStructureCombo.DropDownStyle = 'DropDownList'
 	$MDTDriverStructureCombo.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '9', [System.Drawing.FontStyle]'Bold')
 	$MDTDriverStructureCombo.FormattingEnabled = $True
@@ -9655,7 +9655,7 @@ rkJgggs='))
 	#
 	$TotalControlLabel.AutoSize = $True
 	$TotalControlLabel.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$TotalControlLabel.ForeColor = [System.Drawing.Color]::Black 
+	$TotalControlLabel.ForeColor = [System.Drawing.Color]::Black
 	$TotalControlLabel.Location = New-Object System.Drawing.Point(24, 114)
 	$TotalControlLabel.Name = 'TotalControlLabel'
 	$TotalControlLabel.Size = New-Object System.Drawing.Size(180, 21)
@@ -9665,10 +9665,10 @@ rkJgggs='))
 	#
 	# TotalControlExampleLabel
 	#
-	$TotalControlExampleLabel.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$TotalControlExampleLabel.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$TotalControlExampleLabel.BorderStyle = 'None'
 	$TotalControlExampleLabel.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$TotalControlExampleLabel.ForeColor = [System.Drawing.Color]::Black 
+	$TotalControlExampleLabel.ForeColor = [System.Drawing.Color]::Black
 	$TotalControlExampleLabel.Location = New-Object System.Drawing.Point(24, 138)
 	$TotalControlExampleLabel.Multiline = $True
 	$TotalControlExampleLabel.Name = 'TotalControlExampleLabel'
@@ -9682,7 +9682,7 @@ Structure: Lenovo\T460S\Windows 10 x64\A08\"
 	# FolderStructureLabel
 	#
 	$FolderStructureLabel.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$FolderStructureLabel.ForeColor = [System.Drawing.Color]::Black 
+	$FolderStructureLabel.ForeColor = [System.Drawing.Color]::Black
 	$FolderStructureLabel.Location = New-Object System.Drawing.Point(24, 36)
 	$FolderStructureLabel.Name = 'FolderStructureLabel'
 	$FolderStructureLabel.Size = New-Object System.Drawing.Size(300, 20)
@@ -9700,7 +9700,7 @@ Structure: Lenovo\T460S\Windows 10 x64\A08\"
 	$MDTScriptGroup.Controls.Add($MDTScriptBrowseButton)
 	$MDTScriptGroup.Anchor = 'Top, Left, Right'
 	$MDTScriptGroup.Font = [System.Drawing.Font]::new('Segoe UI', '9.75', [System.Drawing.FontStyle]'Bold')
-	$MDTScriptGroup.ForeColor = [System.Drawing.Color]::Black 
+	$MDTScriptGroup.ForeColor = [System.Drawing.Color]::Black
 	$MDTScriptGroup.Location = New-Object System.Drawing.Point(4, 12)
 	$MDTScriptGroup.Name = 'MDTScriptGroup'
 	$MDTScriptGroup.Size = New-Object System.Drawing.Size(734, 222)
@@ -9713,7 +9713,7 @@ Structure: Lenovo\T460S\Windows 10 x64\A08\"
 	#
 	$MDTScriptTextBox.AutoCompleteMode = 'SuggestAppend'
 	$MDTScriptTextBox.AutoCompleteSource = 'FileSystemDirectories'
-	$MDTScriptTextBox.BackColor = [System.Drawing.Color]::White 
+	$MDTScriptTextBox.BackColor = [System.Drawing.Color]::White
 	$MDTScriptTextBox.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
 	$MDTScriptTextBox.Location = New-Object System.Drawing.Point(23, 62)
 	$MDTScriptTextBox.Margin = '2, 2, 2, 2'
@@ -9723,10 +9723,10 @@ Structure: Lenovo\T460S\Windows 10 x64\A08\"
 	#
 	# MDTLocationDesc
 	#
-	$MDTLocationDesc.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$MDTLocationDesc.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$MDTLocationDesc.BorderStyle = 'None'
 	$MDTLocationDesc.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$MDTLocationDesc.ForeColor = [System.Drawing.Color]::Black 
+	$MDTLocationDesc.ForeColor = [System.Drawing.Color]::Black
 	$MDTLocationDesc.Location = New-Object System.Drawing.Point(23, 114)
 	$MDTLocationDesc.Multiline = $True
 	$MDTLocationDesc.Name = 'MDTLocationDesc'
@@ -9742,7 +9742,7 @@ Structure: Lenovo\T460S\Windows 10 x64\A08\"
 	$ImportMDTPSButton.BackColor = [System.Drawing.Color]::FromArgb(255, 64, 64, 64)
 	$ImportMDTPSButton.FlatStyle = 'Popup'
 	$ImportMDTPSButton.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$ImportMDTPSButton.ForeColor = [System.Drawing.Color]::White 
+	$ImportMDTPSButton.ForeColor = [System.Drawing.Color]::White
 	$ImportMDTPSButton.Location = New-Object System.Drawing.Point(493, 61)
 	$ImportMDTPSButton.Margin = '4, 3, 4, 3'
 	$ImportMDTPSButton.Name = 'ImportMDTPSButton'
@@ -9756,7 +9756,7 @@ Structure: Lenovo\T460S\Windows 10 x64\A08\"
 	# ScriptLocationLabel
 	#
 	$ScriptLocationLabel.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$ScriptLocationLabel.ForeColor = [System.Drawing.Color]::Black 
+	$ScriptLocationLabel.ForeColor = [System.Drawing.Color]::Black
 	$ScriptLocationLabel.Location = New-Object System.Drawing.Point(23, 36)
 	$ScriptLocationLabel.Name = 'ScriptLocationLabel'
 	$ScriptLocationLabel.Size = New-Object System.Drawing.Size(411, 24)
@@ -9770,7 +9770,7 @@ Structure: Lenovo\T460S\Windows 10 x64\A08\"
 	#
 	$MDTScriptBrowseButton.BackColor = [System.Drawing.Color]::FromArgb(255, 64, 64, 64)
 	$MDTScriptBrowseButton.FlatStyle = 'Popup'
-	$MDTScriptBrowseButton.ForeColor = [System.Drawing.Color]::White 
+	$MDTScriptBrowseButton.ForeColor = [System.Drawing.Color]::White
 	$MDTScriptBrowseButton.Location = New-Object System.Drawing.Point(440, 61)
 	$MDTScriptBrowseButton.Margin = '4, 4, 4, 4'
 	$MDTScriptBrowseButton.Name = 'MDTScriptBrowseButton'
@@ -9788,7 +9788,7 @@ Structure: Lenovo\T460S\Windows 10 x64\A08\"
 	$ConfigMgrDriverTab.Controls.Add($PackageUpdatePanel)
 	$ConfigMgrDriverTab.Controls.Add($PackageGrid)
 	$ConfigMgrDriverTab.Controls.Add($PackagePanel)
-	$ConfigMgrDriverTab.BackColor = [System.Drawing.Color]::Gray 
+	$ConfigMgrDriverTab.BackColor = [System.Drawing.Color]::Gray
 	$ConfigMgrDriverTab.Location = New-Object System.Drawing.Point(4, 48)
 	$ConfigMgrDriverTab.Name = 'ConfigMgrDriverTab'
 	$ConfigMgrDriverTab.Size = New-Object System.Drawing.Size(1248, 587)
@@ -9799,7 +9799,7 @@ Structure: Lenovo\T460S\Windows 10 x64\A08\"
 	#
 	$PkgMgmtTabLabel.AutoSize = $True
 	$PkgMgmtTabLabel.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '16', [System.Drawing.FontStyle]'Bold')
-	$PkgMgmtTabLabel.ForeColor = [System.Drawing.Color]::White 
+	$PkgMgmtTabLabel.ForeColor = [System.Drawing.Color]::White
 	$PkgMgmtTabLabel.Location = New-Object System.Drawing.Point(90, 24)
 	$PkgMgmtTabLabel.Name = 'PkgMgmtTabLabel'
 	$PkgMgmtTabLabel.Size = New-Object System.Drawing.Size(355, 35)
@@ -9856,7 +9856,7 @@ aHlkaHlkaHlkaHlkaHlkaHlkaHlkaHlkaFnms68WxfyoJ3KVKAAAAABJRU5ErkJgggs='))
 	$PackageUpdateNotice.Anchor = 'Top, Bottom, Left, Right'
 	$PackageUpdateNotice.AutoSize = $True
 	$PackageUpdateNotice.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$PackageUpdateNotice.ForeColor = [System.Drawing.Color]::White 
+	$PackageUpdateNotice.ForeColor = [System.Drawing.Color]::White
 	$PackageUpdateNotice.Location = New-Object System.Drawing.Point(164, 75)
 	$PackageUpdateNotice.Name = 'PackageUpdateNotice'
 	$PackageUpdateNotice.Size = New-Object System.Drawing.Size(156, 21)
@@ -9870,7 +9870,7 @@ aHlkaHlkaHlkaHlkaHlkaHlkaHlkaHlkaFnms68WxfyoJ3KVKAAAAABJRU5ErkJgggs='))
 	$PackageGrid.AllowUserToAddRows = $False
 	$PackageGrid.AllowUserToDeleteRows = $False
 	$PackageGrid.Anchor = 'Top, Bottom, Left, Right'
-	$PackageGrid.BackgroundColor = [System.Drawing.Color]::White 
+	$PackageGrid.BackgroundColor = [System.Drawing.Color]::White
 	$PackageGrid.BorderStyle = 'None'
 	$PackageGrid.ColumnHeadersDefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_8
 	$PackageGrid.ColumnHeadersHeight = 30
@@ -9883,12 +9883,12 @@ aHlkaHlkaHlkaHlkaHlkaHlkaHlkaHlkaFnms68WxfyoJ3KVKAAAAABJRU5ErkJgggs='))
 	[void]$PackageGrid.Columns.Add($PatchPath)
 	[void]$PackageGrid.Columns.Add($PatchDirectory)
 	$PackageGrid.DefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_9
-	$PackageGrid.GridColor = [System.Drawing.Color]::WhiteSmoke 
+	$PackageGrid.GridColor = [System.Drawing.Color]::WhiteSmoke
 	$PackageGrid.Location = New-Object System.Drawing.Point(0, 152)
 	$PackageGrid.Name = 'PackageGrid'
 	$PackageGrid.RowHeadersDefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_10
 	$PackageGrid.RowHeadersVisible = $False
-	$PackageGrid.RowTemplate.DefaultCellStyle.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$PackageGrid.RowTemplate.DefaultCellStyle.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$PackageGrid.RowTemplate.Height = 24
 	$PackageGrid.SelectionMode = 'CellSelect'
 	$PackageGrid.Size = New-Object System.Drawing.Size(1226, 364)
@@ -9908,7 +9908,7 @@ aHlkaHlkaHlkaHlkaHlkaHlkaHlkaHlkaFnms68WxfyoJ3KVKAAAAABJRU5ErkJgggs='))
 	$PackagePanel.Controls.Add($ConfigMgrPkgActionCombo)
 	$PackagePanel.Controls.Add($ActionLabel)
 	$PackagePanel.Anchor = 'Top, Bottom, Left, Right'
-	$PackagePanel.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$PackagePanel.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$PackagePanel.Location = New-Object System.Drawing.Point(0, 83)
 	$PackagePanel.Name = 'PackagePanel'
 	$PackagePanel.Size = New-Object System.Drawing.Size(1229, 478)
@@ -9917,9 +9917,9 @@ aHlkaHlkaHlkaHlkaHlkaHlkaHlkaHlkaFnms68WxfyoJ3KVKAAAAABJRU5ErkJgggs='))
 	# PackageTypeLabel
 	#
 	$PackageTypeLabel.AutoSize = $True
-	$PackageTypeLabel.BackColor = [System.Drawing.Color]::Transparent 
+	$PackageTypeLabel.BackColor = [System.Drawing.Color]::Transparent
 	$PackageTypeLabel.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$PackageTypeLabel.ForeColor = [System.Drawing.Color]::Black 
+	$PackageTypeLabel.ForeColor = [System.Drawing.Color]::Black
 	$PackageTypeLabel.Location = New-Object System.Drawing.Point(24, 27)
 	$PackageTypeLabel.Margin = '4, 0, 4, 0'
 	$PackageTypeLabel.Name = 'PackageTypeLabel'
@@ -9930,7 +9930,7 @@ aHlkaHlkaHlkaHlkaHlkaHlkaHlkaHlkaFnms68WxfyoJ3KVKAAAAABJRU5ErkJgggs='))
 	#
 	# DeploymentStateCombo
 	#
-	$DeploymentStateCombo.BackColor = [System.Drawing.Color]::White 
+	$DeploymentStateCombo.BackColor = [System.Drawing.Color]::White
 	$DeploymentStateCombo.DropDownStyle = 'DropDownList'
 	$DeploymentStateCombo.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '9', [System.Drawing.FontStyle]'Bold')
 	$DeploymentStateCombo.FormattingEnabled = $True
@@ -9946,9 +9946,9 @@ aHlkaHlkaHlkaHlkaHlkaHlkaHlkaHlkaFnms68WxfyoJ3KVKAAAAABJRU5ErkJgggs='))
 	# DeploymentStateLabel
 	#
 	$DeploymentStateLabel.AutoSize = $True
-	$DeploymentStateLabel.BackColor = [System.Drawing.Color]::Transparent 
+	$DeploymentStateLabel.BackColor = [System.Drawing.Color]::Transparent
 	$DeploymentStateLabel.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$DeploymentStateLabel.ForeColor = [System.Drawing.Color]::Black 
+	$DeploymentStateLabel.ForeColor = [System.Drawing.Color]::Black
 	$DeploymentStateLabel.Location = New-Object System.Drawing.Point(440, 27)
 	$DeploymentStateLabel.Margin = '4, 0, 4, 0'
 	$DeploymentStateLabel.Name = 'DeploymentStateLabel'
@@ -9960,10 +9960,10 @@ aHlkaHlkaHlkaHlkaHlkaHlkaHlkaHlkaFnms68WxfyoJ3KVKAAAAABJRU5ErkJgggs='))
 	# SelectNoneButton
 	#
 	$SelectNoneButton.Anchor = 'Bottom, Left'
-	$SelectNoneButton.BackColor = [System.Drawing.Color]::Gray 
+	$SelectNoneButton.BackColor = [System.Drawing.Color]::Gray
 	$SelectNoneButton.FlatStyle = 'Flat'
 	$SelectNoneButton.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$SelectNoneButton.ForeColor = [System.Drawing.Color]::White 
+	$SelectNoneButton.ForeColor = [System.Drawing.Color]::White
 	$SelectNoneButton.Location = New-Object System.Drawing.Point(215, 439)
 	$SelectNoneButton.Margin = '4, 3, 4, 3'
 	$SelectNoneButton.Name = 'SelectNoneButton'
@@ -9976,7 +9976,7 @@ aHlkaHlkaHlkaHlkaHlkaHlkaHlkaHlkaFnms68WxfyoJ3KVKAAAAABJRU5ErkJgggs='))
 	#
 	# PackageTypeCombo
 	#
-	$PackageTypeCombo.BackColor = [System.Drawing.Color]::White 
+	$PackageTypeCombo.BackColor = [System.Drawing.Color]::White
 	$PackageTypeCombo.DropDownStyle = 'DropDownList'
 	$PackageTypeCombo.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '9', [System.Drawing.FontStyle]'Bold')
 	$PackageTypeCombo.FormattingEnabled = $True
@@ -9995,7 +9995,7 @@ aHlkaHlkaHlkaHlkaHlkaHlkaHlkaHlkaFnms68WxfyoJ3KVKAAAAABJRU5ErkJgggs='))
 	$SelectAllButton.BackColor = [System.Drawing.Color]::FromArgb(255, 64, 64, 64)
 	$SelectAllButton.FlatStyle = 'Flat'
 	$SelectAllButton.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$SelectAllButton.ForeColor = [System.Drawing.Color]::White 
+	$SelectAllButton.ForeColor = [System.Drawing.Color]::White
 	$SelectAllButton.Location = New-Object System.Drawing.Point(20, 439)
 	$SelectAllButton.Margin = '4, 3, 4, 3'
 	$SelectAllButton.Name = 'SelectAllButton'
@@ -10009,7 +10009,7 @@ aHlkaHlkaHlkaHlkaHlkaHlkaHlkaHlkaFnms68WxfyoJ3KVKAAAAABJRU5ErkJgggs='))
 	# ConfigMgrPkgActionCombo
 	#
 	$ConfigMgrPkgActionCombo.Anchor = 'Bottom, Left'
-	$ConfigMgrPkgActionCombo.BackColor = [System.Drawing.Color]::White 
+	$ConfigMgrPkgActionCombo.BackColor = [System.Drawing.Color]::White
 	$ConfigMgrPkgActionCombo.DropDownStyle = 'DropDownList'
 	$ConfigMgrPkgActionCombo.Font = [System.Drawing.Font]::new('Segoe UI', '9')
 	$ConfigMgrPkgActionCombo.FormattingEnabled = $True
@@ -10041,9 +10041,9 @@ aHlkaHlkaHlkaHlkaHlkaHlkaHlkaHlkaFnms68WxfyoJ3KVKAAAAABJRU5ErkJgggs='))
 	#
 	$ActionLabel.Anchor = 'Bottom, Left'
 	$ActionLabel.AutoSize = $True
-	$ActionLabel.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$ActionLabel.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$ActionLabel.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$ActionLabel.ForeColor = [System.Drawing.Color]::Black 
+	$ActionLabel.ForeColor = [System.Drawing.Color]::Black
 	$ActionLabel.Location = New-Object System.Drawing.Point(775, 447)
 	$ActionLabel.Margin = '4, 0, 4, 0'
 	$ActionLabel.Name = 'ActionLabel'
@@ -10058,7 +10058,7 @@ aHlkaHlkaHlkaHlkaHlkaHlkaHlkaHlkaFnms68WxfyoJ3KVKAAAAABJRU5ErkJgggs='))
 	$ConfigWSDiagTab.Controls.Add($WebDiagsIcon)
 	$ConfigWSDiagTab.Controls.Add($WebServiceDataGrid)
 	$ConfigWSDiagTab.Controls.Add($WebDiagsPanel)
-	$ConfigWSDiagTab.BackColor = [System.Drawing.Color]::Gray 
+	$ConfigWSDiagTab.BackColor = [System.Drawing.Color]::Gray
 	$ConfigWSDiagTab.Location = New-Object System.Drawing.Point(4, 48)
 	$ConfigWSDiagTab.Name = 'ConfigWSDiagTab'
 	$ConfigWSDiagTab.Size = New-Object System.Drawing.Size(1248, 587)
@@ -10069,7 +10069,7 @@ aHlkaHlkaHlkaHlkaHlkaHlkaHlkaHlkaFnms68WxfyoJ3KVKAAAAABJRU5ErkJgggs='))
 	#
 	$WebDiagsTabLabel.AutoSize = $True
 	$WebDiagsTabLabel.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '16', [System.Drawing.FontStyle]'Bold')
-	$WebDiagsTabLabel.ForeColor = [System.Drawing.Color]::White 
+	$WebDiagsTabLabel.ForeColor = [System.Drawing.Color]::White
 	$WebDiagsTabLabel.Location = New-Object System.Drawing.Point(90, 24)
 	$WebDiagsTabLabel.Name = 'WebDiagsTabLabel'
 	$WebDiagsTabLabel.Size = New-Object System.Drawing.Size(378, 35)
@@ -10111,7 +10111,7 @@ QmCCCw=='))
 	$WebServiceDataGrid.AllowUserToAddRows = $False
 	$WebServiceDataGrid.AllowUserToDeleteRows = $False
 	$WebServiceDataGrid.Anchor = 'Top, Bottom, Left, Right'
-	$WebServiceDataGrid.BackgroundColor = [System.Drawing.Color]::White 
+	$WebServiceDataGrid.BackgroundColor = [System.Drawing.Color]::White
 	$WebServiceDataGrid.BorderStyle = 'None'
 	$WebServiceDataGrid.ColumnHeadersDefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_8
 	$WebServiceDataGrid.ColumnHeadersHeight = 30
@@ -10120,12 +10120,12 @@ QmCCCw=='))
 	[void]$WebServiceDataGrid.Columns.Add($PackageVersionDetails)
 	[void]$WebServiceDataGrid.Columns.Add($WebServicePackageID)
 	$WebServiceDataGrid.DefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_9
-	$WebServiceDataGrid.GridColor = [System.Drawing.Color]::WhiteSmoke 
+	$WebServiceDataGrid.GridColor = [System.Drawing.Color]::WhiteSmoke
 	$WebServiceDataGrid.Location = New-Object System.Drawing.Point(377, 282)
 	$WebServiceDataGrid.Name = 'WebServiceDataGrid'
 	$WebServiceDataGrid.RowHeadersDefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_10
 	$WebServiceDataGrid.RowHeadersVisible = $False
-	$WebServiceDataGrid.RowTemplate.DefaultCellStyle.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$WebServiceDataGrid.RowTemplate.DefaultCellStyle.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$WebServiceDataGrid.RowTemplate.Height = 24
 	$WebServiceDataGrid.Size = New-Object System.Drawing.Size(852, 343)
 	$WebServiceDataGrid.TabIndex = 75
@@ -10152,7 +10152,7 @@ QmCCCw=='))
 	$WebDiagsPanel.Controls.Add($WebServiceStatusCode)
 	$WebDiagsPanel.Controls.Add($DriverPackageCountLabel)
 	$WebDiagsPanel.Anchor = 'Top, Bottom, Left, Right'
-	$WebDiagsPanel.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$WebDiagsPanel.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$WebDiagsPanel.Location = New-Object System.Drawing.Point(0, 83)
 	$WebDiagsPanel.Name = 'WebDiagsPanel'
 	$WebDiagsPanel.Size = New-Object System.Drawing.Size(1252, 504)
@@ -10162,7 +10162,7 @@ QmCCCw=='))
 	#
 	$ConfigMgrWebSvcLabel.AutoSize = $True
 	$ConfigMgrWebSvcLabel.Font = [System.Drawing.Font]::new('Segoe UI', '9.75', [System.Drawing.FontStyle]'Bold')
-	$ConfigMgrWebSvcLabel.ForeColor = [System.Drawing.Color]::Black 
+	$ConfigMgrWebSvcLabel.ForeColor = [System.Drawing.Color]::Black
 	$ConfigMgrWebSvcLabel.Location = New-Object System.Drawing.Point(42, 199)
 	$ConfigMgrWebSvcLabel.Name = 'ConfigMgrWebSvcLabel'
 	$ConfigMgrWebSvcLabel.Size = New-Object System.Drawing.Size(210, 22)
@@ -10173,9 +10173,9 @@ QmCCCw=='))
 	# WebServiceVersion
 	#
 	$WebServiceVersion.AutoSize = $True
-	$WebServiceVersion.BackColor = [System.Drawing.Color]::Transparent 
+	$WebServiceVersion.BackColor = [System.Drawing.Color]::Transparent
 	$WebServiceVersion.Font = [System.Drawing.Font]::new('Segoe UI', '9.75', [System.Drawing.FontStyle]'Bold')
-	$WebServiceVersion.ForeColor = [System.Drawing.Color]::Black 
+	$WebServiceVersion.ForeColor = [System.Drawing.Color]::Black
 	$WebServiceVersion.Location = New-Object System.Drawing.Point(253, 241)
 	$WebServiceVersion.Margin = '4, 0, 4, 0'
 	$WebServiceVersion.Name = 'WebServiceVersion'
@@ -10186,10 +10186,10 @@ QmCCCw=='))
 	#
 	# WebSvcDesc
 	#
-	$WebSvcDesc.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$WebSvcDesc.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$WebSvcDesc.BorderStyle = 'None'
 	$WebSvcDesc.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$WebSvcDesc.ForeColor = [System.Drawing.Color]::Black 
+	$WebSvcDesc.ForeColor = [System.Drawing.Color]::Black
 	$WebSvcDesc.Location = New-Object System.Drawing.Point(42, 29)
 	$WebSvcDesc.Multiline = $True
 	$WebSvcDesc.Name = 'WebSvcDesc'
@@ -10206,9 +10206,9 @@ Please note: Support for the web service has been discontinued. Your scripts sho
 	# WebServiceVersionLabel
 	#
 	$WebServiceVersionLabel.AutoSize = $True
-	$WebServiceVersionLabel.BackColor = [System.Drawing.Color]::Transparent 
+	$WebServiceVersionLabel.BackColor = [System.Drawing.Color]::Transparent
 	$WebServiceVersionLabel.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$WebServiceVersionLabel.ForeColor = [System.Drawing.Color]::Black 
+	$WebServiceVersionLabel.ForeColor = [System.Drawing.Color]::Black
 	$WebServiceVersionLabel.Location = New-Object System.Drawing.Point(42, 241)
 	$WebServiceVersionLabel.Margin = '4, 0, 4, 0'
 	$WebServiceVersionLabel.Name = 'WebServiceVersionLabel'
@@ -10223,7 +10223,7 @@ Please note: Support for the web service has been discontinued. Your scripts sho
 	$ConnectWebServiceButton.FlatAppearance.BorderSize = 0
 	$ConnectWebServiceButton.FlatStyle = 'Flat'
 	$ConnectWebServiceButton.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$ConnectWebServiceButton.ForeColor = [System.Drawing.Color]::White 
+	$ConnectWebServiceButton.ForeColor = [System.Drawing.Color]::White
 	$ConnectWebServiceButton.Location = New-Object System.Drawing.Point(859, 127)
 	$ConnectWebServiceButton.Margin = '4, 3, 4, 3'
 	$ConnectWebServiceButton.Name = 'ConnectWebServiceButton'
@@ -10237,9 +10237,9 @@ Please note: Support for the web service has been discontinued. Your scripts sho
 	# WebServiceStatusDescription
 	#
 	$WebServiceStatusDescription.AutoSize = $True
-	$WebServiceStatusDescription.BackColor = [System.Drawing.Color]::Transparent 
+	$WebServiceStatusDescription.BackColor = [System.Drawing.Color]::Transparent
 	$WebServiceStatusDescription.Font = [System.Drawing.Font]::new('Segoe UI', '9.75', [System.Drawing.FontStyle]'Bold')
-	$WebServiceStatusDescription.ForeColor = [System.Drawing.Color]::Black 
+	$WebServiceStatusDescription.ForeColor = [System.Drawing.Color]::Black
 	$WebServiceStatusDescription.Location = New-Object System.Drawing.Point(253, 319)
 	$WebServiceStatusDescription.Margin = '4, 0, 4, 0'
 	$WebServiceStatusDescription.Name = 'WebServiceStatusDescription'
@@ -10250,9 +10250,9 @@ Please note: Support for the web service has been discontinued. Your scripts sho
 	#
 	# SecretKey
 	#
-	$SecretKey.BackColor = [System.Drawing.Color]::White 
+	$SecretKey.BackColor = [System.Drawing.Color]::White
 	$SecretKey.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '9', [System.Drawing.FontStyle]'Bold')
-	$SecretKey.ForeColor = [System.Drawing.Color]::Black 
+	$SecretKey.ForeColor = [System.Drawing.Color]::Black
 	$SecretKey.Location = New-Object System.Drawing.Point(859, 82)
 	$SecretKey.Margin = '4, 3, 4, 3'
 	$SecretKey.Name = 'SecretKey'
@@ -10262,9 +10262,9 @@ Please note: Support for the web service has been discontinued. Your scripts sho
 	# ConfigMgrWebServuceULabel
 	#
 	$ConfigMgrWebServuceULabel.AutoSize = $True
-	$ConfigMgrWebServuceULabel.BackColor = [System.Drawing.Color]::Transparent 
+	$ConfigMgrWebServuceULabel.BackColor = [System.Drawing.Color]::Transparent
 	$ConfigMgrWebServuceULabel.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$ConfigMgrWebServuceULabel.ForeColor = [System.Drawing.Color]::Black 
+	$ConfigMgrWebServuceULabel.ForeColor = [System.Drawing.Color]::Black
 	$ConfigMgrWebServuceULabel.Location = New-Object System.Drawing.Point(722, 42)
 	$ConfigMgrWebServuceULabel.Margin = '4, 0, 4, 0'
 	$ConfigMgrWebServuceULabel.Name = 'ConfigMgrWebServuceULabel'
@@ -10276,9 +10276,9 @@ Please note: Support for the web service has been discontinued. Your scripts sho
 	# StatusDescriptionLabel
 	#
 	$StatusDescriptionLabel.AutoSize = $True
-	$StatusDescriptionLabel.BackColor = [System.Drawing.Color]::Transparent 
+	$StatusDescriptionLabel.BackColor = [System.Drawing.Color]::Transparent
 	$StatusDescriptionLabel.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$StatusDescriptionLabel.ForeColor = [System.Drawing.Color]::Black 
+	$StatusDescriptionLabel.ForeColor = [System.Drawing.Color]::Black
 	$StatusDescriptionLabel.Location = New-Object System.Drawing.Point(42, 319)
 	$StatusDescriptionLabel.Margin = '4, 0, 4, 0'
 	$StatusDescriptionLabel.Name = 'StatusDescriptionLabel'
@@ -10290,9 +10290,9 @@ Please note: Support for the web service has been discontinued. Your scripts sho
 	# SecretKeyLabel
 	#
 	$SecretKeyLabel.AutoSize = $True
-	$SecretKeyLabel.BackColor = [System.Drawing.Color]::Transparent 
+	$SecretKeyLabel.BackColor = [System.Drawing.Color]::Transparent
 	$SecretKeyLabel.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$SecretKeyLabel.ForeColor = [System.Drawing.Color]::Black 
+	$SecretKeyLabel.ForeColor = [System.Drawing.Color]::Black
 	$SecretKeyLabel.Location = New-Object System.Drawing.Point(760, 82)
 	$SecretKeyLabel.Margin = '4, 0, 4, 0'
 	$SecretKeyLabel.Name = 'SecretKeyLabel'
@@ -10304,9 +10304,9 @@ Please note: Support for the web service has been discontinued. Your scripts sho
 	# StatusCodeLabel
 	#
 	$StatusCodeLabel.AutoSize = $True
-	$StatusCodeLabel.BackColor = [System.Drawing.Color]::Transparent 
+	$StatusCodeLabel.BackColor = [System.Drawing.Color]::Transparent
 	$StatusCodeLabel.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$StatusCodeLabel.ForeColor = [System.Drawing.Color]::Black 
+	$StatusCodeLabel.ForeColor = [System.Drawing.Color]::Black
 	$StatusCodeLabel.Location = New-Object System.Drawing.Point(42, 280)
 	$StatusCodeLabel.Margin = '4, 0, 4, 0'
 	$StatusCodeLabel.Name = 'StatusCodeLabel'
@@ -10317,9 +10317,9 @@ Please note: Support for the web service has been discontinued. Your scripts sho
 	#
 	# ConfigMgrWebURL
 	#
-	$ConfigMgrWebURL.BackColor = [System.Drawing.Color]::White 
+	$ConfigMgrWebURL.BackColor = [System.Drawing.Color]::White
 	$ConfigMgrWebURL.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '9', [System.Drawing.FontStyle]'Bold')
-	$ConfigMgrWebURL.ForeColor = [System.Drawing.Color]::Black 
+	$ConfigMgrWebURL.ForeColor = [System.Drawing.Color]::Black
 	$ConfigMgrWebURL.Location = New-Object System.Drawing.Point(859, 40)
 	$ConfigMgrWebURL.Margin = '4, 3, 4, 3'
 	$ConfigMgrWebURL.Name = 'ConfigMgrWebURL'
@@ -10329,9 +10329,9 @@ Please note: Support for the web service has been discontinued. Your scripts sho
 	# BIOSPackageCount
 	#
 	$BIOSPackageCount.AutoSize = $True
-	$BIOSPackageCount.BackColor = [System.Drawing.Color]::Transparent 
+	$BIOSPackageCount.BackColor = [System.Drawing.Color]::Transparent
 	$BIOSPackageCount.Font = [System.Drawing.Font]::new('Segoe UI', '9.75', [System.Drawing.FontStyle]'Bold')
-	$BIOSPackageCount.ForeColor = [System.Drawing.Color]::Black 
+	$BIOSPackageCount.ForeColor = [System.Drawing.Color]::Black
 	$BIOSPackageCount.Location = New-Object System.Drawing.Point(253, 436)
 	$BIOSPackageCount.Margin = '4, 0, 4, 0'
 	$BIOSPackageCount.Name = 'BIOSPackageCount'
@@ -10343,9 +10343,9 @@ Please note: Support for the web service has been discontinued. Your scripts sho
 	# WebServiceResponseTime
 	#
 	$WebServiceResponseTime.AutoSize = $True
-	$WebServiceResponseTime.BackColor = [System.Drawing.Color]::Transparent 
+	$WebServiceResponseTime.BackColor = [System.Drawing.Color]::Transparent
 	$WebServiceResponseTime.Font = [System.Drawing.Font]::new('Segoe UI', '9.75', [System.Drawing.FontStyle]'Bold')
-	$WebServiceResponseTime.ForeColor = [System.Drawing.Color]::Black 
+	$WebServiceResponseTime.ForeColor = [System.Drawing.Color]::Black
 	$WebServiceResponseTime.Location = New-Object System.Drawing.Point(253, 358)
 	$WebServiceResponseTime.Margin = '4, 0, 4, 0'
 	$WebServiceResponseTime.Name = 'WebServiceResponseTime'
@@ -10357,9 +10357,9 @@ Please note: Support for the web service has been discontinued. Your scripts sho
 	# ResponseTimeLabel
 	#
 	$ResponseTimeLabel.AutoSize = $True
-	$ResponseTimeLabel.BackColor = [System.Drawing.Color]::Transparent 
+	$ResponseTimeLabel.BackColor = [System.Drawing.Color]::Transparent
 	$ResponseTimeLabel.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$ResponseTimeLabel.ForeColor = [System.Drawing.Color]::Black 
+	$ResponseTimeLabel.ForeColor = [System.Drawing.Color]::Black
 	$ResponseTimeLabel.Location = New-Object System.Drawing.Point(42, 358)
 	$ResponseTimeLabel.Margin = '4, 0, 4, 0'
 	$ResponseTimeLabel.Name = 'ResponseTimeLabel'
@@ -10371,9 +10371,9 @@ Please note: Support for the web service has been discontinued. Your scripts sho
 	# DriverPackageCount
 	#
 	$DriverPackageCount.AutoSize = $True
-	$DriverPackageCount.BackColor = [System.Drawing.Color]::Transparent 
+	$DriverPackageCount.BackColor = [System.Drawing.Color]::Transparent
 	$DriverPackageCount.Font = [System.Drawing.Font]::new('Segoe UI', '9.75', [System.Drawing.FontStyle]'Bold')
-	$DriverPackageCount.ForeColor = [System.Drawing.Color]::Black 
+	$DriverPackageCount.ForeColor = [System.Drawing.Color]::Black
 	$DriverPackageCount.Location = New-Object System.Drawing.Point(253, 397)
 	$DriverPackageCount.Margin = '4, 0, 4, 0'
 	$DriverPackageCount.Name = 'DriverPackageCount'
@@ -10385,9 +10385,9 @@ Please note: Support for the web service has been discontinued. Your scripts sho
 	# BIOSPackageCountLabel
 	#
 	$BIOSPackageCountLabel.AutoSize = $True
-	$BIOSPackageCountLabel.BackColor = [System.Drawing.Color]::Transparent 
+	$BIOSPackageCountLabel.BackColor = [System.Drawing.Color]::Transparent
 	$BIOSPackageCountLabel.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$BIOSPackageCountLabel.ForeColor = [System.Drawing.Color]::Black 
+	$BIOSPackageCountLabel.ForeColor = [System.Drawing.Color]::Black
 	$BIOSPackageCountLabel.Location = New-Object System.Drawing.Point(42, 436)
 	$BIOSPackageCountLabel.Margin = '4, 0, 4, 0'
 	$BIOSPackageCountLabel.Name = 'BIOSPackageCountLabel'
@@ -10399,9 +10399,9 @@ Please note: Support for the web service has been discontinued. Your scripts sho
 	# WebServiceStatusCode
 	#
 	$WebServiceStatusCode.AutoSize = $True
-	$WebServiceStatusCode.BackColor = [System.Drawing.Color]::Transparent 
+	$WebServiceStatusCode.BackColor = [System.Drawing.Color]::Transparent
 	$WebServiceStatusCode.Font = [System.Drawing.Font]::new('Segoe UI', '9.75', [System.Drawing.FontStyle]'Bold')
-	$WebServiceStatusCode.ForeColor = [System.Drawing.Color]::Black 
+	$WebServiceStatusCode.ForeColor = [System.Drawing.Color]::Black
 	$WebServiceStatusCode.Location = New-Object System.Drawing.Point(253, 280)
 	$WebServiceStatusCode.Margin = '4, 0, 4, 0'
 	$WebServiceStatusCode.Name = 'WebServiceStatusCode'
@@ -10413,9 +10413,9 @@ Please note: Support for the web service has been discontinued. Your scripts sho
 	# DriverPackageCountLabel
 	#
 	$DriverPackageCountLabel.AutoSize = $True
-	$DriverPackageCountLabel.BackColor = [System.Drawing.Color]::Transparent 
+	$DriverPackageCountLabel.BackColor = [System.Drawing.Color]::Transparent
 	$DriverPackageCountLabel.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$DriverPackageCountLabel.ForeColor = [System.Drawing.Color]::Black 
+	$DriverPackageCountLabel.ForeColor = [System.Drawing.Color]::Black
 	$DriverPackageCountLabel.Location = New-Object System.Drawing.Point(42, 397)
 	$DriverPackageCountLabel.Margin = '4, 0, 4, 0'
 	$DriverPackageCountLabel.Name = 'DriverPackageCountLabel'
@@ -10431,7 +10431,7 @@ Please note: Support for the web service has been discontinued. Your scripts sho
 	$CustPkgTab.Controls.Add($CustomPkgTabLabel)
 	$CustPkgTab.Controls.Add($CustomPkgDataGrid)
 	$CustPkgTab.Controls.Add($CustomPkgPanel)
-	$CustPkgTab.BackColor = [System.Drawing.Color]::Gray 
+	$CustPkgTab.BackColor = [System.Drawing.Color]::Gray
 	$CustPkgTab.Location = New-Object System.Drawing.Point(4, 48)
 	$CustPkgTab.Name = 'CustPkgTab'
 	$CustPkgTab.Size = New-Object System.Drawing.Size(1248, 587)
@@ -10443,7 +10443,7 @@ Please note: Support for the web service has been discontinued. Your scripts sho
 	$PkgImporting.Controls.Add($PkgImportingText)
 	$PkgImporting.Controls.Add($label1)
 	$PkgImporting.Anchor = 'Top, Bottom, Left, Right'
-	$PkgImporting.BackColor = [System.Drawing.Color]::Maroon 
+	$PkgImporting.BackColor = [System.Drawing.Color]::Maroon
 	$PkgImporting.Cursor = 'WaitCursor'
 	$PkgImporting.Location = New-Object System.Drawing.Point(360, 275)
 	$PkgImporting.Name = 'PkgImporting'
@@ -10455,7 +10455,7 @@ Please note: Support for the web service has been discontinued. Your scripts sho
 	#
 	$PkgImportingText.Anchor = 'Top, Left, Right'
 	$PkgImportingText.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$PkgImportingText.ForeColor = [System.Drawing.Color]::White 
+	$PkgImportingText.ForeColor = [System.Drawing.Color]::White
 	$PkgImportingText.Location = New-Object System.Drawing.Point(0, 0)
 	$PkgImportingText.Name = 'PkgImportingText'
 	$PkgImportingText.Size = New-Object System.Drawing.Size(524, 127)
@@ -10470,7 +10470,7 @@ Please note: Support for the web service has been discontinued. Your scripts sho
 	$label1.Anchor = 'Top, Bottom, Left, Right'
 	$label1.AutoSize = $True
 	$label1.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$label1.ForeColor = [System.Drawing.Color]::White 
+	$label1.ForeColor = [System.Drawing.Color]::White
 	$label1.Location = New-Object System.Drawing.Point(106, 42)
 	$label1.Name = 'label1'
 	$label1.Size = New-Object System.Drawing.Size(0, 18)
@@ -10516,7 +10516,7 @@ loc0th/dZQAAAABJRU5ErkJgggs='))
 	#
 	$CustomPkgTabLabel.AutoSize = $True
 	$CustomPkgTabLabel.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '16', [System.Drawing.FontStyle]'Bold')
-	$CustomPkgTabLabel.ForeColor = [System.Drawing.Color]::White 
+	$CustomPkgTabLabel.ForeColor = [System.Drawing.Color]::White
 	$CustomPkgTabLabel.Location = New-Object System.Drawing.Point(90, 24)
 	$CustomPkgTabLabel.Name = 'CustomPkgTabLabel'
 	$CustomPkgTabLabel.Size = New-Object System.Drawing.Size(263, 35)
@@ -10528,14 +10528,14 @@ loc0th/dZQAAAABJRU5ErkJgggs='))
 	#
 	$CustomPkgDataGrid.AllowUserToResizeRows = $False
 	$CustomPkgDataGrid.Anchor = 'Top, Bottom, Left, Right'
-	$CustomPkgDataGrid.BackgroundColor = [System.Drawing.Color]::White 
+	$CustomPkgDataGrid.BackgroundColor = [System.Drawing.Color]::White
 	$System_Windows_Forms_DataGridViewCellStyle_11 = New-Object 'System.Windows.Forms.DataGridViewCellStyle'
 	$System_Windows_Forms_DataGridViewCellStyle_11.Alignment = 'MiddleLeft'
-	$System_Windows_Forms_DataGridViewCellStyle_11.BackColor = [System.Drawing.Color]::White 
+	$System_Windows_Forms_DataGridViewCellStyle_11.BackColor = [System.Drawing.Color]::White
 	$System_Windows_Forms_DataGridViewCellStyle_11.Font = [System.Drawing.Font]::new('Segoe UI', '10')
-	$System_Windows_Forms_DataGridViewCellStyle_11.ForeColor = [System.Drawing.SystemColors]::WindowText 
-	$System_Windows_Forms_DataGridViewCellStyle_11.SelectionBackColor = [System.Drawing.SystemColors]::Highlight 
-	$System_Windows_Forms_DataGridViewCellStyle_11.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText 
+	$System_Windows_Forms_DataGridViewCellStyle_11.ForeColor = [System.Drawing.SystemColors]::WindowText
+	$System_Windows_Forms_DataGridViewCellStyle_11.SelectionBackColor = [System.Drawing.SystemColors]::Highlight
+	$System_Windows_Forms_DataGridViewCellStyle_11.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText
 	$System_Windows_Forms_DataGridViewCellStyle_11.WrapMode = 'True'
 	$CustomPkgDataGrid.ColumnHeadersDefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_11
 	$CustomPkgDataGrid.ColumnHeadersHeight = 30
@@ -10551,27 +10551,27 @@ loc0th/dZQAAAABJRU5ErkJgggs='))
 	[void]$CustomPkgDataGrid.Columns.Add($Browse)
 	$System_Windows_Forms_DataGridViewCellStyle_12 = New-Object 'System.Windows.Forms.DataGridViewCellStyle'
 	$System_Windows_Forms_DataGridViewCellStyle_12.Alignment = 'MiddleLeft'
-	$System_Windows_Forms_DataGridViewCellStyle_12.BackColor = [System.Drawing.Color]::White 
+	$System_Windows_Forms_DataGridViewCellStyle_12.BackColor = [System.Drawing.Color]::White
 	$System_Windows_Forms_DataGridViewCellStyle_12.Font = [System.Drawing.Font]::new('Segoe UI', '10')
-	$System_Windows_Forms_DataGridViewCellStyle_12.ForeColor = [System.Drawing.SystemColors]::ControlText 
-	$System_Windows_Forms_DataGridViewCellStyle_12.SelectionBackColor = [System.Drawing.Color]::Maroon 
-	$System_Windows_Forms_DataGridViewCellStyle_12.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText 
+	$System_Windows_Forms_DataGridViewCellStyle_12.ForeColor = [System.Drawing.SystemColors]::ControlText
+	$System_Windows_Forms_DataGridViewCellStyle_12.SelectionBackColor = [System.Drawing.Color]::Maroon
+	$System_Windows_Forms_DataGridViewCellStyle_12.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText
 	$System_Windows_Forms_DataGridViewCellStyle_12.WrapMode = 'False'
 	$CustomPkgDataGrid.DefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_12
-	$CustomPkgDataGrid.GridColor = [System.Drawing.Color]::White 
+	$CustomPkgDataGrid.GridColor = [System.Drawing.Color]::White
 	$CustomPkgDataGrid.Location = New-Object System.Drawing.Point(0, 197)
 	$CustomPkgDataGrid.Name = 'CustomPkgDataGrid'
 	$System_Windows_Forms_DataGridViewCellStyle_13 = New-Object 'System.Windows.Forms.DataGridViewCellStyle'
 	$System_Windows_Forms_DataGridViewCellStyle_13.Alignment = 'MiddleLeft'
-	$System_Windows_Forms_DataGridViewCellStyle_13.BackColor = [System.Drawing.Color]::White 
+	$System_Windows_Forms_DataGridViewCellStyle_13.BackColor = [System.Drawing.Color]::White
 	$System_Windows_Forms_DataGridViewCellStyle_13.Font = [System.Drawing.Font]::new('Segoe UI', '10')
-	$System_Windows_Forms_DataGridViewCellStyle_13.ForeColor = [System.Drawing.Color]::Black 
-	$System_Windows_Forms_DataGridViewCellStyle_13.SelectionBackColor = [System.Drawing.Color]::Maroon 
-	$System_Windows_Forms_DataGridViewCellStyle_13.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText 
+	$System_Windows_Forms_DataGridViewCellStyle_13.ForeColor = [System.Drawing.Color]::Black
+	$System_Windows_Forms_DataGridViewCellStyle_13.SelectionBackColor = [System.Drawing.Color]::Maroon
+	$System_Windows_Forms_DataGridViewCellStyle_13.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText
 	$System_Windows_Forms_DataGridViewCellStyle_13.WrapMode = 'True'
 	$CustomPkgDataGrid.RowHeadersDefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_13
 	$CustomPkgDataGrid.RowHeadersVisible = $False
-	$CustomPkgDataGrid.RowTemplate.DefaultCellStyle.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$CustomPkgDataGrid.RowTemplate.DefaultCellStyle.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$CustomPkgDataGrid.RowTemplate.Height = 24
 	$CustomPkgDataGrid.ShowCellErrors = $False
 	$CustomPkgDataGrid.Size = New-Object System.Drawing.Size(1223, 293)
@@ -10584,7 +10584,7 @@ loc0th/dZQAAAABJRU5ErkJgggs='))
 	$CustomPkgPanel.Controls.Add($CustomPkgGroup)
 	$CustomPkgPanel.Controls.Add($groupbox2)
 	$CustomPkgPanel.Anchor = 'Top, Bottom, Left, Right'
-	$CustomPkgPanel.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$CustomPkgPanel.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$CustomPkgPanel.Location = New-Object System.Drawing.Point(0, 83)
 	$CustomPkgPanel.Name = 'CustomPkgPanel'
 	$CustomPkgPanel.Size = New-Object System.Drawing.Size(1247, 508)
@@ -10597,9 +10597,9 @@ loc0th/dZQAAAABJRU5ErkJgggs='))
 	$CustomPkgGroup.Controls.Add($CustomDeploymentLabel)
 	$CustomPkgGroup.Controls.Add($CustomPkgPlatform)
 	$CustomPkgGroup.Anchor = 'Top, Left, Right'
-	$CustomPkgGroup.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$CustomPkgGroup.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$CustomPkgGroup.Font = [System.Drawing.Font]::new('Segoe UI', '9.75', [System.Drawing.FontStyle]'Bold')
-	$CustomPkgGroup.ForeColor = [System.Drawing.Color]::Black 
+	$CustomPkgGroup.ForeColor = [System.Drawing.Color]::Black
 	$CustomPkgGroup.Location = New-Object System.Drawing.Point(3, 3)
 	$CustomPkgGroup.Name = 'CustomPkgGroup'
 	$CustomPkgGroup.Size = New-Object System.Drawing.Size(1237, 93)
@@ -10611,9 +10611,9 @@ loc0th/dZQAAAABJRU5ErkJgggs='))
 	# CustomPackageType
 	#
 	$CustomPackageType.AutoSize = $True
-	$CustomPackageType.BackColor = [System.Drawing.Color]::Transparent 
+	$CustomPackageType.BackColor = [System.Drawing.Color]::Transparent
 	$CustomPackageType.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$CustomPackageType.ForeColor = [System.Drawing.Color]::Black 
+	$CustomPackageType.ForeColor = [System.Drawing.Color]::Black
 	$CustomPackageType.Location = New-Object System.Drawing.Point(429, 46)
 	$CustomPackageType.Margin = '4, 0, 4, 0'
 	$CustomPackageType.Name = 'CustomPackageType'
@@ -10624,7 +10624,7 @@ loc0th/dZQAAAABJRU5ErkJgggs='))
 	#
 	# CustomPkgType
 	#
-	$CustomPkgType.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$CustomPkgType.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$CustomPkgType.DropDownStyle = 'DropDownList'
 	$CustomPkgType.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '9', [System.Drawing.FontStyle]'Bold')
 	$CustomPkgType.FormattingEnabled = $True
@@ -10639,9 +10639,9 @@ loc0th/dZQAAAABJRU5ErkJgggs='))
 	# CustomDeploymentLabel
 	#
 	$CustomDeploymentLabel.AutoSize = $True
-	$CustomDeploymentLabel.BackColor = [System.Drawing.Color]::Transparent 
+	$CustomDeploymentLabel.BackColor = [System.Drawing.Color]::Transparent
 	$CustomDeploymentLabel.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$CustomDeploymentLabel.ForeColor = [System.Drawing.Color]::Black 
+	$CustomDeploymentLabel.ForeColor = [System.Drawing.Color]::Black
 	$CustomDeploymentLabel.Location = New-Object System.Drawing.Point(21, 46)
 	$CustomDeploymentLabel.Margin = '4, 0, 4, 0'
 	$CustomDeploymentLabel.Name = 'CustomDeploymentLabel'
@@ -10652,7 +10652,7 @@ loc0th/dZQAAAABJRU5ErkJgggs='))
 	#
 	# CustomPkgPlatform
 	#
-	$CustomPkgPlatform.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$CustomPkgPlatform.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$CustomPkgPlatform.DropDownStyle = 'DropDownList'
 	$CustomPkgPlatform.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '9', [System.Drawing.FontStyle]'Bold')
 	$CustomPkgPlatform.FormattingEnabled = $True
@@ -10674,9 +10674,9 @@ loc0th/dZQAAAABJRU5ErkJgggs='))
 	$groupbox2.Controls.Add($ImportCSVButton)
 	$groupbox2.Controls.Add($CreatePackagesButton)
 	$groupbox2.Anchor = 'Bottom, Left, Right'
-	$groupbox2.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$groupbox2.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$groupbox2.Font = [System.Drawing.Font]::new('Segoe UI', '9.75', [System.Drawing.FontStyle]'Bold')
-	$groupbox2.ForeColor = [System.Drawing.Color]::Black 
+	$groupbox2.ForeColor = [System.Drawing.Color]::Black
 	$groupbox2.Location = New-Object System.Drawing.Point(7, 412)
 	$groupbox2.Name = 'groupbox2'
 	$groupbox2.Size = New-Object System.Drawing.Size(1237, 89)
@@ -10688,10 +10688,10 @@ loc0th/dZQAAAABJRU5ErkJgggs='))
 	# ClearCustomGrid
 	#
 	$ClearCustomGrid.Anchor = 'Bottom, Left'
-	$ClearCustomGrid.BackColor = [System.Drawing.Color]::Silver 
+	$ClearCustomGrid.BackColor = [System.Drawing.Color]::Silver
 	$ClearCustomGrid.FlatStyle = 'Flat'
 	$ClearCustomGrid.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$ClearCustomGrid.ForeColor = [System.Drawing.Color]::Black 
+	$ClearCustomGrid.ForeColor = [System.Drawing.Color]::Black
 	$ClearCustomGrid.Location = New-Object System.Drawing.Point(1016, 40)
 	$ClearCustomGrid.Margin = '4, 3, 4, 3'
 	$ClearCustomGrid.Name = 'ClearCustomGrid'
@@ -10709,7 +10709,7 @@ loc0th/dZQAAAABJRU5ErkJgggs='))
 	$QuerySystemButton.Enabled = $False
 	$QuerySystemButton.FlatStyle = 'Flat'
 	$QuerySystemButton.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$QuerySystemButton.ForeColor = [System.Drawing.Color]::White 
+	$QuerySystemButton.ForeColor = [System.Drawing.Color]::White
 	$QuerySystemButton.Location = New-Object System.Drawing.Point(26, 40)
 	$QuerySystemButton.Margin = '4, 3, 4, 3'
 	$QuerySystemButton.Name = 'QuerySystemButton'
@@ -10727,7 +10727,7 @@ loc0th/dZQAAAABJRU5ErkJgggs='))
 	$ImportExtractedDriveButton.Enabled = $False
 	$ImportExtractedDriveButton.FlatStyle = 'Flat'
 	$ImportExtractedDriveButton.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$ImportExtractedDriveButton.ForeColor = [System.Drawing.Color]::White 
+	$ImportExtractedDriveButton.ForeColor = [System.Drawing.Color]::White
 	$ImportExtractedDriveButton.Location = New-Object System.Drawing.Point(422, 40)
 	$ImportExtractedDriveButton.Margin = '4, 3, 4, 3'
 	$ImportExtractedDriveButton.Name = 'ImportExtractedDriveButton'
@@ -10745,7 +10745,7 @@ loc0th/dZQAAAABJRU5ErkJgggs='))
 	$CustomExtractButton.Enabled = $False
 	$CustomExtractButton.FlatStyle = 'Flat'
 	$CustomExtractButton.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$CustomExtractButton.ForeColor = [System.Drawing.Color]::White 
+	$CustomExtractButton.ForeColor = [System.Drawing.Color]::White
 	$CustomExtractButton.Location = New-Object System.Drawing.Point(224, 40)
 	$CustomExtractButton.Margin = '4, 3, 4, 3'
 	$CustomExtractButton.Name = 'CustomExtractButton'
@@ -10763,7 +10763,7 @@ loc0th/dZQAAAABJRU5ErkJgggs='))
 	$ImportCSVButton.Enabled = $False
 	$ImportCSVButton.FlatStyle = 'Flat'
 	$ImportCSVButton.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$ImportCSVButton.ForeColor = [System.Drawing.Color]::White 
+	$ImportCSVButton.ForeColor = [System.Drawing.Color]::White
 	$ImportCSVButton.Location = New-Object System.Drawing.Point(620, 40)
 	$ImportCSVButton.Margin = '4, 3, 4, 3'
 	$ImportCSVButton.Name = 'ImportCSVButton'
@@ -10781,7 +10781,7 @@ loc0th/dZQAAAABJRU5ErkJgggs='))
 	$CreatePackagesButton.Enabled = $False
 	$CreatePackagesButton.FlatStyle = 'Flat'
 	$CreatePackagesButton.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$CreatePackagesButton.ForeColor = [System.Drawing.Color]::White 
+	$CreatePackagesButton.ForeColor = [System.Drawing.Color]::White
 	$CreatePackagesButton.Location = New-Object System.Drawing.Point(818, 40)
 	$CreatePackagesButton.Margin = '4, 3, 4, 3'
 	$CreatePackagesButton.Name = 'CreatePackagesButton'
@@ -10808,7 +10808,7 @@ loc0th/dZQAAAABJRU5ErkJgggs='))
 	#
 	$labelIntuneDriverControl.AutoSize = $True
 	$labelIntuneDriverControl.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '16', [System.Drawing.FontStyle]'Bold')
-	$labelIntuneDriverControl.ForeColor = [System.Drawing.Color]::White 
+	$labelIntuneDriverControl.ForeColor = [System.Drawing.Color]::White
 	$labelIntuneDriverControl.Location = New-Object System.Drawing.Point(90, 24)
 	$labelIntuneDriverControl.Name = 'labelIntuneDriverControl'
 	$labelIntuneDriverControl.Size = New-Object System.Drawing.Size(219, 35)
@@ -10863,7 +10863,7 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	$panel1.Controls.Add($groupbox5)
 	$panel1.Controls.Add($groupbox7)
 	$panel1.Anchor = 'Top, Bottom, Left, Right'
-	$panel1.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$panel1.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$panel1.Location = New-Object System.Drawing.Point(0, 83)
 	$panel1.Name = 'panel1'
 	$panel1.Size = New-Object System.Drawing.Size(1252, 504)
@@ -10887,15 +10887,15 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	$IntuneAppDataGrid.AllowUserToAddRows = $False
 	$IntuneAppDataGrid.AllowUserToDeleteRows = $False
 	$IntuneAppDataGrid.Anchor = 'Top, Bottom, Left, Right'
-	$IntuneAppDataGrid.BackgroundColor = [System.Drawing.Color]::White 
+	$IntuneAppDataGrid.BackgroundColor = [System.Drawing.Color]::White
 	$IntuneAppDataGrid.BorderStyle = 'None'
 	$System_Windows_Forms_DataGridViewCellStyle_14 = New-Object 'System.Windows.Forms.DataGridViewCellStyle'
 	$System_Windows_Forms_DataGridViewCellStyle_14.Alignment = 'MiddleLeft'
-	$System_Windows_Forms_DataGridViewCellStyle_14.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$System_Windows_Forms_DataGridViewCellStyle_14.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$System_Windows_Forms_DataGridViewCellStyle_14.Font = [System.Drawing.Font]::new('Segoe UI', '9.75', [System.Drawing.FontStyle]'Bold')
-	$System_Windows_Forms_DataGridViewCellStyle_14.ForeColor = [System.Drawing.SystemColors]::WindowText 
+	$System_Windows_Forms_DataGridViewCellStyle_14.ForeColor = [System.Drawing.SystemColors]::WindowText
 	$System_Windows_Forms_DataGridViewCellStyle_14.SelectionBackColor = [System.Drawing.Color]::FromArgb(255, 0, 114, 198)
-	$System_Windows_Forms_DataGridViewCellStyle_14.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText 
+	$System_Windows_Forms_DataGridViewCellStyle_14.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText
 	$System_Windows_Forms_DataGridViewCellStyle_14.WrapMode = 'True'
 	$IntuneAppDataGrid.ColumnHeadersDefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_14
 	$IntuneAppDataGrid.ColumnHeadersHeight = 30
@@ -10904,30 +10904,30 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	[void]$IntuneAppDataGrid.Columns.Add($PackageDetails)
 	$System_Windows_Forms_DataGridViewCellStyle_15 = New-Object 'System.Windows.Forms.DataGridViewCellStyle'
 	$System_Windows_Forms_DataGridViewCellStyle_15.Alignment = 'MiddleLeft'
-	$System_Windows_Forms_DataGridViewCellStyle_15.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$System_Windows_Forms_DataGridViewCellStyle_15.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$System_Windows_Forms_DataGridViewCellStyle_15.Font = [System.Drawing.Font]::new('Segoe UI', '9.75', [System.Drawing.FontStyle]'Bold')
-	$System_Windows_Forms_DataGridViewCellStyle_15.ForeColor = [System.Drawing.SystemColors]::ControlText 
-	$System_Windows_Forms_DataGridViewCellStyle_15.SelectionBackColor = [System.Drawing.Color]::Maroon 
-	$System_Windows_Forms_DataGridViewCellStyle_15.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText 
+	$System_Windows_Forms_DataGridViewCellStyle_15.ForeColor = [System.Drawing.SystemColors]::ControlText
+	$System_Windows_Forms_DataGridViewCellStyle_15.SelectionBackColor = [System.Drawing.Color]::Maroon
+	$System_Windows_Forms_DataGridViewCellStyle_15.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText
 	$System_Windows_Forms_DataGridViewCellStyle_15.WrapMode = 'False'
 	$IntuneAppDataGrid.DefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_15
-	$IntuneAppDataGrid.GridColor = [System.Drawing.Color]::WhiteSmoke 
+	$IntuneAppDataGrid.GridColor = [System.Drawing.Color]::WhiteSmoke
 	$IntuneAppDataGrid.Location = New-Object System.Drawing.Point(0, 24)
 	$IntuneAppDataGrid.Name = 'IntuneAppDataGrid'
 	$System_Windows_Forms_DataGridViewCellStyle_16 = New-Object 'System.Windows.Forms.DataGridViewCellStyle'
 	$System_Windows_Forms_DataGridViewCellStyle_16.Alignment = 'MiddleLeft'
-	$System_Windows_Forms_DataGridViewCellStyle_16.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$System_Windows_Forms_DataGridViewCellStyle_16.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$System_Windows_Forms_DataGridViewCellStyle_16.Font = [System.Drawing.Font]::new('Segoe UI', '9.75', [System.Drawing.FontStyle]'Bold')
-	$System_Windows_Forms_DataGridViewCellStyle_16.ForeColor = [System.Drawing.Color]::Black 
+	$System_Windows_Forms_DataGridViewCellStyle_16.ForeColor = [System.Drawing.Color]::Black
 	$System_Windows_Forms_DataGridViewCellStyle_16.SelectionBackColor = [System.Drawing.Color]::FromArgb(255, 0, 114, 198)
-	$System_Windows_Forms_DataGridViewCellStyle_16.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText 
+	$System_Windows_Forms_DataGridViewCellStyle_16.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText
 	$System_Windows_Forms_DataGridViewCellStyle_16.WrapMode = 'True'
 	$IntuneAppDataGrid.RowHeadersDefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_16
 	$IntuneAppDataGrid.RowHeadersVisible = $False
 	$System_Windows_Forms_DataGridViewCellStyle_17 = New-Object 'System.Windows.Forms.DataGridViewCellStyle'
 	$System_Windows_Forms_DataGridViewCellStyle_17.SelectionBackColor = [System.Drawing.Color]::FromArgb(255, 0, 114, 198)
 	$IntuneAppDataGrid.RowsDefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_17
-	$IntuneAppDataGrid.RowTemplate.DefaultCellStyle.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$IntuneAppDataGrid.RowTemplate.DefaultCellStyle.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$IntuneAppDataGrid.RowTemplate.Height = 24
 	$IntuneAppDataGrid.Size = New-Object System.Drawing.Size(677, 241)
 	$IntuneAppDataGrid.TabIndex = 76
@@ -10957,7 +10957,7 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	$RefreshIntuneModels.FlatAppearance.BorderSize = 0
 	$RefreshIntuneModels.FlatStyle = 'Flat'
 	$RefreshIntuneModels.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$RefreshIntuneModels.ForeColor = [System.Drawing.Color]::White 
+	$RefreshIntuneModels.ForeColor = [System.Drawing.Color]::White
 	$RefreshIntuneModels.Location = New-Object System.Drawing.Point(279, 76)
 	$RefreshIntuneModels.Margin = '4, 3, 4, 3'
 	$RefreshIntuneModels.Name = 'RefreshIntuneModels'
@@ -10971,9 +10971,9 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	# IntuneSelectKnownModels
 	#
 	$IntuneSelectKnownModels.AutoSize = $True
-	$IntuneSelectKnownModels.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$IntuneSelectKnownModels.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$IntuneSelectKnownModels.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$IntuneSelectKnownModels.ForeColor = [System.Drawing.Color]::Black 
+	$IntuneSelectKnownModels.ForeColor = [System.Drawing.Color]::Black
 	$IntuneSelectKnownModels.Location = New-Object System.Drawing.Point(31, 40)
 	$IntuneSelectKnownModels.Name = 'IntuneSelectKnownModels'
 	$IntuneSelectKnownModels.Size = New-Object System.Drawing.Size(129, 21)
@@ -10983,10 +10983,10 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	#
 	# checkboxRemoveUnusedDriverPa
 	#
-	$checkboxRemoveUnusedDriverPa.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$checkboxRemoveUnusedDriverPa.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$checkboxRemoveUnusedDriverPa.Enabled = $False
 	$checkboxRemoveUnusedDriverPa.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$checkboxRemoveUnusedDriverPa.ForeColor = [System.Drawing.Color]::Black 
+	$checkboxRemoveUnusedDriverPa.ForeColor = [System.Drawing.Color]::Black
 	$checkboxRemoveUnusedDriverPa.Location = New-Object System.Drawing.Point(31, 119)
 	$checkboxRemoveUnusedDriverPa.Name = 'checkboxRemoveUnusedDriverPa'
 	$checkboxRemoveUnusedDriverPa.Size = New-Object System.Drawing.Size(396, 24)
@@ -10997,10 +10997,10 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	#
 	# textbox1
 	#
-	$textbox1.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$textbox1.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$textbox1.BorderStyle = 'None'
 	$textbox1.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$textbox1.ForeColor = [System.Drawing.Color]::Black 
+	$textbox1.ForeColor = [System.Drawing.Color]::Black
 	$textbox1.Location = New-Object System.Drawing.Point(47, 203)
 	$textbox1.Multiline = $True
 	$textbox1.Name = 'textbox1'
@@ -11012,10 +11012,10 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	#
 	# textbox3
 	#
-	$textbox3.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$textbox3.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$textbox3.BorderStyle = 'None'
 	$textbox3.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$textbox3.ForeColor = [System.Drawing.Color]::Black 
+	$textbox3.ForeColor = [System.Drawing.Color]::Black
 	$textbox3.Location = New-Object System.Drawing.Point(47, 145)
 	$textbox3.Multiline = $True
 	$textbox3.Name = 'textbox3'
@@ -11029,7 +11029,7 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	#
 	$checkboxRemoveUnusedBIOSPack.Enabled = $False
 	$checkboxRemoveUnusedBIOSPack.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$checkboxRemoveUnusedBIOSPack.ForeColor = [System.Drawing.Color]::Black 
+	$checkboxRemoveUnusedBIOSPack.ForeColor = [System.Drawing.Color]::Black
 	$checkboxRemoveUnusedBIOSPack.Location = New-Object System.Drawing.Point(29, 180)
 	$checkboxRemoveUnusedBIOSPack.Name = 'checkboxRemoveUnusedBIOSPack'
 	$checkboxRemoveUnusedBIOSPack.Size = New-Object System.Drawing.Size(396, 24)
@@ -11040,10 +11040,10 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	#
 	# IntuneKnownModels
 	#
-	$IntuneKnownModels.BackColor = [System.Drawing.Color]::White 
+	$IntuneKnownModels.BackColor = [System.Drawing.Color]::White
 	$IntuneKnownModels.DropDownStyle = 'DropDownList'
 	$IntuneKnownModels.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '9', [System.Drawing.FontStyle]'Bold')
-	$IntuneKnownModels.ForeColor = [System.Drawing.Color]::Black 
+	$IntuneKnownModels.ForeColor = [System.Drawing.Color]::Black
 	$IntuneKnownModels.FormattingEnabled = $True
 	[void]$IntuneKnownModels.Items.Add('Yes')
 	[void]$IntuneKnownModels.Items.Add('No')
@@ -11084,9 +11084,9 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	# IntuneUniqueDeviceCount
 	#
 	$IntuneUniqueDeviceCount.AutoSize = $True
-	$IntuneUniqueDeviceCount.BackColor = [System.Drawing.Color]::Transparent 
+	$IntuneUniqueDeviceCount.BackColor = [System.Drawing.Color]::Transparent
 	$IntuneUniqueDeviceCount.Font = [System.Drawing.Font]::new('Segoe UI', '9.75', [System.Drawing.FontStyle]'Bold')
-	$IntuneUniqueDeviceCount.ForeColor = [System.Drawing.Color]::Black 
+	$IntuneUniqueDeviceCount.ForeColor = [System.Drawing.Color]::Black
 	$IntuneUniqueDeviceCount.Location = New-Object System.Drawing.Point(985, 103)
 	$IntuneUniqueDeviceCount.Margin = '4, 0, 4, 0'
 	$IntuneUniqueDeviceCount.Name = 'IntuneUniqueDeviceCount'
@@ -11098,9 +11098,9 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	# IntuneUniqueCount
 	#
 	$IntuneUniqueCount.AutoSize = $True
-	$IntuneUniqueCount.BackColor = [System.Drawing.Color]::Transparent 
+	$IntuneUniqueCount.BackColor = [System.Drawing.Color]::Transparent
 	$IntuneUniqueCount.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$IntuneUniqueCount.ForeColor = [System.Drawing.Color]::Black 
+	$IntuneUniqueCount.ForeColor = [System.Drawing.Color]::Black
 	$IntuneUniqueCount.Location = New-Object System.Drawing.Point(710, 99)
 	$IntuneUniqueCount.Margin = '4, 0, 4, 0'
 	$IntuneUniqueCount.Name = 'IntuneUniqueCount'
@@ -11112,9 +11112,9 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	# GraphAuthStatus
 	#
 	$GraphAuthStatus.AutoSize = $True
-	$GraphAuthStatus.BackColor = [System.Drawing.Color]::Transparent 
+	$GraphAuthStatus.BackColor = [System.Drawing.Color]::Transparent
 	$GraphAuthStatus.Font = [System.Drawing.Font]::new('Segoe UI', '9.75', [System.Drawing.FontStyle]'Bold')
-	$GraphAuthStatus.ForeColor = [System.Drawing.Color]::Black 
+	$GraphAuthStatus.ForeColor = [System.Drawing.Color]::Black
 	$GraphAuthStatus.Location = New-Object System.Drawing.Point(985, 29)
 	$GraphAuthStatus.Margin = '4, 0, 4, 0'
 	$GraphAuthStatus.Name = 'GraphAuthStatus'
@@ -11125,9 +11125,9 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	#
 	# AADAppID
 	#
-	$AADAppID.BackColor = [System.Drawing.Color]::White 
+	$AADAppID.BackColor = [System.Drawing.Color]::White
 	$AADAppID.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$AADAppID.ForeColor = [System.Drawing.Color]::Black 
+	$AADAppID.ForeColor = [System.Drawing.Color]::Black
 	$AADAppID.Location = New-Object System.Drawing.Point(191, 93)
 	$AADAppID.Margin = '4, 3, 4, 3'
 	$AADAppID.Name = 'AADAppID'
@@ -11138,7 +11138,7 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	#
 	$labelAuthenticationStatus.AutoSize = $True
 	$labelAuthenticationStatus.Font = [System.Drawing.Font]::new('Segoe UI', '9.75', [System.Drawing.FontStyle]'Bold')
-	$labelAuthenticationStatus.ForeColor = [System.Drawing.Color]::Black 
+	$labelAuthenticationStatus.ForeColor = [System.Drawing.Color]::Black
 	$labelAuthenticationStatus.Location = New-Object System.Drawing.Point(710, 29)
 	$labelAuthenticationStatus.Name = 'labelAuthenticationStatus'
 	$labelAuthenticationStatus.Size = New-Object System.Drawing.Size(142, 22)
@@ -11149,9 +11149,9 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	# Win32BIOSCount
 	#
 	$Win32BIOSCount.AutoSize = $True
-	$Win32BIOSCount.BackColor = [System.Drawing.Color]::Transparent 
+	$Win32BIOSCount.BackColor = [System.Drawing.Color]::Transparent
 	$Win32BIOSCount.Font = [System.Drawing.Font]::new('Segoe UI', '9.75', [System.Drawing.FontStyle]'Bold')
-	$Win32BIOSCount.ForeColor = [System.Drawing.Color]::Black 
+	$Win32BIOSCount.ForeColor = [System.Drawing.Color]::Black
 	$Win32BIOSCount.Location = New-Object System.Drawing.Point(985, 172)
 	$Win32BIOSCount.Margin = '4, 0, 4, 0'
 	$Win32BIOSCount.Name = 'Win32BIOSCount'
@@ -11163,9 +11163,9 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	# labelTenantName
 	#
 	$labelTenantName.AutoSize = $True
-	$labelTenantName.BackColor = [System.Drawing.Color]::Transparent 
+	$labelTenantName.BackColor = [System.Drawing.Color]::Transparent
 	$labelTenantName.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$labelTenantName.ForeColor = [System.Drawing.Color]::Black 
+	$labelTenantName.ForeColor = [System.Drawing.Color]::Black
 	$labelTenantName.Location = New-Object System.Drawing.Point(29, 56)
 	$labelTenantName.Margin = '4, 0, 4, 0'
 	$labelTenantName.Name = 'labelTenantName'
@@ -11177,9 +11177,9 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	# labelBIOSPackageCount
 	#
 	$labelBIOSPackageCount.AutoSize = $True
-	$labelBIOSPackageCount.BackColor = [System.Drawing.Color]::Transparent 
+	$labelBIOSPackageCount.BackColor = [System.Drawing.Color]::Transparent
 	$labelBIOSPackageCount.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$labelBIOSPackageCount.ForeColor = [System.Drawing.Color]::Black 
+	$labelBIOSPackageCount.ForeColor = [System.Drawing.Color]::Black
 	$labelBIOSPackageCount.Location = New-Object System.Drawing.Point(710, 172)
 	$labelBIOSPackageCount.Margin = '4, 0, 4, 0'
 	$labelBIOSPackageCount.Name = 'labelBIOSPackageCount'
@@ -11191,9 +11191,9 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	# labelAppID
 	#
 	$labelAppID.AutoSize = $True
-	$labelAppID.BackColor = [System.Drawing.Color]::Transparent 
+	$labelAppID.BackColor = [System.Drawing.Color]::Transparent
 	$labelAppID.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$labelAppID.ForeColor = [System.Drawing.Color]::Black 
+	$labelAppID.ForeColor = [System.Drawing.Color]::Black
 	$labelAppID.Location = New-Object System.Drawing.Point(29, 96)
 	$labelAppID.Margin = '4, 0, 4, 0'
 	$labelAppID.Name = 'labelAppID'
@@ -11205,9 +11205,9 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	# Win32DriverCount
 	#
 	$Win32DriverCount.AutoSize = $True
-	$Win32DriverCount.BackColor = [System.Drawing.Color]::Transparent 
+	$Win32DriverCount.BackColor = [System.Drawing.Color]::Transparent
 	$Win32DriverCount.Font = [System.Drawing.Font]::new('Segoe UI', '9.75', [System.Drawing.FontStyle]'Bold')
-	$Win32DriverCount.ForeColor = [System.Drawing.Color]::Black 
+	$Win32DriverCount.ForeColor = [System.Drawing.Color]::Black
 	$Win32DriverCount.Location = New-Object System.Drawing.Point(985, 140)
 	$Win32DriverCount.Margin = '4, 0, 4, 0'
 	$Win32DriverCount.Name = 'Win32DriverCount'
@@ -11218,9 +11218,9 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	#
 	# AADTenantName
 	#
-	$AADTenantName.BackColor = [System.Drawing.Color]::White 
+	$AADTenantName.BackColor = [System.Drawing.Color]::White
 	$AADTenantName.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$AADTenantName.ForeColor = [System.Drawing.Color]::Black 
+	$AADTenantName.ForeColor = [System.Drawing.Color]::Black
 	$AADTenantName.Location = New-Object System.Drawing.Point(191, 53)
 	$AADTenantName.Margin = '4, 3, 4, 3'
 	$AADTenantName.Name = 'AADTenantName'
@@ -11230,9 +11230,9 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	# labelDriverPackageCount
 	#
 	$labelDriverPackageCount.AutoSize = $True
-	$labelDriverPackageCount.BackColor = [System.Drawing.Color]::Transparent 
+	$labelDriverPackageCount.BackColor = [System.Drawing.Color]::Transparent
 	$labelDriverPackageCount.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$labelDriverPackageCount.ForeColor = [System.Drawing.Color]::Black 
+	$labelDriverPackageCount.ForeColor = [System.Drawing.Color]::Black
 	$labelDriverPackageCount.Location = New-Object System.Drawing.Point(710, 140)
 	$labelDriverPackageCount.Margin = '4, 0, 4, 0'
 	$labelDriverPackageCount.Name = 'labelDriverPackageCount'
@@ -11248,7 +11248,7 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	$buttonConnectGraphAPI.FlatAppearance.BorderSize = 0
 	$buttonConnectGraphAPI.FlatStyle = 'Flat'
 	$buttonConnectGraphAPI.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$buttonConnectGraphAPI.ForeColor = [System.Drawing.Color]::White 
+	$buttonConnectGraphAPI.ForeColor = [System.Drawing.Color]::White
 	$buttonConnectGraphAPI.Location = New-Object System.Drawing.Point(279, 172)
 	$buttonConnectGraphAPI.Margin = '4, 3, 4, 3'
 	$buttonConnectGraphAPI.Name = 'buttonConnectGraphAPI'
@@ -11262,9 +11262,9 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	# labelAppSecret
 	#
 	$labelAppSecret.AutoSize = $True
-	$labelAppSecret.BackColor = [System.Drawing.Color]::Transparent 
+	$labelAppSecret.BackColor = [System.Drawing.Color]::Transparent
 	$labelAppSecret.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$labelAppSecret.ForeColor = [System.Drawing.Color]::Black 
+	$labelAppSecret.ForeColor = [System.Drawing.Color]::Black
 	$labelAppSecret.Location = New-Object System.Drawing.Point(29, 136)
 	$labelAppSecret.Margin = '4, 0, 4, 0'
 	$labelAppSecret.Name = 'labelAppSecret'
@@ -11276,9 +11276,9 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	# IntuneDeviceCount
 	#
 	$IntuneDeviceCount.AutoSize = $True
-	$IntuneDeviceCount.BackColor = [System.Drawing.Color]::Transparent 
+	$IntuneDeviceCount.BackColor = [System.Drawing.Color]::Transparent
 	$IntuneDeviceCount.Font = [System.Drawing.Font]::new('Segoe UI', '9.75', [System.Drawing.FontStyle]'Bold')
-	$IntuneDeviceCount.ForeColor = [System.Drawing.Color]::Black 
+	$IntuneDeviceCount.ForeColor = [System.Drawing.Color]::Black
 	$IntuneDeviceCount.Location = New-Object System.Drawing.Point(985, 71)
 	$IntuneDeviceCount.Margin = '4, 0, 4, 0'
 	$IntuneDeviceCount.Name = 'IntuneDeviceCount'
@@ -11289,9 +11289,9 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	#
 	# APPSecret
 	#
-	$APPSecret.BackColor = [System.Drawing.Color]::White 
+	$APPSecret.BackColor = [System.Drawing.Color]::White
 	$APPSecret.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$APPSecret.ForeColor = [System.Drawing.Color]::Black 
+	$APPSecret.ForeColor = [System.Drawing.Color]::Black
 	$APPSecret.Location = New-Object System.Drawing.Point(191, 133)
 	$APPSecret.Margin = '4, 3, 4, 3'
 	$APPSecret.Name = 'APPSecret'
@@ -11302,9 +11302,9 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	# labelNumberOfManagedDevic
 	#
 	$labelNumberOfManagedDevic.AutoSize = $True
-	$labelNumberOfManagedDevic.BackColor = [System.Drawing.Color]::Transparent 
+	$labelNumberOfManagedDevic.BackColor = [System.Drawing.Color]::Transparent
 	$labelNumberOfManagedDevic.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$labelNumberOfManagedDevic.ForeColor = [System.Drawing.Color]::Black 
+	$labelNumberOfManagedDevic.ForeColor = [System.Drawing.Color]::Black
 	$labelNumberOfManagedDevic.Location = New-Object System.Drawing.Point(710, 64)
 	$labelNumberOfManagedDevic.Margin = '4, 0, 4, 0'
 	$labelNumberOfManagedDevic.Name = 'labelNumberOfManagedDevic'
@@ -11331,7 +11331,7 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	$panel2.Controls.Add($groupbox8)
 	$panel2.Controls.Add($IntuneControlTabs)
 	$panel2.Anchor = 'Top, Bottom, Left, Right'
-	$panel2.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$panel2.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$panel2.Location = New-Object System.Drawing.Point(0, 83)
 	$panel2.Name = 'panel2'
 	$panel2.Size = New-Object System.Drawing.Size(1235, 481)
@@ -11341,7 +11341,7 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	#
 	$groupbox8.Controls.Add($groupbox10)
 	$groupbox8.Controls.Add($panel3)
-	$groupbox8.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$groupbox8.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$groupbox8.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
 	$groupbox8.Location = New-Object System.Drawing.Point(774, 12)
 	$groupbox8.Name = 'groupbox8'
@@ -11366,7 +11366,7 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	$panel5.Controls.Add($buttonPushProductionUpdate)
 	$panel5.Controls.Add($buttonPushLatestToPilot)
 	$panel5.Controls.Add($buttonPushPilotToProduction)
-	$panel5.BackColor = [System.Drawing.Color]::White 
+	$panel5.BackColor = [System.Drawing.Color]::White
 	$panel5.BorderStyle = 'FixedSingle'
 	$panel5.Location = New-Object System.Drawing.Point(0, 24)
 	$panel5.Name = 'panel5'
@@ -11377,7 +11377,7 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	#
 	$buttonPushLatestToProduction.BackColor = [System.Drawing.Color]::FromArgb(255, 0, 114, 198)
 	$buttonPushLatestToProduction.FlatStyle = 'Flat'
-	$buttonPushLatestToProduction.ForeColor = [System.Drawing.Color]::White 
+	$buttonPushLatestToProduction.ForeColor = [System.Drawing.Color]::White
 	$buttonPushLatestToProduction.Location = New-Object System.Drawing.Point(99, 54)
 	$buttonPushLatestToProduction.Name = 'buttonPushLatestToProduction'
 	$buttonPushLatestToProduction.Size = New-Object System.Drawing.Size(239, 29)
@@ -11390,7 +11390,7 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	#
 	$buttonPushProductionUpdate.BackColor = [System.Drawing.Color]::FromArgb(255, 0, 114, 198)
 	$buttonPushProductionUpdate.FlatStyle = 'Flat'
-	$buttonPushProductionUpdate.ForeColor = [System.Drawing.Color]::White 
+	$buttonPushProductionUpdate.ForeColor = [System.Drawing.Color]::White
 	$buttonPushProductionUpdate.Location = New-Object System.Drawing.Point(99, 19)
 	$buttonPushProductionUpdate.Name = 'buttonPushProductionUpdate'
 	$buttonPushProductionUpdate.Size = New-Object System.Drawing.Size(239, 29)
@@ -11402,7 +11402,7 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	#
 	$buttonPushLatestToPilot.BackColor = [System.Drawing.Color]::FromArgb(255, 0, 114, 198)
 	$buttonPushLatestToPilot.FlatStyle = 'Flat'
-	$buttonPushLatestToPilot.ForeColor = [System.Drawing.Color]::White 
+	$buttonPushLatestToPilot.ForeColor = [System.Drawing.Color]::White
 	$buttonPushLatestToPilot.Location = New-Object System.Drawing.Point(99, 124)
 	$buttonPushLatestToPilot.Name = 'buttonPushLatestToPilot'
 	$buttonPushLatestToPilot.Size = New-Object System.Drawing.Size(239, 29)
@@ -11416,7 +11416,7 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	#
 	$buttonPushPilotToProduction.BackColor = [System.Drawing.Color]::FromArgb(255, 0, 114, 198)
 	$buttonPushPilotToProduction.FlatStyle = 'Flat'
-	$buttonPushPilotToProduction.ForeColor = [System.Drawing.Color]::White 
+	$buttonPushPilotToProduction.ForeColor = [System.Drawing.Color]::White
 	$buttonPushPilotToProduction.Location = New-Object System.Drawing.Point(99, 89)
 	$buttonPushPilotToProduction.Name = 'buttonPushPilotToProduction'
 	$buttonPushPilotToProduction.Size = New-Object System.Drawing.Size(239, 29)
@@ -11437,7 +11437,7 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	$panel3.Controls.Add($BCTenantIDDetails)
 	$panel3.Controls.Add($BCSubscriptionID)
 	$panel3.Controls.Add($BCSubscriptionIDDetails)
-	$panel3.BackColor = [System.Drawing.Color]::White 
+	$panel3.BackColor = [System.Drawing.Color]::White
 	$panel3.BorderStyle = 'FixedSingle'
 	$panel3.Location = New-Object System.Drawing.Point(6, 25)
 	$panel3.Name = 'panel3'
@@ -11447,9 +11447,9 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	# BCResourceGroupName
 	#
 	$BCResourceGroupName.AutoSize = $True
-	$BCResourceGroupName.BackColor = [System.Drawing.Color]::White 
+	$BCResourceGroupName.BackColor = [System.Drawing.Color]::White
 	$BCResourceGroupName.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$BCResourceGroupName.ForeColor = [System.Drawing.Color]::Black 
+	$BCResourceGroupName.ForeColor = [System.Drawing.Color]::Black
 	$BCResourceGroupName.Location = New-Object System.Drawing.Point(48, 24)
 	$BCResourceGroupName.Name = 'BCResourceGroupName'
 	$BCResourceGroupName.Size = New-Object System.Drawing.Size(150, 23)
@@ -11460,7 +11460,7 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	# BCStorageURLDetails
 	#
 	$BCStorageURLDetails.AutoEllipsis = $True
-	$BCStorageURLDetails.BackColor = [System.Drawing.Color]::White 
+	$BCStorageURLDetails.BackColor = [System.Drawing.Color]::White
 	$BCStorageURLDetails.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
 	$BCStorageURLDetails.LinkArea = '0, 500'
 	$BCStorageURLDetails.Location = New-Object System.Drawing.Point(48, 194)
@@ -11474,9 +11474,9 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	# BCStorageLocation
 	#
 	$BCStorageLocation.AutoSize = $True
-	$BCStorageLocation.BackColor = [System.Drawing.Color]::White 
+	$BCStorageLocation.BackColor = [System.Drawing.Color]::White
 	$BCStorageLocation.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$BCStorageLocation.ForeColor = [System.Drawing.Color]::Black 
+	$BCStorageLocation.ForeColor = [System.Drawing.Color]::Black
 	$BCStorageLocation.Location = New-Object System.Drawing.Point(48, 132)
 	$BCStorageLocation.Margin = '4, 0, 4, 0'
 	$BCStorageLocation.Name = 'BCStorageLocation'
@@ -11488,9 +11488,9 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	# BCStorageURL
 	#
 	$BCStorageURL.AutoSize = $True
-	$BCStorageURL.BackColor = [System.Drawing.Color]::White 
+	$BCStorageURL.BackColor = [System.Drawing.Color]::White
 	$BCStorageURL.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$BCStorageURL.ForeColor = [System.Drawing.Color]::Black 
+	$BCStorageURL.ForeColor = [System.Drawing.Color]::Black
 	$BCStorageURL.Location = New-Object System.Drawing.Point(48, 162)
 	$BCStorageURL.Margin = '4, 0, 4, 0'
 	$BCStorageURL.Name = 'BCStorageURL'
@@ -11503,9 +11503,9 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	#
 	$BCResourceGroupDetails.AutoEllipsis = $True
 	$BCResourceGroupDetails.AutoSize = $True
-	$BCResourceGroupDetails.BackColor = [System.Drawing.Color]::White 
+	$BCResourceGroupDetails.BackColor = [System.Drawing.Color]::White
 	$BCResourceGroupDetails.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$BCResourceGroupDetails.ForeColor = [System.Drawing.Color]::Black 
+	$BCResourceGroupDetails.ForeColor = [System.Drawing.Color]::Black
 	$BCResourceGroupDetails.Location = New-Object System.Drawing.Point(221, 24)
 	$BCResourceGroupDetails.Margin = '4, 0, 4, 0'
 	$BCResourceGroupDetails.MaximumSize = New-Object System.Drawing.Size(200, 0)
@@ -11519,9 +11519,9 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	#
 	$BCStorageLocationDetails.AutoEllipsis = $True
 	$BCStorageLocationDetails.AutoSize = $True
-	$BCStorageLocationDetails.BackColor = [System.Drawing.Color]::White 
+	$BCStorageLocationDetails.BackColor = [System.Drawing.Color]::White
 	$BCStorageLocationDetails.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$BCStorageLocationDetails.ForeColor = [System.Drawing.Color]::Black 
+	$BCStorageLocationDetails.ForeColor = [System.Drawing.Color]::Black
 	$BCStorageLocationDetails.Location = New-Object System.Drawing.Point(221, 135)
 	$BCStorageLocationDetails.Margin = '4, 0, 4, 0'
 	$BCStorageLocationDetails.Name = 'BCStorageLocationDetails'
@@ -11533,9 +11533,9 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	# BCTenantID
 	#
 	$BCTenantID.AutoSize = $True
-	$BCTenantID.BackColor = [System.Drawing.Color]::White 
+	$BCTenantID.BackColor = [System.Drawing.Color]::White
 	$BCTenantID.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$BCTenantID.ForeColor = [System.Drawing.Color]::Black 
+	$BCTenantID.ForeColor = [System.Drawing.Color]::Black
 	$BCTenantID.Location = New-Object System.Drawing.Point(48, 91)
 	$BCTenantID.Margin = '4, 0, 4, 0'
 	$BCTenantID.Name = 'BCTenantID'
@@ -11548,9 +11548,9 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	#
 	$BCTenantIDDetails.AutoEllipsis = $True
 	$BCTenantIDDetails.AutoSize = $True
-	$BCTenantIDDetails.BackColor = [System.Drawing.Color]::White 
+	$BCTenantIDDetails.BackColor = [System.Drawing.Color]::White
 	$BCTenantIDDetails.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$BCTenantIDDetails.ForeColor = [System.Drawing.Color]::Black 
+	$BCTenantIDDetails.ForeColor = [System.Drawing.Color]::Black
 	$BCTenantIDDetails.Location = New-Object System.Drawing.Point(221, 93)
 	$BCTenantIDDetails.Margin = '4, 0, 4, 0'
 	$BCTenantIDDetails.MaximumSize = New-Object System.Drawing.Size(200, 0)
@@ -11563,9 +11563,9 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	# BCSubscriptionID
 	#
 	$BCSubscriptionID.AutoSize = $True
-	$BCSubscriptionID.BackColor = [System.Drawing.Color]::White 
+	$BCSubscriptionID.BackColor = [System.Drawing.Color]::White
 	$BCSubscriptionID.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$BCSubscriptionID.ForeColor = [System.Drawing.Color]::Black 
+	$BCSubscriptionID.ForeColor = [System.Drawing.Color]::Black
 	$BCSubscriptionID.Location = New-Object System.Drawing.Point(48, 50)
 	$BCSubscriptionID.Margin = '4, 0, 4, 0'
 	$BCSubscriptionID.Name = 'BCSubscriptionID'
@@ -11577,10 +11577,10 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	# BCSubscriptionIDDetails
 	#
 	$BCSubscriptionIDDetails.AutoSize = $True
-	$BCSubscriptionIDDetails.BackColor = [System.Drawing.Color]::White 
+	$BCSubscriptionIDDetails.BackColor = [System.Drawing.Color]::White
 	$BCSubscriptionIDDetails.CausesValidation = $False
 	$BCSubscriptionIDDetails.Font = [System.Drawing.Font]::new('Segoe UI', '9.75')
-	$BCSubscriptionIDDetails.ForeColor = [System.Drawing.Color]::Black 
+	$BCSubscriptionIDDetails.ForeColor = [System.Drawing.Color]::Black
 	$BCSubscriptionIDDetails.Location = New-Object System.Drawing.Point(221, 51)
 	$BCSubscriptionIDDetails.Margin = '4, 0, 4, 0'
 	$BCSubscriptionIDDetails.MaximumSize = New-Object System.Drawing.Size(200, 0)
@@ -11618,10 +11618,10 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	#
 	# SelectNoIntuneBIOS
 	#
-	$SelectNoIntuneBIOS.BackColor = [System.Drawing.Color]::Silver 
+	$SelectNoIntuneBIOS.BackColor = [System.Drawing.Color]::Silver
 	$SelectNoIntuneBIOS.FlatStyle = 'Popup'
 	$SelectNoIntuneBIOS.Font = [System.Drawing.Font]::new('Segoe UI', '9.75', [System.Drawing.FontStyle]'Bold')
-	$SelectNoIntuneBIOS.ForeColor = [System.Drawing.Color]::Black 
+	$SelectNoIntuneBIOS.ForeColor = [System.Drawing.Color]::Black
 	$SelectNoIntuneBIOS.Location = New-Object System.Drawing.Point(262, 404)
 	$SelectNoIntuneBIOS.Name = 'SelectNoIntuneBIOS'
 	$SelectNoIntuneBIOS.Size = New-Object System.Drawing.Size(239, 29)
@@ -11634,7 +11634,7 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	#
 	$SelectAllIntuneBIOS.BackColor = [System.Drawing.Color]::FromArgb(255, 64, 64, 64)
 	$SelectAllIntuneBIOS.FlatStyle = 'Popup'
-	$SelectAllIntuneBIOS.ForeColor = [System.Drawing.Color]::White 
+	$SelectAllIntuneBIOS.ForeColor = [System.Drawing.Color]::White
 	$SelectAllIntuneBIOS.Location = New-Object System.Drawing.Point(6, 404)
 	$SelectAllIntuneBIOS.Name = 'SelectAllIntuneBIOS'
 	$SelectAllIntuneBIOS.Size = New-Object System.Drawing.Size(239, 29)
@@ -11649,15 +11649,15 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	$IntuneBIOSDataGrid.AllowUserToDeleteRows = $False
 	$IntuneBIOSDataGrid.AllowUserToResizeRows = $False
 	$IntuneBIOSDataGrid.Anchor = 'Top, Bottom, Left, Right'
-	$IntuneBIOSDataGrid.BackgroundColor = [System.Drawing.Color]::White 
+	$IntuneBIOSDataGrid.BackgroundColor = [System.Drawing.Color]::White
 	$IntuneBIOSDataGrid.ColumnHeadersBorderStyle = 'Single'
 	$System_Windows_Forms_DataGridViewCellStyle_18 = New-Object 'System.Windows.Forms.DataGridViewCellStyle'
 	$System_Windows_Forms_DataGridViewCellStyle_18.Alignment = 'MiddleLeft'
-	$System_Windows_Forms_DataGridViewCellStyle_18.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$System_Windows_Forms_DataGridViewCellStyle_18.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$System_Windows_Forms_DataGridViewCellStyle_18.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$System_Windows_Forms_DataGridViewCellStyle_18.ForeColor = [System.Drawing.SystemColors]::WindowText 
+	$System_Windows_Forms_DataGridViewCellStyle_18.ForeColor = [System.Drawing.SystemColors]::WindowText
 	$System_Windows_Forms_DataGridViewCellStyle_18.SelectionBackColor = [System.Drawing.Color]::FromArgb(255, 0, 114, 198)
-	$System_Windows_Forms_DataGridViewCellStyle_18.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText 
+	$System_Windows_Forms_DataGridViewCellStyle_18.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText
 	$System_Windows_Forms_DataGridViewCellStyle_18.WrapMode = 'True'
 	$IntuneBIOSDataGrid.ColumnHeadersDefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_18
 	$IntuneBIOSDataGrid.ColumnHeadersHeight = 30
@@ -11671,34 +11671,34 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	[void]$IntuneBIOSDataGrid.Columns.Add($SKU)
 	$System_Windows_Forms_DataGridViewCellStyle_19 = New-Object 'System.Windows.Forms.DataGridViewCellStyle'
 	$System_Windows_Forms_DataGridViewCellStyle_19.Alignment = 'MiddleLeft'
-	$System_Windows_Forms_DataGridViewCellStyle_19.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$System_Windows_Forms_DataGridViewCellStyle_19.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$System_Windows_Forms_DataGridViewCellStyle_19.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$System_Windows_Forms_DataGridViewCellStyle_19.ForeColor = [System.Drawing.SystemColors]::ControlText 
+	$System_Windows_Forms_DataGridViewCellStyle_19.ForeColor = [System.Drawing.SystemColors]::ControlText
 	$System_Windows_Forms_DataGridViewCellStyle_19.SelectionBackColor = [System.Drawing.Color]::FromArgb(255, 0, 114, 198)
-	$System_Windows_Forms_DataGridViewCellStyle_19.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText 
+	$System_Windows_Forms_DataGridViewCellStyle_19.SelectionForeColor = [System.Drawing.SystemColors]::HighlightText
 	$System_Windows_Forms_DataGridViewCellStyle_19.WrapMode = 'False'
 	$IntuneBIOSDataGrid.DefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_19
-	$IntuneBIOSDataGrid.GridColor = [System.Drawing.Color]::WhiteSmoke 
+	$IntuneBIOSDataGrid.GridColor = [System.Drawing.Color]::WhiteSmoke
 	$IntuneBIOSDataGrid.Location = New-Object System.Drawing.Point(6, 6)
 	$IntuneBIOSDataGrid.Name = 'IntuneBIOSDataGrid'
 	$IntuneBIOSDataGrid.RowHeadersBorderStyle = 'None'
 	$System_Windows_Forms_DataGridViewCellStyle_20 = New-Object 'System.Windows.Forms.DataGridViewCellStyle'
 	$System_Windows_Forms_DataGridViewCellStyle_20.Alignment = 'MiddleLeft'
-	$System_Windows_Forms_DataGridViewCellStyle_20.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$System_Windows_Forms_DataGridViewCellStyle_20.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$System_Windows_Forms_DataGridViewCellStyle_20.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$System_Windows_Forms_DataGridViewCellStyle_20.ForeColor = [System.Drawing.Color]::Black 
+	$System_Windows_Forms_DataGridViewCellStyle_20.ForeColor = [System.Drawing.Color]::Black
 	$System_Windows_Forms_DataGridViewCellStyle_20.SelectionBackColor = [System.Drawing.Color]::FromArgb(255, 0, 114, 198)
-	$System_Windows_Forms_DataGridViewCellStyle_20.SelectionForeColor = [System.Drawing.Color]::White 
+	$System_Windows_Forms_DataGridViewCellStyle_20.SelectionForeColor = [System.Drawing.Color]::White
 	$System_Windows_Forms_DataGridViewCellStyle_20.WrapMode = 'True'
 	$IntuneBIOSDataGrid.RowHeadersDefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_20
 	$IntuneBIOSDataGrid.RowHeadersVisible = $False
 	$System_Windows_Forms_DataGridViewCellStyle_21 = New-Object 'System.Windows.Forms.DataGridViewCellStyle'
-	$System_Windows_Forms_DataGridViewCellStyle_21.BackColor = [System.Drawing.Color]::White 
+	$System_Windows_Forms_DataGridViewCellStyle_21.BackColor = [System.Drawing.Color]::White
 	$System_Windows_Forms_DataGridViewCellStyle_21.Font = [System.Drawing.Font]::new('Microsoft Sans Serif', '10')
-	$System_Windows_Forms_DataGridViewCellStyle_21.ForeColor = [System.Drawing.Color]::Black 
+	$System_Windows_Forms_DataGridViewCellStyle_21.ForeColor = [System.Drawing.Color]::Black
 	$System_Windows_Forms_DataGridViewCellStyle_21.SelectionBackColor = [System.Drawing.Color]::FromArgb(255, 0, 114, 198)
 	$IntuneBIOSDataGrid.RowsDefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_21
-	$IntuneBIOSDataGrid.RowTemplate.DefaultCellStyle.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$IntuneBIOSDataGrid.RowTemplate.DefaultCellStyle.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$IntuneBIOSDataGrid.RowTemplate.Height = 24
 	$IntuneBIOSDataGrid.SelectionMode = 'FullRowSelect'
 	$IntuneBIOSDataGrid.Size = New-Object System.Drawing.Size(751, 392)
@@ -11706,9 +11706,9 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	#
 	# buttonRefreshAzureXMLValue
 	#
-	$buttonRefreshAzureXMLValue.BackColor = [System.Drawing.Color]::Silver 
+	$buttonRefreshAzureXMLValue.BackColor = [System.Drawing.Color]::Silver
 	$buttonRefreshAzureXMLValue.FlatStyle = 'Flat'
-	$buttonRefreshAzureXMLValue.ForeColor = [System.Drawing.Color]::Black 
+	$buttonRefreshAzureXMLValue.ForeColor = [System.Drawing.Color]::Black
 	$buttonRefreshAzureXMLValue.Location = New-Object System.Drawing.Point(518, 404)
 	$buttonRefreshAzureXMLValue.Name = 'buttonRefreshAzureXMLValue'
 	$buttonRefreshAzureXMLValue.Size = New-Object System.Drawing.Size(239, 29)
@@ -11745,7 +11745,7 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	$groupbox9.Controls.Add($ResourceGroupCombo)
 	$groupbox9.Controls.Add($SubscriptionLabel)
 	$groupbox9.Controls.Add($SubscriptionCombo)
-	$groupbox9.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$groupbox9.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$groupbox9.Location = New-Object System.Drawing.Point(-3, -28)
 	$groupbox9.Name = 'groupbox9'
 	$groupbox9.Size = New-Object System.Drawing.Size(1228, 468)
@@ -11758,7 +11758,7 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	$buttonConnectToAzure.BackColor = [System.Drawing.Color]::FromArgb(255, 0, 114, 198)
 	$buttonConnectToAzure.FlatStyle = 'Flat'
 	$buttonConnectToAzure.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$buttonConnectToAzure.ForeColor = [System.Drawing.Color]::White 
+	$buttonConnectToAzure.ForeColor = [System.Drawing.Color]::White
 	$buttonConnectToAzure.Location = New-Object System.Drawing.Point(16, 418)
 	$buttonConnectToAzure.Name = 'buttonConnectToAzure'
 	$buttonConnectToAzure.Size = New-Object System.Drawing.Size(167, 29)
@@ -11770,16 +11770,16 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	# richtextbox6
 	#
 	$richtextbox6.Anchor = 'Top, Left, Right'
-	$richtextbox6.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$richtextbox6.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$richtextbox6.BorderStyle = 'None'
 	$richtextbox6.Font = [System.Drawing.Font]::new('Segoe UI', '11')
-	$richtextbox6.ForeColor = [System.Drawing.Color]::Black 
+	$richtextbox6.ForeColor = [System.Drawing.Color]::Black
 	$richtextbox6.Location = New-Object System.Drawing.Point(16, 47)
 	$richtextbox6.Name = 'richtextbox6'
 	$richtextbox6.ScrollBars = 'None'
 	$richtextbox6.Size = New-Object System.Drawing.Size(744, 130)
 	$richtextbox6.TabIndex = 152
-	$richtextbox6.Text = 'Intune BIOS control uses the logic XML package created by this tool to control the BIOS update release version being applied through Proactive Remediations. In order to upload the XML logic packages, an Azure storage blob is required, and you must have suitable licensing. 
+	$richtextbox6.Text = 'Intune BIOS control uses the logic XML package created by this tool to control the BIOS update release version being applied through Proactive Remediations. In order to upload the XML logic packages, an Azure storage blob is required, and you must have suitable licensing.
 
 Below you will see the list of subscriptions, resources, locations, and storage accounts for use with this process as part of the provisioning switch you have opted in for when launching this tool. '
 	#
@@ -11799,7 +11799,7 @@ Below you will see the list of subscriptions, resources, locations, and storage 
 	$CreateAzureStorage.Enabled = $False
 	$CreateAzureStorage.FlatStyle = 'Flat'
 	$CreateAzureStorage.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$CreateAzureStorage.ForeColor = [System.Drawing.Color]::White 
+	$CreateAzureStorage.ForeColor = [System.Drawing.Color]::White
 	$CreateAzureStorage.Location = New-Object System.Drawing.Point(362, 418)
 	$CreateAzureStorage.Name = 'CreateAzureStorage'
 	$CreateAzureStorage.Size = New-Object System.Drawing.Size(167, 29)
@@ -11844,7 +11844,7 @@ Below you will see the list of subscriptions, resources, locations, and storage 
 	$ValidateStorage.Enabled = $False
 	$ValidateStorage.FlatStyle = 'Flat'
 	$ValidateStorage.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$ValidateStorage.ForeColor = [System.Drawing.Color]::White 
+	$ValidateStorage.ForeColor = [System.Drawing.Color]::White
 	$ValidateStorage.Location = New-Object System.Drawing.Point(189, 418)
 	$ValidateStorage.Name = 'ValidateStorage'
 	$ValidateStorage.Size = New-Object System.Drawing.Size(167, 29)
@@ -11930,7 +11930,7 @@ Below you will see the list of subscriptions, resources, locations, and storage 
 	#
 	$labelIntuneBIOSControl.AutoSize = $True
 	$labelIntuneBIOSControl.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '16', [System.Drawing.FontStyle]'Bold')
-	$labelIntuneBIOSControl.ForeColor = [System.Drawing.Color]::White 
+	$labelIntuneBIOSControl.ForeColor = [System.Drawing.Color]::White
 	$labelIntuneBIOSControl.Location = New-Object System.Drawing.Point(90, 24)
 	$labelIntuneBIOSControl.Name = 'labelIntuneBIOSControl'
 	$labelIntuneBIOSControl.Size = New-Object System.Drawing.Size(207, 35)
@@ -11984,7 +11984,7 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	$LogTab.Controls.Add($ProcessTabLabel)
 	$LogTab.Controls.Add($ProcessIcon)
 	$LogTab.Controls.Add($LogPanel)
-	$LogTab.BackColor = [System.Drawing.Color]::Gray 
+	$LogTab.BackColor = [System.Drawing.Color]::Gray
 	$LogTab.Location = New-Object System.Drawing.Point(4, 48)
 	$LogTab.Name = 'LogTab'
 	$LogTab.Size = New-Object System.Drawing.Size(1248, 587)
@@ -11995,7 +11995,7 @@ n8YOAu4e/odMOeBaIeBaIeBaIeBaIeBaIeBaIeBaCbQy/wDNo/deFMOXnQAAAABJRU5ErkJgggs='))
 	#
 	$ProcessTabLabel.AutoSize = $True
 	$ProcessTabLabel.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '16', [System.Drawing.FontStyle]'Bold')
-	$ProcessTabLabel.ForeColor = [System.Drawing.Color]::White 
+	$ProcessTabLabel.ForeColor = [System.Drawing.Color]::White
 	$ProcessTabLabel.Location = New-Object System.Drawing.Point(90, 24)
 	$ProcessTabLabel.Name = 'ProcessTabLabel'
 	$ProcessTabLabel.Size = New-Object System.Drawing.Size(126, 35)
@@ -12054,7 +12054,7 @@ gjq+RIZ1KDIOt+A1qEa5fIX7cEodF5NhG8mwjWTYPlXnH3rcbtR1CciLAAAAAElFTkSuQmCCCw=='))
 	$LogPanel.Controls.Add($ModelProgressOverlay)
 	$LogPanel.Controls.Add($ProgressBar)
 	$LogPanel.Anchor = 'Top, Bottom, Left, Right'
-	$LogPanel.BackColor = [System.Drawing.Color]::LightGray 
+	$LogPanel.BackColor = [System.Drawing.Color]::LightGray
 	$LogPanel.Location = New-Object System.Drawing.Point(0, 83)
 	$LogPanel.Name = 'LogPanel'
 	$LogPanel.Size = New-Object System.Drawing.Size(1230, 481)
@@ -12064,9 +12064,9 @@ gjq+RIZ1KDIOt+A1qEa5fIX7cEodF5NhG8mwjWTYPlXnH3rcbtR1CciLAAAAAElFTkSuQmCCCw=='))
 	#
 	$RemainingDownloads.Anchor = 'Top, Bottom, Left, Right'
 	$RemainingDownloads.AutoSize = $True
-	$RemainingDownloads.BackColor = [System.Drawing.Color]::Transparent 
+	$RemainingDownloads.BackColor = [System.Drawing.Color]::Transparent
 	$RemainingDownloads.Font = [System.Drawing.Font]::new('Calibri', '12')
-	$RemainingDownloads.ForeColor = [System.Drawing.Color]::Green 
+	$RemainingDownloads.ForeColor = [System.Drawing.Color]::Green
 	$RemainingDownloads.Location = New-Object System.Drawing.Point(1030, 241)
 	$RemainingDownloads.Margin = '4, 0, 4, 0'
 	$RemainingDownloads.Name = 'RemainingDownloads'
@@ -12079,9 +12079,9 @@ gjq+RIZ1KDIOt+A1qEa5fIX7cEodF5NhG8mwjWTYPlXnH3rcbtR1CciLAAAAAElFTkSuQmCCCw=='))
 	#
 	$labelRemainingDownloads.Anchor = 'Top, Bottom, Left, Right'
 	$labelRemainingDownloads.AutoSize = $True
-	$labelRemainingDownloads.BackColor = [System.Drawing.Color]::Transparent 
+	$labelRemainingDownloads.BackColor = [System.Drawing.Color]::Transparent
 	$labelRemainingDownloads.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$labelRemainingDownloads.ForeColor = [System.Drawing.Color]::Black 
+	$labelRemainingDownloads.ForeColor = [System.Drawing.Color]::Black
 	$labelRemainingDownloads.Location = New-Object System.Drawing.Point(865, 241)
 	$labelRemainingDownloads.Margin = '4, 0, 4, 0'
 	$labelRemainingDownloads.Name = 'labelRemainingDownloads'
@@ -12094,9 +12094,9 @@ gjq+RIZ1KDIOt+A1qEa5fIX7cEodF5NhG8mwjWTYPlXnH3rcbtR1CciLAAAAAElFTkSuQmCCCw=='))
 	#
 	$FileSize.Anchor = 'Top, Bottom, Left, Right'
 	$FileSize.AutoSize = $True
-	$FileSize.BackColor = [System.Drawing.Color]::Transparent 
+	$FileSize.BackColor = [System.Drawing.Color]::Transparent
 	$FileSize.Font = [System.Drawing.Font]::new('Calibri', '12')
-	$FileSize.ForeColor = [System.Drawing.Color]::Green 
+	$FileSize.ForeColor = [System.Drawing.Color]::Green
 	$FileSize.Location = New-Object System.Drawing.Point(1030, 165)
 	$FileSize.Margin = '4, 0, 4, 0'
 	$FileSize.Name = 'FileSize'
@@ -12109,9 +12109,9 @@ gjq+RIZ1KDIOt+A1qEa5fIX7cEodF5NhG8mwjWTYPlXnH3rcbtR1CciLAAAAAElFTkSuQmCCCw=='))
 	#
 	$labelFileSizeMB.Anchor = 'Top, Bottom, Left, Right'
 	$labelFileSizeMB.AutoSize = $True
-	$labelFileSizeMB.BackColor = [System.Drawing.Color]::Transparent 
+	$labelFileSizeMB.BackColor = [System.Drawing.Color]::Transparent
 	$labelFileSizeMB.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$labelFileSizeMB.ForeColor = [System.Drawing.Color]::Black 
+	$labelFileSizeMB.ForeColor = [System.Drawing.Color]::Black
 	$labelFileSizeMB.Location = New-Object System.Drawing.Point(866, 165)
 	$labelFileSizeMB.Margin = '4, 0, 4, 0'
 	$labelFileSizeMB.Name = 'labelFileSizeMB'
@@ -12122,10 +12122,10 @@ gjq+RIZ1KDIOt+A1qEa5fIX7cEodF5NhG8mwjWTYPlXnH3rcbtR1CciLAAAAAElFTkSuQmCCCw=='))
 	#
 	# CurrentDownload
 	#
-	$CurrentDownload.BackColor = [System.Drawing.Color]::LightGray 
+	$CurrentDownload.BackColor = [System.Drawing.Color]::LightGray
 	$CurrentDownload.BorderStyle = 'None'
 	$CurrentDownload.Font = [System.Drawing.Font]::new('Calibri', '12')
-	$CurrentDownload.ForeColor = [System.Drawing.Color]::Green 
+	$CurrentDownload.ForeColor = [System.Drawing.Color]::Green
 	$CurrentDownload.Location = New-Object System.Drawing.Point(1030, 68)
 	$CurrentDownload.Name = 'CurrentDownload'
 	$CurrentDownload.ScrollBars = 'None'
@@ -12136,10 +12136,10 @@ gjq+RIZ1KDIOt+A1qEa5fIX7cEodF5NhG8mwjWTYPlXnH3rcbtR1CciLAAAAAElFTkSuQmCCCw=='))
 	# richtextbox2
 	#
 	$richtextbox2.Anchor = 'Top, Left, Right'
-	$richtextbox2.BackColor = [System.Drawing.Color]::LightGray 
+	$richtextbox2.BackColor = [System.Drawing.Color]::LightGray
 	$richtextbox2.BorderStyle = 'None'
 	$richtextbox2.Font = [System.Drawing.Font]::new('Calibri', '9.75')
-	$richtextbox2.ForeColor = [System.Drawing.Color]::Black 
+	$richtextbox2.ForeColor = [System.Drawing.Color]::Black
 	$richtextbox2.Location = New-Object System.Drawing.Point(866, 388)
 	$richtextbox2.Name = 'richtextbox2'
 	$richtextbox2.ScrollBars = 'None'
@@ -12151,9 +12151,9 @@ gjq+RIZ1KDIOt+A1qEa5fIX7cEodF5NhG8mwjWTYPlXnH3rcbtR1CciLAAAAAElFTkSuQmCCCw=='))
 	#
 	$ErrorsOccurred.Anchor = 'Top, Bottom, Left, Right'
 	$ErrorsOccurred.AutoSize = $True
-	$ErrorsOccurred.BackColor = [System.Drawing.Color]::Transparent 
+	$ErrorsOccurred.BackColor = [System.Drawing.Color]::Transparent
 	$ErrorsOccurred.Font = [System.Drawing.Font]::new('Calibri', '12')
-	$ErrorsOccurred.ForeColor = [System.Drawing.Color]::Green 
+	$ErrorsOccurred.ForeColor = [System.Drawing.Color]::Green
 	$ErrorsOccurred.Location = New-Object System.Drawing.Point(1030, 279)
 	$ErrorsOccurred.Margin = '4, 0, 4, 0'
 	$ErrorsOccurred.Name = 'ErrorsOccurred'
@@ -12166,9 +12166,9 @@ gjq+RIZ1KDIOt+A1qEa5fIX7cEodF5NhG8mwjWTYPlXnH3rcbtR1CciLAAAAAElFTkSuQmCCCw=='))
 	#
 	$TotalDownloads.Anchor = 'Top, Bottom, Left, Right'
 	$TotalDownloads.AutoSize = $True
-	$TotalDownloads.BackColor = [System.Drawing.Color]::Transparent 
+	$TotalDownloads.BackColor = [System.Drawing.Color]::Transparent
 	$TotalDownloads.Font = [System.Drawing.Font]::new('Calibri', '12')
-	$TotalDownloads.ForeColor = [System.Drawing.Color]::Green 
+	$TotalDownloads.ForeColor = [System.Drawing.Color]::Green
 	$TotalDownloads.Location = New-Object System.Drawing.Point(1030, 203)
 	$TotalDownloads.Margin = '4, 0, 4, 0'
 	$TotalDownloads.Name = 'TotalDownloads'
@@ -12181,9 +12181,9 @@ gjq+RIZ1KDIOt+A1qEa5fIX7cEodF5NhG8mwjWTYPlXnH3rcbtR1CciLAAAAAElFTkSuQmCCCw=='))
 	#
 	$JobStatus.Anchor = 'Top, Bottom, Left, Right'
 	$JobStatus.AutoSize = $True
-	$JobStatus.BackColor = [System.Drawing.Color]::Transparent 
+	$JobStatus.BackColor = [System.Drawing.Color]::Transparent
 	$JobStatus.Font = [System.Drawing.Font]::new('Calibri', '12')
-	$JobStatus.ForeColor = [System.Drawing.Color]::Green 
+	$JobStatus.ForeColor = [System.Drawing.Color]::Green
 	$JobStatus.Location = New-Object System.Drawing.Point(1030, 29)
 	$JobStatus.Margin = '4, 0, 4, 0'
 	$JobStatus.Name = 'JobStatus'
@@ -12195,10 +12195,10 @@ gjq+RIZ1KDIOt+A1qEa5fIX7cEodF5NhG8mwjWTYPlXnH3rcbtR1CciLAAAAAElFTkSuQmCCCw=='))
 	# ProgressListBox
 	#
 	$ProgressListBox.Anchor = 'Top, Bottom, Left'
-	$ProgressListBox.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$ProgressListBox.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$ProgressListBox.BorderStyle = 'None'
 	$ProgressListBox.Font = [System.Drawing.Font]::new('Segoe UI Semibold', '10')
-	$ProgressListBox.ForeColor = [System.Drawing.Color]::Black 
+	$ProgressListBox.ForeColor = [System.Drawing.Color]::Black
 	$ProgressListBox.FormattingEnabled = $True
 	$ProgressListBox.ItemHeight = 17
 	$ProgressListBox.Location = New-Object System.Drawing.Point(0, 0)
@@ -12212,9 +12212,9 @@ gjq+RIZ1KDIOt+A1qEa5fIX7cEodF5NhG8mwjWTYPlXnH3rcbtR1CciLAAAAAElFTkSuQmCCCw=='))
 	#
 	$labelWarningsErrors.Anchor = 'Top, Bottom, Left, Right'
 	$labelWarningsErrors.AutoSize = $True
-	$labelWarningsErrors.BackColor = [System.Drawing.Color]::Transparent 
+	$labelWarningsErrors.BackColor = [System.Drawing.Color]::Transparent
 	$labelWarningsErrors.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$labelWarningsErrors.ForeColor = [System.Drawing.Color]::Black 
+	$labelWarningsErrors.ForeColor = [System.Drawing.Color]::Black
 	$labelWarningsErrors.Location = New-Object System.Drawing.Point(866, 279)
 	$labelWarningsErrors.Margin = '4, 0, 4, 0'
 	$labelWarningsErrors.Name = 'labelWarningsErrors'
@@ -12227,9 +12227,9 @@ gjq+RIZ1KDIOt+A1qEa5fIX7cEodF5NhG8mwjWTYPlXnH3rcbtR1CciLAAAAAElFTkSuQmCCCw=='))
 	#
 	$labelSelectedDownloads.Anchor = 'Top, Bottom, Left, Right'
 	$labelSelectedDownloads.AutoSize = $True
-	$labelSelectedDownloads.BackColor = [System.Drawing.Color]::Transparent 
+	$labelSelectedDownloads.BackColor = [System.Drawing.Color]::Transparent
 	$labelSelectedDownloads.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$labelSelectedDownloads.ForeColor = [System.Drawing.Color]::Black 
+	$labelSelectedDownloads.ForeColor = [System.Drawing.Color]::Black
 	$labelSelectedDownloads.Location = New-Object System.Drawing.Point(865, 203)
 	$labelSelectedDownloads.Margin = '4, 0, 4, 0'
 	$labelSelectedDownloads.Name = 'labelSelectedDownloads'
@@ -12242,9 +12242,9 @@ gjq+RIZ1KDIOt+A1qEa5fIX7cEodF5NhG8mwjWTYPlXnH3rcbtR1CciLAAAAAElFTkSuQmCCCw=='))
 	#
 	$labelCurrentDownload.Anchor = 'Top, Bottom, Left, Right'
 	$labelCurrentDownload.AutoSize = $True
-	$labelCurrentDownload.BackColor = [System.Drawing.Color]::Transparent 
+	$labelCurrentDownload.BackColor = [System.Drawing.Color]::Transparent
 	$labelCurrentDownload.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$labelCurrentDownload.ForeColor = [System.Drawing.Color]::Black 
+	$labelCurrentDownload.ForeColor = [System.Drawing.Color]::Black
 	$labelCurrentDownload.Location = New-Object System.Drawing.Point(866, 70)
 	$labelCurrentDownload.Margin = '4, 0, 4, 0'
 	$labelCurrentDownload.Name = 'labelCurrentDownload'
@@ -12257,9 +12257,9 @@ gjq+RIZ1KDIOt+A1qEa5fIX7cEodF5NhG8mwjWTYPlXnH3rcbtR1CciLAAAAAElFTkSuQmCCCw=='))
 	#
 	$labelJobStatus.Anchor = 'Top, Bottom, Left, Right'
 	$labelJobStatus.AutoSize = $True
-	$labelJobStatus.BackColor = [System.Drawing.Color]::Transparent 
+	$labelJobStatus.BackColor = [System.Drawing.Color]::Transparent
 	$labelJobStatus.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$labelJobStatus.ForeColor = [System.Drawing.Color]::Black 
+	$labelJobStatus.ForeColor = [System.Drawing.Color]::Black
 	$labelJobStatus.Location = New-Object System.Drawing.Point(866, 29)
 	$labelJobStatus.Margin = '4, 0, 4, 0'
 	$labelJobStatus.Name = 'labelJobStatus'
@@ -12272,9 +12272,9 @@ gjq+RIZ1KDIOt+A1qEa5fIX7cEodF5NhG8mwjWTYPlXnH3rcbtR1CciLAAAAAElFTkSuQmCCCw=='))
 	#
 	$ProgressLabel.Anchor = 'Top, Bottom, Left, Right'
 	$ProgressLabel.AutoSize = $True
-	$ProgressLabel.BackColor = [System.Drawing.Color]::Transparent 
+	$ProgressLabel.BackColor = [System.Drawing.Color]::Transparent
 	$ProgressLabel.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$ProgressLabel.ForeColor = [System.Drawing.Color]::Maroon 
+	$ProgressLabel.ForeColor = [System.Drawing.Color]::Maroon
 	$ProgressLabel.Location = New-Object System.Drawing.Point(866, 317)
 	$ProgressLabel.Margin = '4, 0, 4, 0'
 	$ProgressLabel.Name = 'ProgressLabel'
@@ -12315,7 +12315,7 @@ gjq+RIZ1KDIOt+A1qEa5fIX7cEodF5NhG8mwjWTYPlXnH3rcbtR1CciLAAAAAElFTkSuQmCCCw=='))
 	$AboutTab.Controls.Add($Version)
 	$AboutTab.Controls.Add($lBuildDateLabel)
 	$AboutTab.Controls.Add($VersionLabel)
-	$AboutTab.BackColor = [System.Drawing.Color]::Gray 
+	$AboutTab.BackColor = [System.Drawing.Color]::Gray
 	$AboutTab.Location = New-Object System.Drawing.Point(4, 48)
 	$AboutTab.Name = 'AboutTab'
 	$AboutTab.Padding = '3, 3, 3, 3'
@@ -12329,7 +12329,7 @@ gjq+RIZ1KDIOt+A1qEa5fIX7cEodF5NhG8mwjWTYPlXnH3rcbtR1CciLAAAAAElFTkSuQmCCCw=='))
 	$AboutPanelRight.Controls.Add($richtextbox3)
 	$AboutPanelRight.Controls.Add($ReleaseNotesText)
 	$AboutPanelRight.Anchor = 'Top, Bottom, Right'
-	$AboutPanelRight.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$AboutPanelRight.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$AboutPanelRight.Location = New-Object System.Drawing.Point(728, 83)
 	$AboutPanelRight.Name = 'AboutPanelRight'
 	$AboutPanelRight.Size = New-Object System.Drawing.Size(505, 508)
@@ -12341,7 +12341,7 @@ gjq+RIZ1KDIOt+A1qEa5fIX7cEodF5NhG8mwjWTYPlXnH3rcbtR1CciLAAAAAElFTkSuQmCCCw=='))
 	$UpdateDAT.BackColor = [System.Drawing.Color]::FromArgb(255, 122, 0, 0)
 	$UpdateDAT.FlatStyle = 'Flat'
 	$UpdateDAT.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$UpdateDAT.ForeColor = [System.Drawing.Color]::White 
+	$UpdateDAT.ForeColor = [System.Drawing.Color]::White
 	$UpdateDAT.Location = New-Object System.Drawing.Point(35, 454)
 	$UpdateDAT.Name = 'UpdateDAT'
 	$UpdateDAT.Size = New-Object System.Drawing.Size(438, 40)
@@ -12353,10 +12353,10 @@ gjq+RIZ1KDIOt+A1qEa5fIX7cEodF5NhG8mwjWTYPlXnH3rcbtR1CciLAAAAAElFTkSuQmCCCw=='))
 	#
 	# richtextbox3
 	#
-	$richtextbox3.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$richtextbox3.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$richtextbox3.BorderStyle = 'None'
 	$richtextbox3.Font = [System.Drawing.Font]::new('Segoe UI', '11.25', [System.Drawing.FontStyle]'Bold')
-	$richtextbox3.ForeColor = [System.Drawing.Color]::Black 
+	$richtextbox3.ForeColor = [System.Drawing.Color]::Black
 	$richtextbox3.Location = New-Object System.Drawing.Point(35, 28)
 	$richtextbox3.Name = 'richtextbox3'
 	$richtextbox3.ScrollBars = 'None'
@@ -12366,10 +12366,10 @@ gjq+RIZ1KDIOt+A1qEa5fIX7cEodF5NhG8mwjWTYPlXnH3rcbtR1CciLAAAAAElFTkSuQmCCCw=='))
 	#
 	# ReleaseNotesText
 	#
-	$ReleaseNotesText.BackColor = [System.Drawing.Color]::White 
+	$ReleaseNotesText.BackColor = [System.Drawing.Color]::White
 	$ReleaseNotesText.BorderStyle = 'None'
 	$ReleaseNotesText.Font = [System.Drawing.Font]::new('Segoe UI', '10')
-	$ReleaseNotesText.ForeColor = [System.Drawing.Color]::DarkRed 
+	$ReleaseNotesText.ForeColor = [System.Drawing.Color]::DarkRed
 	$ReleaseNotesText.Location = New-Object System.Drawing.Point(35, 68)
 	$ReleaseNotesText.Margin = '2, 2, 2, 2'
 	$ReleaseNotesText.Name = 'ReleaseNotesText'
@@ -12383,7 +12383,7 @@ gjq+RIZ1KDIOt+A1qEa5fIX7cEodF5NhG8mwjWTYPlXnH3rcbtR1CciLAAAAAElFTkSuQmCCCw=='))
 	#
 	$AboutTabLabel.AutoSize = $True
 	$AboutTabLabel.Font = [System.Drawing.Font]::new('Calibri', '18', [System.Drawing.FontStyle]'Bold')
-	$AboutTabLabel.ForeColor = [System.Drawing.Color]::White 
+	$AboutTabLabel.ForeColor = [System.Drawing.Color]::White
 	$AboutTabLabel.Location = New-Object System.Drawing.Point(90, 24)
 	$AboutTabLabel.Name = 'AboutTabLabel'
 	$AboutTabLabel.Size = New-Object System.Drawing.Size(338, 36)
@@ -12483,7 +12483,7 @@ ClfaYYUr7bDClXZY4Uo7rHClFXsH/gvKjCI7YJe62gAAAABJRU5ErkJgggs='))
 	$AboutPanelLeft.Controls.Add($GitHubLaunchButton)
 	$AboutPanelLeft.Anchor = 'Top, Bottom, Left, Right'
 	$AboutPanelLeft.AutoSizeMode = 'GrowAndShrink'
-	$AboutPanelLeft.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$AboutPanelLeft.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$AboutPanelLeft.Location = New-Object System.Drawing.Point(0, 83)
 	$AboutPanelLeft.Name = 'AboutPanelLeft'
 	$AboutPanelLeft.Size = New-Object System.Drawing.Size(722, 504)
@@ -12492,10 +12492,10 @@ ClfaYYUr7bDClXZY4Uo7rHClFXsH/gvKjCI7YJe62gAAAABJRU5ErkJgggs='))
 	# richtextbox7
 	#
 	$richtextbox7.Anchor = 'Top, Left, Right'
-	$richtextbox7.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$richtextbox7.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$richtextbox7.BorderStyle = 'None'
 	$richtextbox7.Font = [System.Drawing.Font]::new('Calibri', '12')
-	$richtextbox7.ForeColor = [System.Drawing.Color]::Black 
+	$richtextbox7.ForeColor = [System.Drawing.Color]::Black
 	$richtextbox7.Location = New-Object System.Drawing.Point(14, 362)
 	$richtextbox7.Name = 'richtextbox7'
 	$richtextbox7.Size = New-Object System.Drawing.Size(657, 57)
@@ -12504,10 +12504,10 @@ ClfaYYUr7bDClXZY4Uo7rHClFXsH/gvKjCI7YJe62gAAAABJRU5ErkJgggs='))
 	#
 	# richtextbox8
 	#
-	$richtextbox8.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$richtextbox8.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$richtextbox8.BorderStyle = 'None'
 	$richtextbox8.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$richtextbox8.ForeColor = [System.Drawing.Color]::Maroon 
+	$richtextbox8.ForeColor = [System.Drawing.Color]::Maroon
 	$richtextbox8.Location = New-Object System.Drawing.Point(14, 335)
 	$richtextbox8.Name = 'richtextbox8'
 	$richtextbox8.ScrollBars = 'None'
@@ -12521,7 +12521,7 @@ ClfaYYUr7bDClXZY4Uo7rHClFXsH/gvKjCI7YJe62gAAAABJRU5ErkJgggs='))
 	$GitHubLaunch.BackColor = [System.Drawing.Color]::FromArgb(255, 64, 64, 64)
 	$GitHubLaunch.FlatStyle = 'Flat'
 	$GitHubLaunch.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$GitHubLaunch.ForeColor = [System.Drawing.Color]::White 
+	$GitHubLaunch.ForeColor = [System.Drawing.Color]::White
 	$GitHubLaunch.Location = New-Object System.Drawing.Point(339, 454)
 	$GitHubLaunch.Name = 'GitHubLaunch'
 	$GitHubLaunch.Size = New-Object System.Drawing.Size(352, 40)
@@ -12534,10 +12534,10 @@ ClfaYYUr7bDClXZY4Uo7rHClFXsH/gvKjCI7YJe62gAAAABJRU5ErkJgggs='))
 	# ModernDriverDesc
 	#
 	$ModernDriverDesc.Anchor = 'Top, Left, Right'
-	$ModernDriverDesc.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$ModernDriverDesc.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$ModernDriverDesc.BorderStyle = 'None'
 	$ModernDriverDesc.Font = [System.Drawing.Font]::new('Calibri', '12')
-	$ModernDriverDesc.ForeColor = [System.Drawing.Color]::Black 
+	$ModernDriverDesc.ForeColor = [System.Drawing.Color]::Black
 	$ModernDriverDesc.Location = New-Object System.Drawing.Point(14, 285)
 	$ModernDriverDesc.Name = 'ModernDriverDesc'
 	$ModernDriverDesc.Size = New-Object System.Drawing.Size(657, 57)
@@ -12546,10 +12546,10 @@ ClfaYYUr7bDClXZY4Uo7rHClFXsH/gvKjCI7YJe62gAAAABJRU5ErkJgggs='))
 	#
 	# richtextbox5
 	#
-	$richtextbox5.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$richtextbox5.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$richtextbox5.BorderStyle = 'None'
 	$richtextbox5.Font = [System.Drawing.Font]::new('Segoe UI', '11.25', [System.Drawing.FontStyle]'Bold')
-	$richtextbox5.ForeColor = [System.Drawing.Color]::Black 
+	$richtextbox5.ForeColor = [System.Drawing.Color]::Black
 	$richtextbox5.Location = New-Object System.Drawing.Point(16, 28)
 	$richtextbox5.Name = 'richtextbox5'
 	$richtextbox5.ScrollBars = 'None'
@@ -12562,10 +12562,10 @@ ClfaYYUr7bDClXZY4Uo7rHClFXsH/gvKjCI7YJe62gAAAABJRU5ErkJgggs='))
 	#
 	# ModernDriverLabel
 	#
-	$ModernDriverLabel.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$ModernDriverLabel.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$ModernDriverLabel.BorderStyle = 'None'
 	$ModernDriverLabel.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$ModernDriverLabel.ForeColor = [System.Drawing.Color]::Maroon 
+	$ModernDriverLabel.ForeColor = [System.Drawing.Color]::Maroon
 	$ModernDriverLabel.Location = New-Object System.Drawing.Point(14, 258)
 	$ModernDriverLabel.Name = 'ModernDriverLabel'
 	$ModernDriverLabel.ScrollBars = 'None'
@@ -12576,10 +12576,10 @@ ClfaYYUr7bDClXZY4Uo7rHClFXsH/gvKjCI7YJe62gAAAABJRU5ErkJgggs='))
 	# AboutToolDesc
 	#
 	$AboutToolDesc.Anchor = 'Top, Left, Right'
-	$AboutToolDesc.BackColor = [System.Drawing.Color]::WhiteSmoke 
+	$AboutToolDesc.BackColor = [System.Drawing.Color]::WhiteSmoke
 	$AboutToolDesc.BorderStyle = 'None'
 	$AboutToolDesc.Font = [System.Drawing.Font]::new('Calibri', '11.25')
-	$AboutToolDesc.ForeColor = [System.Drawing.Color]::Black 
+	$AboutToolDesc.ForeColor = [System.Drawing.Color]::Black
 	$AboutToolDesc.Location = New-Object System.Drawing.Point(14, 83)
 	$AboutToolDesc.Name = 'AboutToolDesc'
 	$AboutToolDesc.ScrollBars = 'None'
@@ -12599,7 +12599,7 @@ THIS SCRIPT MUST NOT BE EDITED AND REDISTRIBUTED WITHOUT EXPRESS PERMISSION OF T
 	$GitHubLaunchButton.BackColor = [System.Drawing.Color]::FromArgb(255, 64, 64, 64)
 	$GitHubLaunchButton.FlatStyle = 'Flat'
 	$GitHubLaunchButton.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$GitHubLaunchButton.ForeColor = [System.Drawing.Color]::White 
+	$GitHubLaunchButton.ForeColor = [System.Drawing.Color]::White
 	$GitHubLaunchButton.Location = New-Object System.Drawing.Point(14, 454)
 	$GitHubLaunchButton.Name = 'GitHubLaunchButton'
 	$GitHubLaunchButton.Size = New-Object System.Drawing.Size(313, 40)
@@ -12628,7 +12628,7 @@ THIS SCRIPT MUST NOT BE EDITED AND REDISTRIBUTED WITHOUT EXPRESS PERMISSION OF T
 	$BuildDate.Anchor = 'Top, Right'
 	$BuildDate.AutoSize = $True
 	$BuildDate.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$BuildDate.ForeColor = [System.Drawing.Color]::White 
+	$BuildDate.ForeColor = [System.Drawing.Color]::White
 	$BuildDate.Location = New-Object System.Drawing.Point(840, 45)
 	$BuildDate.Name = 'BuildDate'
 	$BuildDate.Size = New-Object System.Drawing.Size(11, 25)
@@ -12641,7 +12641,7 @@ THIS SCRIPT MUST NOT BE EDITED AND REDISTRIBUTED WITHOUT EXPRESS PERMISSION OF T
 	$Version.Anchor = 'Top, Right'
 	$Version.AutoSize = $True
 	$Version.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$Version.ForeColor = [System.Drawing.Color]::White 
+	$Version.ForeColor = [System.Drawing.Color]::White
 	$Version.Location = New-Object System.Drawing.Point(840, 16)
 	$Version.Name = 'Version'
 	$Version.Size = New-Object System.Drawing.Size(11, 25)
@@ -12654,7 +12654,7 @@ THIS SCRIPT MUST NOT BE EDITED AND REDISTRIBUTED WITHOUT EXPRESS PERMISSION OF T
 	$lBuildDateLabel.Anchor = 'Top, Right'
 	$lBuildDateLabel.AutoSize = $True
 	$lBuildDateLabel.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$lBuildDateLabel.ForeColor = [System.Drawing.Color]::White 
+	$lBuildDateLabel.ForeColor = [System.Drawing.Color]::White
 	$lBuildDateLabel.Location = New-Object System.Drawing.Point(742, 44)
 	$lBuildDateLabel.Name = 'lBuildDateLabel'
 	$lBuildDateLabel.Size = New-Object System.Drawing.Size(82, 25)
@@ -12667,7 +12667,7 @@ THIS SCRIPT MUST NOT BE EDITED AND REDISTRIBUTED WITHOUT EXPRESS PERMISSION OF T
 	$VersionLabel.Anchor = 'Top, Right'
 	$VersionLabel.AutoSize = $True
 	$VersionLabel.Font = [System.Drawing.Font]::new('Calibri', '12', [System.Drawing.FontStyle]'Bold')
-	$VersionLabel.ForeColor = [System.Drawing.Color]::White 
+	$VersionLabel.ForeColor = [System.Drawing.Color]::White
 	$VersionLabel.Location = New-Object System.Drawing.Point(742, 16)
 	$VersionLabel.Name = 'VersionLabel'
 	$VersionLabel.Size = New-Object System.Drawing.Size(63, 25)
@@ -12683,7 +12683,7 @@ THIS SCRIPT MUST NOT BE EDITED AND REDISTRIBUTED WITHOUT EXPRESS PERMISSION OF T
 	$ResetDATSettings.Cursor = 'Hand'
 	$ResetDATSettings.FlatStyle = 'Popup'
 	$ResetDATSettings.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$ResetDATSettings.ForeColor = [System.Drawing.Color]::White 
+	$ResetDATSettings.ForeColor = [System.Drawing.Color]::White
 	$ResetDATSettings.Location = New-Object System.Drawing.Point(12, 772)
 	$ResetDATSettings.Margin = '4, 3, 4, 3'
 	$ResetDATSettings.MaximumSize = New-Object System.Drawing.Size(566, 30)
@@ -12708,7 +12708,7 @@ THIS SCRIPT MUST NOT BE EDITED AND REDISTRIBUTED WITHOUT EXPRESS PERMISSION OF T
 	$StartDownloadButton.FlatAppearance.BorderSize = 0
 	$StartDownloadButton.FlatStyle = 'Popup'
 	$StartDownloadButton.Font = [System.Drawing.Font]::new('Segoe UI', '10', [System.Drawing.FontStyle]'Bold')
-	$StartDownloadButton.ForeColor = [System.Drawing.Color]::White 
+	$StartDownloadButton.ForeColor = [System.Drawing.Color]::White
 	$StartDownloadButton.Location = New-Object System.Drawing.Point(702, 772)
 	$StartDownloadButton.Margin = '4, 3, 4, 3'
 	$StartDownloadButton.MaximumSize = New-Object System.Drawing.Size(566, 30)
@@ -12789,7 +12789,7 @@ THIS SCRIPT MUST NOT BE EDITED AND REDISTRIBUTED WITHOUT EXPRESS PERMISSION OF T
 	# checkboxUseAProxyServer
 	#
 	$checkboxUseAProxyServer.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$checkboxUseAProxyServer.ForeColor = [System.Drawing.Color]::White 
+	$checkboxUseAProxyServer.ForeColor = [System.Drawing.Color]::White
 	$checkboxUseAProxyServer.Location = New-Object System.Drawing.Point(41, 152)
 	$checkboxUseAProxyServer.Margin = '4, 4, 4, 4'
 	$checkboxUseAProxyServer.Name = 'checkboxUseAProxyServer'
@@ -13048,12 +13048,12 @@ AABJRU5ErkJgggs='))
 	#
 	$System_Windows_Forms_DataGridViewCellStyle_22 = New-Object 'System.Windows.Forms.DataGridViewCellStyle'
 	$System_Windows_Forms_DataGridViewCellStyle_22.Alignment = 'MiddleCenter'
-	$System_Windows_Forms_DataGridViewCellStyle_22.BackColor = [System.Drawing.Color]::Gray 
+	$System_Windows_Forms_DataGridViewCellStyle_22.BackColor = [System.Drawing.Color]::Gray
 	$System_Windows_Forms_DataGridViewCellStyle_22.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$System_Windows_Forms_DataGridViewCellStyle_22.ForeColor = [System.Drawing.Color]::White 
+	$System_Windows_Forms_DataGridViewCellStyle_22.ForeColor = [System.Drawing.Color]::White
 	$System_Windows_Forms_DataGridViewCellStyle_22.Padding = '1, 1, 1, 1'
-	$System_Windows_Forms_DataGridViewCellStyle_22.SelectionBackColor = [System.Drawing.Color]::Gray 
-	$System_Windows_Forms_DataGridViewCellStyle_22.SelectionForeColor = [System.Drawing.Color]::White 
+	$System_Windows_Forms_DataGridViewCellStyle_22.SelectionBackColor = [System.Drawing.Color]::Gray
+	$System_Windows_Forms_DataGridViewCellStyle_22.SelectionForeColor = [System.Drawing.Color]::White
 	$PatchPath.DefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_22
 	$PatchPath.HeaderText = 'Patch Action'
 	$PatchPath.Name = 'PatchPath'
@@ -13071,9 +13071,9 @@ AABJRU5ErkJgggs='))
 	$SelectedIntuneBIOS.AutoSizeMode = 'AllCells'
 	$System_Windows_Forms_DataGridViewCellStyle_23 = New-Object 'System.Windows.Forms.DataGridViewCellStyle'
 	$System_Windows_Forms_DataGridViewCellStyle_23.Alignment = 'MiddleCenter'
-	$System_Windows_Forms_DataGridViewCellStyle_23.BackColor = [System.Drawing.Color]::White 
+	$System_Windows_Forms_DataGridViewCellStyle_23.BackColor = [System.Drawing.Color]::White
 	$System_Windows_Forms_DataGridViewCellStyle_23.NullValue = 'False'
-	$System_Windows_Forms_DataGridViewCellStyle_23.SelectionBackColor = [System.Drawing.Color]::White 
+	$System_Windows_Forms_DataGridViewCellStyle_23.SelectionBackColor = [System.Drawing.Color]::White
 	$SelectedIntuneBIOS.DefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_23
 	$SelectedIntuneBIOS.HeaderText = 'Selected'
 	$SelectedIntuneBIOS.Name = 'SelectedIntuneBIOS'
@@ -13084,7 +13084,7 @@ AABJRU5ErkJgggs='))
 	#
 	$BIOSManufacturer.AutoSizeMode = 'AllCells'
 	$System_Windows_Forms_DataGridViewCellStyle_24 = New-Object 'System.Windows.Forms.DataGridViewCellStyle'
-	$System_Windows_Forms_DataGridViewCellStyle_24.BackColor = [System.Drawing.Color]::White 
+	$System_Windows_Forms_DataGridViewCellStyle_24.BackColor = [System.Drawing.Color]::White
 	$BIOSManufacturer.DefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_24
 	$BIOSManufacturer.HeaderText = 'OEM'
 	$BIOSManufacturer.Name = 'BIOSManufacturer'
@@ -13156,7 +13156,7 @@ AABJRU5ErkJgggs='))
 	#
 	$Platform.AutoSizeMode = 'AllCells'
 	$System_Windows_Forms_DataGridViewCellStyle_25 = New-Object 'System.Windows.Forms.DataGridViewCellStyle'
-	$System_Windows_Forms_DataGridViewCellStyle_25.ForeColor = [System.Drawing.Color]::Black 
+	$System_Windows_Forms_DataGridViewCellStyle_25.ForeColor = [System.Drawing.Color]::Black
 	$Platform.DefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_25
 	$Platform.DisplayStyle = 'ComboBox'
 	$Platform.HeaderText = 'Platform'
@@ -13219,7 +13219,7 @@ AABJRU5ErkJgggs='))
 	$System_Windows_Forms_DataGridViewCellStyle_26.Alignment = 'MiddleCenter'
 	$System_Windows_Forms_DataGridViewCellStyle_26.BackColor = [System.Drawing.Color]::FromArgb(255, 224, 224, 224)
 	$System_Windows_Forms_DataGridViewCellStyle_26.Font = [System.Drawing.Font]::new('Segoe UI', '9', [System.Drawing.FontStyle]'Bold')
-	$System_Windows_Forms_DataGridViewCellStyle_26.ForeColor = [System.Drawing.Color]::Black 
+	$System_Windows_Forms_DataGridViewCellStyle_26.ForeColor = [System.Drawing.Color]::Black
 	$Browse.DefaultCellStyle = $System_Windows_Forms_DataGridViewCellStyle_26
 	$Browse.FlatStyle = 'Popup'
 	$Browse.HeaderText = 'Browse'
@@ -13344,14 +13344,14 @@ AABJRU5ErkJgggs='))
 	# // =================== GLOBAL VARIABLES ====================== //
 	# Requires TLS 1.2
 	[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-	
+
 	# Script Build Numbers
 	[version]$ScriptRelease = "7.2.2"
 	$ScriptBuildDate = "2022-12-31"
 	[version]$NewRelease = (Invoke-WebRequest -Uri "https://raw.githubusercontent.com/maurice-daly/DriverAutomationTool/master/Data//DriverAutomationToolRev.txt" -UseBasicParsing).Content
 	$ReleaseNotesURL = "https://raw.githubusercontent.com/maurice-daly/DriverAutomationTool/master/Data/DriverAutomationToolNotes.txt"
 	$OEMLinksURL = "https://raw.githubusercontent.com/maurice-daly/DriverAutomationTool/master/Data/OEMLinks.xml"
-	
+
 	# Proxy Validation Initial State
 	$global:ProxySettingsSet = $false
 	$global:BitsOptions = @{
@@ -13360,16 +13360,16 @@ AABJRU5ErkJgggs='))
 		Priority	  = "Foreground"
 		TransferType  = "Download"
 	}
-	
+
 	# ConfigMgr Validation Initial State
 	New-Variable -Name "ConfigMgrValidation" -Value $False -Scope Global
-	
+
 	# GraphAPI
 	New-Variable -Name "AuthToken" -Value $null -Scope global
-	
+
 	# Azure Variables
 	New-Variable -Name "Susbscriptions" -Value $null -Scope global
-	
+
 	# Windows Version Hash Table
 	$WindowsBuildHashTable = @{
 		'Win11-22H2' = "10.0.21621"
@@ -13388,12 +13388,12 @@ AABJRU5ErkJgggs='))
 		'1703'	     = "10.0.15063.0"
 		'1607'	     = "10.0.14393.0"
 	}
-	
+
 	if (Test-Path -Path $(Join-Path (Get-Location) -ChildPath "Images\Check.png")) {
 		$CheckIcon = [System.Drawing.Image]::FromFile($(Join-Path (Get-Location) -ChildPath "Images\Check.png"))
 		$UnCheckedIcon = [System.Drawing.Image]::FromFile($(Join-Path (Get-Location) -ChildPath "Images\UnChecked.png"))
 	}
-	
+
 	function Get-ScriptDirectory {
 		[OutputType([string])]
 		param ()
@@ -13403,12 +13403,12 @@ AABJRU5ErkJgggs='))
 			Split-Path $script:MyInvocation.MyCommand.Path
 		}
 	}
-	
-	# Set Temp & Log Location	
+
+	# Set Temp & Log Location
 	[string]$global:TempDirectory = Join-Path $(Get-ScriptDirectory) -ChildPath "Temp"
 	[string]$global:LogDirectory = Join-Path $(Get-ScriptDirectory) -ChildPath "Logs"
 	[string]$global:SettingsDirectory = Join-Path $(Get-ScriptDirectory) -ChildPath "Settings"
-	
+
 	# Logging Function
 	function global:Write-LogEntry {
 		param
@@ -13433,55 +13433,55 @@ AABJRU5ErkJgggs='))
 			[Parameter(HelpMessage = 'Variable for skipping verbose output to the output window')]
 			[switch]$WriteOutput
 		)
-		
+
 		# Determine log file location
 		$global:LogFilePath = Join-Path -Path $global:LogDirectory -ChildPath $FileName
-		
+
 		# Construct time stamp for log entry
 		$Time = -join @((Get-Date -Format "HH:mm:ss.fff"), " ", (Get-WmiObject -Class Win32_TimeZone | Select-Object -ExpandProperty Bias))
-		
+
 		# Construct date for log entry
 		$Date = (Get-Date -Format "MM-dd-yyyy")
-		
+
 		# Construct context for log entry
 		$Context = $([System.Security.Principal.WindowsIdentity]::GetCurrent().Name)
-		
+
 		# Construct final log entry
 		$LogText = "<![LOG[$($Value)]LOG]!><time=""$($Time)"" date=""$($Date)"" component=""DriverAutomationTool"" context=""$($Context)"" type=""$($Severity)"" thread=""$($PID)"" file="""">"
-		
+
 		# Add value to log file
 		try {
 			Out-File -InputObject $LogText -Append -NoClobber -Encoding Default -FilePath $global:LogFilePath -ErrorAction Stop
 		} catch [System.Exception] {
 			Write-Warning -Message "Unable to append log entry to DriverAutomationTool.log file. Error message: $($_.Exception.Message)"
 		}
-		
-		# GUI Logging Section	
+
+		# GUI Logging Section
 		if ($SkipGuiLog -ne $true) {
 			# Set Error GUI Log Window Colour
 			if ($Severity -ne "1") {
 				$ErrorsOccurred.Forecolor = "Maroon"
 				$ErrorsOccurred.Text = "Yes"
 			}
-			
+
 			# Add GUI Log Window Section Block
 			if ($Value -like "*==*==*") {
 				$ProgressListBox.Items.Add(" ")
 			}
-			
+
 			# Update GUI Log Window
 			$ProgressListBox.Items.Add("$Value")
 			$ProgressListBox.SelectedIndex = $ProgressListBox.Items.Count - 1;
 			$ProgressListBox.SelectedIndex = -1;
 		}
-		
+
 		# Write output section
 		if ($WriteOutput) {
 			# Stream to output window
 			Write-Host "$Value"
 		}
 	}
-	
+
 	function global:Write-ErrorOutput {
 		param
 		(
@@ -13490,7 +13490,7 @@ AABJRU5ErkJgggs='))
 			[parameter(Mandatory = $true)]
 			[int]$Severity
 		)
-		
+
 		global:Write-LogEntry -Value "======== Errors(s) Occurred ========" -Severity $Severity
 		global:Write-LogEntry -Value $Message -Severity $Severity
 		global:Write-LogEntry -Value " " -Severity $Severity
@@ -13499,8 +13499,8 @@ AABJRU5ErkJgggs='))
 		$ErrorsOccurred.Text = "Yes"
 		$SelectionTabs.SelectedTab = $LogTab
 	}
-	
-	
+
+
 	# OEM Links Master File
 	try {
 		$OEMXMLPath = (Join-Path $global:SettingsDirectory -ChildPath "OEMLinks.xml")
@@ -13521,9 +13521,9 @@ AABJRU5ErkJgggs='))
 	} catch {
 		global:Write-ErrorOutput -Message "[Error] - $($_.Exception.Message)" -Severity 3
 	}
-	
+
 	# // =================== DELL Variables ================ //
-	
+
 	# Define Dell Download Sources
 	$DellDownloadList = ($OEMLinks.OEM.Manufacturer | Where-Object {
 			$_.Name -match "Dell"
@@ -13550,7 +13550,7 @@ AABJRU5ErkJgggs='))
 		}).Link | Where-Object {
 		$_.Type -eq "BIOSUtility"
 	} | Select-Object -ExpandProperty URL
-	
+
 	# Define Dell Download Sources
 	$DellXMLCabinetSource = ($OEMLinks.OEM.Manufacturer | Where-Object {
 			$_.Name -match "Dell"
@@ -13562,7 +13562,7 @@ AABJRU5ErkJgggs='))
 		}).Link | Where-Object {
 		$_.Type -eq "CatalogSource"
 	} | Select-Object -ExpandProperty URL
-	
+
 	# Define Dell Cabinet/XL Names and Paths
 	$DellCabFile = [string]($DellXMLCabinetSource | Split-Path -Leaf)
 	$DellCatalogFile = [string]($DellCatalogSource | Split-Path -Leaf)
@@ -13570,14 +13570,14 @@ AABJRU5ErkJgggs='))
 	$DellXMLFile = $DellXMLFile + ".xml"
 	$DellCatalogXMLFile = $DellCatalogFile.TrimEnd(".cab") + ".xml"
 	$DellFlashExtracted = $false
-	
+
 	# Define Dell Global Variables
 	New-Variable -Name "DellCatalogXML" -Value $null -Scope Global
 	New-Variable -Name "DellModelXML" -Value $null -Scope Global
 	New-Variable -Name "DellModelCabFiles" -Value $null -Scope Global
-	
+
 	# // =================== HP VARIABLES ================ //
-	
+
 	# Define HP Download Sources
 	$HPXMLCabinetSource = ($OEMLinks.OEM.Manufacturer | Where-Object {
 			$_.Name -match "HP"
@@ -13599,7 +13599,7 @@ AABJRU5ErkJgggs='))
 		}).Link | Where-Object {
 		$_.Type -eq "SoftPaqCab"
 	} | Select-Object -ExpandProperty URL
-	
+
 	# Define HP Cabinet/XL Names and Paths
 	$HPCabFile = [string]($HPXMLCabinetSource | Split-Path -Leaf)
 	$HPXMLFile = $HPCabFile.TrimEnd(".cab")
@@ -13608,21 +13608,21 @@ AABJRU5ErkJgggs='))
 	$HPPlatformXMLFile = $HPPlatformCabFile.TrimEnd(".cab") + ".xml"
 	$HPSoftPaqCabFile = [string]($HPSoftPaqCab | Split-Path -Leaf)
 	$HPSoftPaqXMLFile = $HPSoftPaqCabFile.Replace(".latest.cab", ".xml")
-	
+
 	# Define HP Global Variables
 	New-Variable -Name "HPModelSoftPaqs" -Value $null -Scope Global
 	New-Variable -Name "HPModelXML" -Value $null -Scope Global
 	New-Variable -Name "HPPlatformXML" -Value $null -Scope Global
 	New-Variable -Name "HPSoftPaqXML" -Value $null -Scope Global
 	New-Variable -Name "HPSoftPaqList" -Value $null -Scope Global
-	
+
 	# HP Softpaq Downloads Hashtable
 	$global:HPSoftPaqDownloads = @{
 	}
-	
-	
+
+
 	# // =================== LENOVO VARIABLES ================ //
-	
+
 	# Define Lenovo Download Sources
 	$LenovoXMLSource = ($OEMLinks.OEM.Manufacturer | Where-Object {
 			$_.Name -match "Lenovo"
@@ -13637,13 +13637,13 @@ AABJRU5ErkJgggs='))
 	$LenovoXMLCabFile = $LenovoXMLSource | Split-Path -Leaf
 	$LenovoXMLFile = [string]($LenovoXMLSource | Split-Path -Leaf)
 	#$LenovoBIOSBase = "https://download.lenovo.com/catalog/"
-	
+
 	# Define Lenovo Global Variables
 	New-Variable -Name "LenovoModelDrivers" -Value $null -Scope Global
 	New-Variable -Name "LenovoModelXML" -Value $null -Scope Global
 	New-Variable -Name "LenovoModelType" -Value $null -Scope Global
 	New-Variable -Name "LenovoSystemSKU" -Value $null -Scope Global
-	
+
 	# // =================== MICROSOFT VARIABLES ================ //
 	# Define Microsoft Download Sources
 	$MicrosoftJSONSource = ($OEMLinks.OEM.Manufacturer | Where-Object {
@@ -13661,7 +13661,7 @@ AABJRU5ErkJgggs='))
 		}).Link | Where-Object {
 		$_.Type -eq "SurfaceDriverSupportURL"
 	} | Select-Object -ExpandProperty URL
-	
+
 	# // =================== COMMON VARIABLES ================ //
 	# ArrayList to store models in
 	$DellProducts = New-Object -TypeName System.Collections.ArrayList
@@ -13678,27 +13678,27 @@ AABJRU5ErkJgggs='))
 	$DriverAutomationSummaryLog = $(Join-Path -Path $global:LogDirectory -ChildPath "JobSummary.csv")
 	New-Variable -Name "PreviousDownload" -Value $null -Scope Global
 	New-Variable -Name "SystemSKU" -Value $null -Scope Global
-	
+
 	# MDT PS Commandlets
 	$MDTPSCommandlets = "C:\Program Files\Microsoft Deployment Toolkit\bin\MicrosoftDeploymentToolkit.psd1"
-	
+
 	# MDT Deployment Share Array
 	$MDTDeploymentShareNames = New-Object System.Collections.Generic.List[System.Object]
 	$ExportMDTShareNames = New-Object System.Collections.Generic.List[System.Object]
 	New-Variable -Name "MDTValidation" -Value $null -Scope Global
-	
+
 	# Establish Registry Settings
 	$global:RegistryPath = "HKLM:\SOFTWARE\MSEndpointMgr\DriverAutomationTool"
-	
+
 	#endregion GlobalVariables
-	
+
 	function Import-PSModules {
 		param
 		(
 			[parameter(Mandatory = $true)]
 			[string]$ModuleName
 		)
-		
+
 		if ($ModuleName -in $AvailableModules.Name) {
 			Write-LogEntry -Value "Importing modile $ModuleName.." -SkipGuiLog $true -Severity 1
 			Import-Module -Name $ModuleName
@@ -13706,7 +13706,7 @@ AABJRU5ErkJgggs='))
 			Write-LogEntry -Value "Unable to import/find $ModuleName. Please install the required module." -Severity 2
 		}
 	}
-	
+
 	function Set-Manufacturer {
 		param (
 			[parameter(Mandatory = $true, HelpMessage = "Provide the manufacturer name.")]
@@ -13726,7 +13726,7 @@ AABJRU5ErkJgggs='))
 		}
 		Return $Make
 	}
-	
+
 	function Set-AzureSubscriptionValue {
 		$AzureSubscriptions = Get-AzSubscription -WarningAction SilentlyContinue | Select-Object -ExpandProperty Name
 		$SubscriptionCombo.Items.Clear()
@@ -13738,17 +13738,17 @@ AABJRU5ErkJgggs='))
 		}
 		$SubscriptionCombo.SelectedIndex = 0
 	}
-	
+
 	function Set-AzureContext {
 		Write-LogEntry -Value "- Setting Azure subscription" -Severity 1 -WriteOutput
 		$SelectedSubscription = Get-AzSubscription | Where-Object {
 			$_.Name -eq $SubscriptionCombo.Text
 		}
 		Write-LogEntry -Value "- Selecting AZ Context" -Severity 1 -WriteOutput
-		
+
 		Set-AzContext -Subscription $SelectedSubscription.Id
 	}
-	
+
 	function Set-AzureContextDisplay {
 		if ((Test-Path -Path $global:RegistryPath) -eq $true) {
 			Write-LogEntry -Value "[Azure Registy Settings Detected]" -Severity 1 -WriteOutput
@@ -13760,31 +13760,31 @@ AABJRU5ErkJgggs='))
 			$BCTenantIDDetails.Text = $DATIntuneRegValues.TenantID
 			$BCStorageLocationDetails.Text = $DATIntuneRegValues.StorageLocation
 			$BCStorageURLDetails.Text = $DATIntuneRegValues.StorageURL
-			
+
 		}
 	}
-	
+
 	function Enable-AzureStorageOptions {
-		
+
 		$SubscriptionCombo.Enabled = $true
 		$ResourceGroupCombo.Enabled = $true
 		$LocationCombo.Enabled = $true
 		$StorageLocationInput.Enabled = $true
-		
+
 		# Clear Fields
 		$SubscriptionCombo.Text = $null
 		$ResourceGroupCombo.Text = $null
 		$LocationCombo.Text = $null
 		$StorageLocationInput.Text = $null
-		
+
 		Write-LogEntry -Value "- Setting subscription values" -Severity 1 -WriteOutput
 		Set-AzureSubscriptionValue
 	}
-	
+
 	function Get-AzureStorageInfo {
-		
+
 		Set-Location -Path $Global:TempDirectory
-		
+
 		# Get Back from Registry and decrypt storage account key
 		$SecureKeyFromRegistry = Get-ItemPropertyValue -Path $global:RegistryPath -Name "key"
 		global:Write-LogEntry -Value "BETA: Registry path is $global:RegistryPath" -Severity 1
@@ -13796,19 +13796,19 @@ AABJRU5ErkJgggs='))
 		global:Write-LogEntry -Value "BETA: Registry path is $secureDecryptedPassword" -Severity 1
 		$containername = Get-ItemPropertyValue -Path $global:RegistryPath -Name "ContainerName"
 		global:Write-LogEntry -Value "BETA: Registry path is $containername" -Severity 1
-		
-		# Decrypt 
+
+		# Decrypt
 		$BSTR1 = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($secureDecryptedPassword)
 		$CurrentStorageAccountKey = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR1)
-		
+
 		# Set Azure Storage Context
 		$StorageContext = New-AzStorageContext -StorageAccountName $StorageAccountName -StorageAccountKey $CurrentStorageAccountKey
 	}
-	
+
 	function Set-ConfigMgrFolder {
-		
-		# Function used to set location of driver and BIOS packages within the SCCM package folder hierarchy 
-		
+
+		# Function used to set location of driver and BIOS packages within the SCCM package folder hierarchy
+
 		Set-Location -Path ($SiteCode + ":")
 		if ($PackageRoot.Checked -eq $true) {
 			$global:VendorBIOSFolder = ($SiteCode + ":" + "\Package")
@@ -13855,7 +13855,7 @@ AABJRU5ErkJgggs='))
 		}
 		Set-Location -Path $Global:TempDirectory
 	}
-	
+
 	function Get-SiteCode ($SiteServer) {
 		try {
 			$SiteCodeObjects = Get-WmiObject -ComputerName $SiteServer -Namespace "root\SMS" -Class SMS_ProviderLocation -ErrorAction Stop
@@ -13874,11 +13874,11 @@ AABJRU5ErkJgggs='))
 			}
 		}
 	}
-	
+
 	function Set-CompatibilityOptions {
 		if ($DownloadComboBox.Text -eq "BIOS") {
 			$PackagePathTextBox.Enabled = $false
-			
+
 			# Condition based on Lenovo products being enabled
 			if ($global:LenovoDisable -eq $false) {
 				$LenovoCheckBox.Enabled = $true
@@ -13906,30 +13906,30 @@ AABJRU5ErkJgggs='))
 			}
 		}
 	}
-	
+
 	function Confirm-OSCompatibility {
 		if ((-not ([string]::IsNullOrEmpty($OSComboBox.Text))) -and (-not ([string]::IsNullOrEmpty($ArchitectureComboxBox.Text)))) {
 			Update-OSModelSuppport
 		}
-		
+
 		#Set-CompatibilityOptions
-		
+
 		if ($FindModelsButton.Enabled -eq $true) {
 			Find-AvailableModels
 			[int]$ModelCount = $MakeModelDataGrid.Rows.Count
 		}
 	}
-	
+
 	function Update-ModeList {
 		param (
 			[string]$SiteServer,
 			[string]$SiteCode
 		)
-		
+
 		# Validate all selections are made prior to starting model query
 		if (((-not ([string]::IsNullOrEmpty($PlatformComboBox.Text))) -and (-not ([string]::IsNullOrEmpty($OSComboBox.Text))) -and (-not ([string]::IsNullOrEmpty($DownloadComboBox.Text))) -and (-not ([string]::IsNullOrEmpty($ArchitectureComboxBox.Text)))) -eq $true) {
 			global:Write-LogEntry -Value "======== Querying Model List(s) ========" -Severity 1
-			
+
 			# Reset Product Listbox
 			$HPCatalogModels.Items.Clear()
 			$HPCatalogModels.Items.Add("All Generic Downloads")
@@ -13941,8 +13941,8 @@ AABJRU5ErkJgggs='))
 			$XMLLoadingLabel.Visible = $true
 			Set-Location -Path $Global:TempDirectory
 			Start-Sleep -Seconds 2
-			
-			# Set variable for WMI known models for ConfigMgr 
+
+			# Set variable for WMI known models for ConfigMgr
 			if (($SiteCode -ne "N/A") -and (-not ([string]::IsNullOrEmpty($SiteCode))) -and ($ConfigMgrImport.text -eq "yes") -and ($PlatformComboBox.Text -match "ConfigMgr")) {
 				$QueryKnownModels = $true
 			} elseif ($IntuneKnownModels.SelectedItem -match "Yes") {
@@ -13950,7 +13950,7 @@ AABJRU5ErkJgggs='))
 			} else {
 				$QueryKnownModels = $false
 			}
-			
+
 			if ($HPCheckBox.Checked -eq $true) {
 				$HPProducts.Clear()
 				$HPSoftpaqDataGrid.ClearSelection()
@@ -13975,7 +13975,7 @@ AABJRU5ErkJgggs='))
 						global:Write-ErrorOutput -Message "[Error] - $($_.Exception.Message)" -Severity 3
 					}
 				}
-				
+
 				# Read XML File
 				if ($global:HPModelSoftPaqs -eq $null) {
 					$XMLDownloadStatus.Text = "Reading HP XML file"
@@ -13985,7 +13985,7 @@ AABJRU5ErkJgggs='))
 					$global:HPModelXML.GetType().FullName
 					$global:HPModelSoftPaqs = $HPModelXML.NewDataSet.HPClientDriverPackCatalog.ProductOSDriverPackList.ProductOSDriverPack
 				}
-				
+
 				if ((Test-Path -Path $(Join-Path -Path $global:TempDirectory -ChildPath $HPSoftPaqXMLFile)) -eq $false) {
 					try {
 						$XMLDownloadStatus.Text = "Downloading HP Softpaq cabinet file"
@@ -14010,26 +14010,26 @@ AABJRU5ErkJgggs='))
 						global:Write-ErrorOutput -Message "[Error] - $($_.Exception.Message)" -Severity 3
 					}
 				}
-				
+
 				# Read SoftPaq XML File
 				if ((Test-Path -Path $(Join-Path $global:TempDirectory -ChildPath $HPSoftPaqXMLFile)) -eq $true) {
 					try {
-						
+
 						if ([string]::IsNullOrEmpty($global:HPSoftPaqXML)) {
-							
+
 							$XMLDownloadStatus.Text = "Reading HP SoftPaq XML"
 							global:Write-LogEntry -Value "- Reading softpaq XML file - $global:TempDirectory\$HPSoftPaqXMLFile" -Severity 1
 							[xml]$global:HPSoftPaqXML = Get-Content -Path $(Join-Path -Path $global:TempDirectory -ChildPath $HPSoftPaqXMLFile) -Raw
-							
+
 							# HP Version Swtich
 							switch -wildcard ($OSComboBox.Text) {
 								"Windows 10*" {
 									$OSRelease = [version]"10.0"
 								}
 							}
-							
+
 							$XMLDownloadStatus.Text = "Parsing Downloaded HP SoftPaq XML"
-							
+
 							# Set XML Object
 							$global:HPSoftPaqXML.GetType().FullName
 							$global:HPSoftPaqList = $global:HPSoftPaqXML.SystemsManagementCatalog.SoftwareDistributionPackage | Where-Object {
@@ -14039,7 +14039,7 @@ AABJRU5ErkJgggs='))
 								$_.Properties.PublicationState -ne "Expired"
 							}
 						}
-						
+
 						# Enable HP SoftPaq Views & Buttons
 						$ResetSoftPaqSelection.enabled = $true
 						$FindSoftPaq.enabled = $true
@@ -14049,7 +14049,7 @@ AABJRU5ErkJgggs='))
 						$DownloadSoftPaqs.Enabled = $true
 						$RefreshSoftPaqSelection.Enabled = $true
 						$SelectAllSoftPaqs.Enabled = $true
-						
+
 					} catch {
 						global:Write-ErrorOutput -Message "[Error] - $($_.Exception.Message)" -Severity 3
 					}
@@ -14057,7 +14057,7 @@ AABJRU5ErkJgggs='))
 					# XML Download Failure
 					global:Write-LogEntry -Value "Warning: Failed to find HP XML file: $HPSoftPaqCabFile" -Severity 2
 				}
-				
+
 				# Find Models Contained Within Downloaded XML
 				if ($OSComboBox.Text -match "Windows 10|Windows 11") {
 					# Windows 10 build query
@@ -14072,7 +14072,7 @@ AABJRU5ErkJgggs='))
 						($_.OSName -like "Windows*$(($OSComboBox.Text).split(' ')[1])*$(($ArchitectureComboxBox.Text).Split(' ')[0])*")
 					} | Select-Object SystemName, SystemID
 				}
-				
+
 				if ($HPModels -ne $null) {
 					$XMLDownloadStatus.Text = "Adding $($HPModels.Count) HP models"
 					foreach ($Model in $HPModels.SystemName) {
@@ -14089,14 +14089,14 @@ AABJRU5ErkJgggs='))
 					$StartDownloadButton.Enabled = $true
 				}
 				$HPProducts = $HPProducts | Sort-Object
-				
+
 				if ($HPModels -ne $null) {
 					foreach ($HPModel in $HPModels) {
 						$MakeModelDataGrid.Rows.Add($false, "HP", $($HPModel.SystemName).TrimStart("HP").Trim(), $OSComboBox.Text, $ArchitectureComboxBox.Text, $null, $null, $HPModel.SystemID)
 						$HPCatalogModels.Items.Add($($HPModel.SystemName).TrimStart("HP").Trim())
 					}
 				}
-				
+
 				# Add Known HP Models
 				if ($QueryKnownModels -eq $true) {
 					if (-not ([string]::IsNullOrEmpty($SiteServer))) {
@@ -14149,7 +14149,7 @@ AABJRU5ErkJgggs='))
 			}
 			if ($DellCheckBox.Checked -eq $true) {
 				$DellProducts.Clear()
-				
+
 				if ((Test-Path -Path $global:TempDirectory\$DellCabFile) -eq $false) {
 					$XMLDownloadStatus.Text = "Downloading Dell cabinet file"
 					global:Write-LogEntry -Value "- Downloading Dell product cabinet file from $DellXMLCabinetSource" -Severity 1
@@ -14225,7 +14225,7 @@ AABJRU5ErkJgggs='))
 						$DellKnownModels = Get-WmiObject -ComputerName $SiteServer -Namespace "root\SMS\site_$SiteCode" -Query "Select Distinct Manufacturer, Model from SMS_G_System_COMPUTER_SYSTEM Where Manufacturer = 'Dell Inc.' and  (Model like '%Optiplex%' or Model like '%Latitude%' or Model like '%Precision%' or Model like '%XPS%')" | Select-Object -Property Manufacturer, Model | Sort-Object Model | Get-Unique -AsString
 						$DellKnownBaseBoardValues = (Get-WmiObject -ComputerName $SiteServer -Namespace "root\SMS\site_$SiteCode" -Query "Select Distinct SystemSKU from SMS_G_System_MS_SystemInformation Where BaseBoardManufacturer = 'Dell Inc.'" -ErrorAction SilentlyContinue | Select-Object -ExpandProperty SystemSKU) | Sort-Object | Get-Unique -AsString
 					}
-					
+
 					# Add model to ArrayList if not present
 					if ($DellKnownModels.Count -gt 0) {
 						foreach ($DellKnownModel in $DellKnownModels.Model) {
@@ -14277,7 +14277,7 @@ AABJRU5ErkJgggs='))
 							$OSSelected = "Win11"
 							$OSBuild = $($OSComboBox.Text).TrimStart("Windows 11").Trim()
 						}
-											
+
 						if (-not ([string]::IsNullOrEmpty($OSBuild))) {
 							$LenovoModels = ($global:LenovoModelDrivers | Where-Object {
 									($_.SCCM.Version -eq $OSBuild -and $_.SCCM.OS -eq $OSSelected)
@@ -14294,7 +14294,7 @@ AABJRU5ErkJgggs='))
 							} | Sort-Object).Name
 					}
 				}
-				
+
 				if ($LenovoModels -ne $null) {
 					$XMLDownloadStatus.Text = "Adding $($LenovoModels.Count) Lenovo models"
 					foreach ($Model in $LenovoModels) {
@@ -14302,7 +14302,7 @@ AABJRU5ErkJgggs='))
 						$LenovoModelTypes = ($global:LenovoModelDrivers | Where-Object {
 								$_.Name -eq $Model
 							}).Types.Type
-						
+
 						if ($Model -notin $LenovoProducts) {
 							$LenovoProducts.Add($Model) | Out-Null
 						}
@@ -14366,10 +14366,10 @@ AABJRU5ErkJgggs='))
 				}
 				# Read Web Site
 				global:Write-LogEntry -Value "- Reading Driver Pack URL - $MicrosoftJSONSource" -Severity 1
-				
+
 				$global:MicrosoftModelList = $MicrosoftJsonDetails | ConvertFrom-Json
 				#$MicrosoftModels = $MicrosoftModelList | Select-Object Model, Product -Unique
-				
+
 				# Find Models Contained Within JSON
 				switch -wildcard ($OSComboBox.Text) {
 					"Windows 1*" {
@@ -14382,16 +14382,16 @@ AABJRU5ErkJgggs='))
 						}
 					}
 				}
-				
+
 				$OSBuild = ($WindowsBuildHashTable.Item("$OSBuild")).Split(".")[2]
 				global:Write-LogEntry -Value "- Filtering models based on $OSSelected build $OSBuild" -Severity 1
-				
+
 				if (-not ([string]::IsNullOrEmpty($OSSelected))) {
 					$MicrosoftModels = ($global:MicrosoftModelList | Where-Object {
 							($_.OSVersion -match $OSSelected -and $_.FileName -match $OSBuild)
 						} | Select-Object Model, Product -Unique)
 				}
-				
+
 				if ($MicrosoftModels.Count -gt 0) {
 					foreach ($MicrosoftModel in $MicrosoftModels) {
 						$MakeModelDataGrid.Rows.Add($false, "Microsoft", $MicrosoftModel.Product, $OSComboBox.Text, $ArchitectureComboxBox.Text)
@@ -14402,7 +14402,7 @@ AABJRU5ErkJgggs='))
 				if (-not ([string]::IsNullOrEmpty($SiteServer))) {
 					if ([boolean](Get-WmiObject -ComputerName $SiteServer -Namespace "root\SMS\site_$SiteCode" -Class SMS_G_System_MS_SYSTEMINFORMATION -ErrorAction SilentlyContinue) -eq $true) {
 						$MicrosoftKnownModels = (Get-WmiObject -ComputerName $SiteServer -Namespace "root\SMS\site_$SiteCode" -Query "Select Distinct SystemManufacturer, SystemProductName, SystemSKU from SMS_G_System_MS_SYSTEMINFORMATION Where (SystemManufacturer like 'Microsoft%') and (SystemProductName like 'Surface%')" | Select-Object -Property SystemManufacturer, SystemProductName, SystemSKU | Get-Unique -AsString) | Sort-Object
-						
+
 						if (($MicrosoftModels).Count -gt 0) {
 							if ($MicrosoftKnownModels.Count -gt 0) {
 								foreach ($Model in $MicrosoftKnownModels) {
@@ -14424,9 +14424,9 @@ AABJRU5ErkJgggs='))
 					}
 				}
 			}
-			
+
 			Start-Sleep -Seconds 1
-			
+
 			if ($QueryKnownModels -eq $true -or $XMLSelectedModels -gt $null) {
 				# Select models known in WMI
 				if ($QueryKnownModels -eq $true) {
@@ -14444,7 +14444,7 @@ AABJRU5ErkJgggs='))
 						Select-KnownModels -SearchMake "Microsoft"
 					}
 				}
-				
+
 				# Select previously selected models
 				if ($XMLSelectedModels -gt $null) {
 					global:Write-LogEntry -Value "======== Selecting Previously Selected Models ========" -Severity 1
@@ -14461,11 +14461,11 @@ AABJRU5ErkJgggs='))
 						}
 					}
 				}
-				
+
 				# Sort datagrid
 				$MakeModelDataGrid.Sort($MakeModelDataGrid.Columns[0], [System.ComponentModel.ListSortDirection]::Descending)
 			}
-			
+
 			if ($MakeModelDataGrid.Rows.Count -gt 0) {
 				# Hide notification panel
 				$XMLLoading.Visible = $false
@@ -14474,7 +14474,7 @@ AABJRU5ErkJgggs='))
 			} else {
 				$XMLDownloadStatus.Text = "No matches found. Please try another OS/build"
 			}
-			
+
 			# Enable find model and search button
 			if ($($MakeModelDataGrid.Rows.Count) -gt 0) {
 				$FindModel.Enabled = $true
@@ -14488,14 +14488,14 @@ AABJRU5ErkJgggs='))
 			}
 		}
 	}
-	
+
 	function Find-MicrosoftDriver {
 		param (
 			[parameter(Mandatory = $true, HelpMessage = "Provide the model to find drivers for")]
 			[ValidateNotNullOrEmpty()]
 			[string]$MSProductName
 		)
-		
+
 		# Find Models Contained Within JSON
 		switch -wildcard ($OSComboBox.Text) {
 			"Windows 1*" {
@@ -14513,20 +14513,20 @@ AABJRU5ErkJgggs='))
 				$_.Product -eq $MSProductName -and $_.FileName -match $OSBuild -and $_.OSVersion -match $OSSelected
 			}) | Select-Object -ExpandProperty Url
 		global:Write-LogEntry -Value "- URL is $MicrosoftDownloadURL" -Severity 1 -SkipGuiLog $false
-		
+
 		if ([string]::IsNullOrEmpty($MicrosoftDownloadURL)) {
 			return "BadLink"
 		} else {
 			Return "$MicrosoftDownloadURL"
 		}
 	}
-	
+
 	function Get-RedirectedUrl {
 		Param (
 			[Parameter(Mandatory = $true)]
 			[String]$URL
 		)
-		
+
 		$Request = [System.Net.WebRequest]::Create($URL)
 		$Request.AllowAutoRedirect = $false
 		$Request.Timeout = 10000
@@ -14535,10 +14535,10 @@ AABJRU5ErkJgggs='))
 			[string]$ReturnedURL = $Response.GetResponseHeader("Location")
 		}
 		$Response.Close()
-		
+
 		Return $ReturnedURL
 	}
-	
+
 	function Get-DPOptions {
 		global:Write-LogEntry -Value "======== Querying ConfigMgr Distribution Options ========" -Severity 1
 		Set-Location -Path ($SiteCode + ":")
@@ -14574,7 +14574,7 @@ AABJRU5ErkJgggs='))
 		}
 		Set-Location -Path $global:TempDirectory
 	}
-	
+
 	function Set-ConfigMgrOptions {
 		param
 		(
@@ -14604,19 +14604,19 @@ AABJRU5ErkJgggs='))
 		$CreateFallbackButton.Enabled = $OptionsEnabled
 		$PackageCompressionCheckBox.Enabled = $OptionsEnabled
 		$CreateXMLLogicPackage.Enabled = $OptionsEnabled
-		
+
 		if (($PlatformComboBox.SelectedItem -match "ConfigMgr") -and (-not ([string]::IsNullOrEmpty($SiteServerInput.Text))) -and ($global:ConfigMgrValidation -ne $true)) {
 			Connect-ConfigMgr
 		}
 	}
-	
+
 	function Set-MDTOptions {
 		param
 		(
 			[parameter(Mandatory = $true)]
 			[Boolean]$OptionsEnabled
 		)
-		
+
 		if ($OptionsEnabled -eq $true) {
 			global:Write-LogEntry -Value "- Enabling MDT Options" -Severity 1
 		} else {
@@ -14629,7 +14629,7 @@ AABJRU5ErkJgggs='))
 		$ImportMDTPSButton.Enabled = $OptionsEnabled
 		$SpecifyCustomPath.Enabled = $false
 	}
-	
+
 	function Distribute-Content {
 		param
 		(
@@ -14637,7 +14637,7 @@ AABJRU5ErkJgggs='))
 			[string]$Product,
 			[string]$PackageID,
 			[string]$ImportInto
-			
+
 		)
 		# Distribute Content - Selected Distribution Points
 		for ($Row = 0; $Row -lt $DPGridView.RowCount; $Row++) {
@@ -14664,12 +14664,12 @@ AABJRU5ErkJgggs='))
 			}
 		}
 	}
-	
+
 	function Connect-ConfigMgr {
 		# Set Site Server Value
 		$SiteServer = $SiteServerInput.Text
 		if (-not ([string]::IsNullOrEmpty($SiteServer))) {
-			
+
 			try {
 				switch ($WinRMOverSSLCheckbox.Checked) {
 					$true {
@@ -14695,7 +14695,7 @@ AABJRU5ErkJgggs='))
 				}
 				global:Write-LogEntry -Value "WinRM connection established" -Severity 1
 			}
-			
+
 			if ($ConfigMgrDiscovery -ne $null) {
 				$ProgressListBox.ForeColor = "Black"
 				try {
@@ -14724,12 +14724,12 @@ AABJRU5ErkJgggs='))
 			global:Write-ErrorOutput -Message "[Error] - ConfigMgr site server not specified. Please review in the common settings tab." -Severity 3
 		}
 	}
-	
+
 	function Find-DellBIOS {
 		param (
 			[string]$SKU
 		)
-		
+
 		if ((Test-Path -Path $global:TempDirectory\$DellCatalogXMLFile) -eq $false) {
 			global:Write-LogEntry -Value "======== Downloading Dell XML Catalog  ========" -Severity 1
 			global:Write-LogEntry -Value "- Downloading Dell XML catalog cabinet file from $DellCatalogSource" -Severity 1
@@ -14774,7 +14774,7 @@ AABJRU5ErkJgggs='))
 			}
 			if (($DellBIOSFile -eq $null) -or (($DellBIOSFile).Count -gt 1)) {
 				global:Write-LogEntry -Value "- Attempting to find BIOS link" -Severity 1
-				# Attempt to find BIOS link		
+				# Attempt to find BIOS link
 				if ($Model -match "AIO") {
 					$DellBIOSFile = $DellBIOSFile | Where-Object {
 						$_.SupportedSystems.Brand.Model.Display.'#cdata-section' -match "AIO"
@@ -14802,7 +14802,7 @@ AABJRU5ErkJgggs='))
 			Return "Badlink"
 		}
 	}
-	
+
 	function Find-HPBIOS {
 		param (
 			[string]$Model,
@@ -14810,13 +14810,13 @@ AABJRU5ErkJgggs='))
 			[string]$Architecture,
 			[string]$SKUValue
 		)
-		
+
 		global:Write-LogEntry -Value "- Checking for existing HP cabinet file $HPPlatformCabFile" -Severity 1
 		if ((Test-Path -Path $(Join-Path -Path $global:TempDirectory -ChildPath $HPPlatformCabFile)) -eq $false) {
 			try {
 				Set-Location -Path $global:TempDirectory
 				# Download HP Model Details XML
-				
+
 				global:Write-LogEntry -Value "- Downloading HP XML from $HPPlatFormList" -Severity 1
 				if ($global:ProxySettingsSet -eq $true) {
 					Start-BitsTransfer -Source $HPPlatFormList -Destination $global:TempDirectory @global:BitsProxyOptions
@@ -14912,12 +14912,12 @@ AABJRU5ErkJgggs='))
 					}
 					$HPCabFile = $HPXMLCabinetSource | Split-Path -Leaf
 					$HPXMLFile = $HPCabFile.Replace(".cab", ".xml")
-					
+
 					if ((Test-Path -Path $(Join-Path -Path $global:TempDirectory -ChildPath $HPCabFile)) -eq $true) {
 						# Expand Cabinet File
 						global:Write-LogEntry -Value "- Expanding HP SoftPaq cabinet file: $HPCabFile" -Severity 1
 						Expand "$global:TempDirectory\$HPCabFile" -F:* "$global:TempDirectory" -R | Out-Null
-						
+
 						# Read HP Model XML
 						global:Write-LogEntry -Value "- Reading model XML $HPXMLFile" -Severity 1
 						[xml]$HPSoftPaqDetails = Get-Content -Path $(Join-Path -Path $global:TempDirectory -ChildPath $HPXMLFile) -Raw
@@ -14935,7 +14935,7 @@ AABJRU5ErkJgggs='))
 			}
 		}
 	}
-	
+
 	function Invoke-HPSoftPaqExpand {
 		param
 		(
@@ -14943,11 +14943,11 @@ AABJRU5ErkJgggs='))
 			[ValidateSet("BIOS", "Drivers")]
 			[string]$SoftPaqType
 		)
-		
+
 		# HP Temp directory
 		$HPTemp = $global:TempDirectory + "\" + $Model + "\Win" + $WindowsVersion + $Architecture
 		$HPTemp = $HPTemp -replace '/', '-'
-		
+
 		switch ($SoftPaqType) {
 			"BIOS" {
 				Unblock-File -Path $HPBIOSSource
@@ -15015,7 +15015,7 @@ AABJRU5ErkJgggs='))
 					Start-Process -FilePath "$($DownloadRoot + $Model + '\Driver Cab\' + $DriverCab)" -ArgumentList $HPFallBackSilentSwitches -Verb RunAs
 					$DriverProcess = ($DriverCab).Substring(0, $DriverCab.length - 4)
 				}
-				# Move HP Extracted Drivers To UNC Share 
+				# Move HP Extracted Drivers To UNC Share
 				# Loop through the HP extracted driver folders to find the extracted folders and reduce directory path
 				while ($HPExtract.Count -eq 1) {
 					$HPExtract = Get-ChildItem -Path $HPExtract.FullName -Directory
@@ -15035,7 +15035,7 @@ AABJRU5ErkJgggs='))
 			}
 		}
 	}
-	
+
 	function Find-LenovoModelType {
 		param (
 			[parameter(Mandatory = $false, HelpMessage = "Enter Lenovo model to query")]
@@ -15045,7 +15045,7 @@ AABJRU5ErkJgggs='))
 			[parameter(Mandatory = $false, HelpMessage = "Enter Lenovo model type to query")]
 			[string]$ModelType
 		)
-		
+
 		if ($ModelType.Length -gt 0) {
 			$global:LenovoModelType = $global:LenovoModelDrivers | Where-Object {
 				$_.Types.Type -match $ModelType
@@ -15055,22 +15055,22 @@ AABJRU5ErkJgggs='))
 			$global:LenovoModelType = ($global:LenovoModelDrivers | Where-Object {
 					$_.Name -eq $Model
 				}).Types.Type
-			
+
 		}
 		$global:SkuValue = $global:LenovoModelType
 		Return $global:LenovoModelType
 	}
-	
+
 	function Find-LenovoBIOS {
 		param (
 			[Parameter(Mandatory = $true)]
 			[string]$ModelType
 		)
-		
+
 		Set-Location -Path $global:TempDirectory
 		# Download Lenovo Model Details XML
 		$OS = "10"
-		
+
 		try {
 			if ($global:ProxySettingsSet -eq $true) {
 				Start-BitsTransfer -Source ($LenovoBIOSBase + $ModelType + "_Win$OS.xml") -Destination $global:TempDirectory @global:BitsProxyOptions
@@ -15087,7 +15087,7 @@ AABJRU5ErkJgggs='))
 			global:Write-ErrorOutput -Message "[Error] - $($_.Exception.Message)" -Severity 3
 		}
 	}
-	
+
 	function Update-IntuneBIOSControlValues {
 		param
 		(
@@ -15095,10 +15095,10 @@ AABJRU5ErkJgggs='))
 			[ValidateSet('Dell', 'Lenovo', 'HP')]
 			[String]$OEM
 		)
-		
+
 		$SKUCount = 0
 		if ($OEM -match "HP|Hewlett") {
-			
+
 			foreach ($SKU in $(([string]($global:SKUValue).TrimEnd()).Replace(" ", ",")).Split(",") | Select-Object -Unique) {
 				$ModelIndentifer = $SKU.Trim()
 				global:Write-LogEntry -Value "Checking OEM for latest BIOS for model ID $ModelIndentifer " -Severity 1
@@ -15113,13 +15113,13 @@ AABJRU5ErkJgggs='))
 			}
 		}
 	}
-	
+
 	function Get-IntuneBIOSControlValues {
-		
+
 		# Read BIOS packages in Intune
 		global:Write-LogEntry -Value "Getting Azure Blob Details" -Severity 1
 		#Get-AzureStorageInfo
-		
+
 		# Get Back from Registry and decrypt storage account key
 		$SecureKeyFromRegistry = Get-ItemPropertyValue -Path $global:RegistryPath -Name "key"
 		$encryptedStorageAccountKeyFromRegistry = Get-ItemPropertyValue -Path $global:RegistryPath -Name "StorageAccountKey"
@@ -15127,14 +15127,14 @@ AABJRU5ErkJgggs='))
 		$secureDecryptedPassword = ConvertTo-SecureString $encryptedStorageAccountKeyFromRegistry -Key $SecureKeyFromRegistry
 		$containername = Get-ItemPropertyValue -Path $global:RegistryPath -Name "ContainerName"
 		$IntuneBIOSXMLURI = Get-ItemPropertyValue -Path $global:RegistryPath -Name "XML"
-		
+
 		global:Write-LogEntry -Value "BETA: Registry path is $global:RegistryPath" -Severity 1
 		global:Write-LogEntry -Value "BETA: AccountKey is $encryptedStorageAccountKeyFromRegistry" -Severity 1
 		global:Write-LogEntry -Value "BETA: AccountName path is $storageAccountName" -Severity 1
 		global:Write-LogEntry -Value "BETA: Password is $secureDecryptedPassword" -Severity 1
 		global:Write-LogEntry -Value "BETA: ContainerName path is $containername" -Severity 1
 		global:Write-LogEntry -Value "BETA: IntuneBIOSXML path is $IntuneBIOSXMLURI" -Severity 1
-		
+
 		# Decrypt content
 		$BSTR1 = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($secureDecryptedPassword)
 		$CurrentStorageAccountKey = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR1)
@@ -15142,7 +15142,7 @@ AABJRU5ErkJgggs='))
 		global:Write-LogEntry -Value "Storage account key is $CurrentStorageAccountKey" -Severity 1
 		global:Write-LogEntry -Value "Setting Azure storage context" -Severity 1
 		$StorageContext = New-AzStorageContext -StorageAccountName $StorageAccountName -StorageAccountKey $CurrentStorageAccountKey
-		
+
 		if ([string]::IsNullOrEmpty($IntuneBIOSXMLURI)) {
 			# Read information from Azure
 			global:Write-LogEntry -Value "Attempting to obtain BIOS information from Azure Storage Blog" -Severity 1
@@ -15152,13 +15152,13 @@ AABJRU5ErkJgggs='))
 			global:Write-LogEntry -Value "BIOS information found in Azure Storage Blog" -Severity 1
 		}
 		if (-not ([string]::IsNullOrEmpty($IntuneBIOSXMLURI))) {
-			
+
 			# Check XML URL availability
 			global:Write-LogEntry -Value "Checking HTTP response from $IntuneBIOSXMLURI" -Severity 1
 			$XMLURLRequest = [System.Net.WebRequest]::Create("$IntuneBIOSXMLURI")
 			$XMLURLRequest = $XMLURLRequest.GetResponse()
 			global:Write-LogEntry -Value "HTTP response from $IntuneBIOSXMLURI" -Severity 1
-			
+
 			if ($XMLURLRequest.StatusCode -eq '200') {
 				try {
 					global:Write-LogEntry -Value "Setting/updating XML location in registry" -Severity 1
@@ -15175,7 +15175,7 @@ AABJRU5ErkJgggs='))
 			} else {
 				global:Write-LogEntry -Value "[Error] - Could not read XML source file. HTTP response code $($XMLURLRequest.StatusCode)" -Severity 3
 			}
-			
+
 			# Update data grid
 			if ($IntuneBIOSDataGrid.RowCount -ge 1) {
 				for ($Row = 0; $Row -lt $IntuneBIOSDataGrid.RowCount; $Row++) {
@@ -15187,13 +15187,13 @@ AABJRU5ErkJgggs='))
 					}
 				}
 			}
-			
+
 			# Add SKU values to array before updating with existing XML entries
 			for ($Row = 0; $Row -lt $IntuneBIOSDataGrid.RowCount; $Row++) {
 				$IntuneBIOSControlSKUs.Add($IntuneBIOSDataGrid.Rows[$Row].Cells[6].Value) | Out-Null
 			}
-			
-			# Update Intune BIOS control data grid with known models		
+
+			# Update Intune BIOS control data grid with known models
 			foreach ($IntuneBIOS in ($IntuneBIOSXMLBIOSInfo | Where-Object {
 						$_.Manufacturer -match "HP|Hewlett"
 					})) {
@@ -15204,7 +15204,7 @@ AABJRU5ErkJgggs='))
 				}
 				$ModelIdentifier = $ModelIdentifier.Trim(")")
 				$ModelIdentifier = $ModelIdentifier.Trim()
-				
+
 				if ($IntuneBIOS.Manufacturer -match "HP|Hewlett") {
 					$OEMName = "HP"
 					$OEMLatestBIOS = $null
@@ -15215,7 +15215,7 @@ AABJRU5ErkJgggs='))
 						global:Write-ErrorOutput -Message "[Error] - Unable to retrieve BIOS information from HP for model $ModelIdentifier" -Severity 3
 					}
 				}
-				
+
 				# Update Intune BIOS control grid if model is supported from OEM
 				if (-not ([string]::IsNullOrEmpty($OEMLatestBIOS))) {
 					if ([boolean]([string]$IntuneBIOSControlSKUs -notmatch $ModelIdentifier)) {
@@ -15225,9 +15225,9 @@ AABJRU5ErkJgggs='))
 			}
 		}
 	}
-	
-	
-	
+
+
+
 	function Invoke-BitsJobMonitor {
 		param (
 			[parameter(Mandatory = $true)]
@@ -15235,11 +15235,11 @@ AABJRU5ErkJgggs='))
 			[parameter(Mandatory = $true)]
 			[string]$DownloadSource
 		)
-		
+
 		try {
-			
+
 			global:Write-LogEntry -Value "- BitsTransfer: Checking BITS background job" -Severity 1 -SkipGuiLog $true
-			
+
 			$BitsIssueCount = 0
 			$BitsJob = Get-BitsTransfer | Where-Object {
 				$_.DisplayName -match "$BitsJobName"
@@ -15281,7 +15281,7 @@ AABJRU5ErkJgggs='))
 					} | Remove-BitsTransfer
 				}
 			}
-			
+
 			if (($BitsJob).JobState -match "Transient") {
 				while ($BitsIssueCount -lt 5 -and ($BitsJob).JobState -match "Transient") {
 					$BitsIssueCount++
@@ -15294,7 +15294,7 @@ AABJRU5ErkJgggs='))
 						global:Write-LogEntry -Value "- BitsTransfer - Resumed successfully" -Severity 1
 					}
 				}
-				
+
 				if ($BitsIssueCount -eq 5) {
 					global:Write-LogEntry -Value "- BitsTransfer - Suspending failed $BitsJobName job" -Severity 1 -SkipGuiLog $true
 					Get-BitsTransfer -Name "$BitsJobName" | Suspend-BitsTransfer
@@ -15305,11 +15305,11 @@ AABJRU5ErkJgggs='))
 			global:Write-ErrorOutput -Message "[Error] - $($_.Exception.Message)" -Severity 3
 		}
 	}
-	
+
 	function Write-XMLSettings {
 		# DATSettings.XML location
 		$Path = "$global:SettingsDirectory\DATSettings.xml"
-		
+
 		# Set XML Structure
 		$XmlWriter = New-Object System.XMl.XmlTextWriter($Path, $Null)
 		$xmlWriter.Formatting = 'Indented'
@@ -15317,19 +15317,19 @@ AABJRU5ErkJgggs='))
 		$XmlWriter.IndentChar = "`t"
 		$xmlWriter.WriteStartDocument()
 		$xmlWriter.WriteProcessingInstruction("xml-stylesheet", "type='text/xsl' href='style.xsl'")
-		
+
 		# Write Initial Header Comments
 		$XmlWriter.WriteComment('Settings used with MSEndpointMgr Driver Automation Tool')
 		$xmlWriter.WriteStartElement('Settings')
 		$XmlWriter.WriteAttributeString('current', $true)
-		
+
 		# Export ConfigMgr Site Settings
 		$xmlWriter.WriteStartElement('SiteSettings')
 		$xmlWriter.WriteElementString('Server', $SiteServerInput.Text)
 		$xmlWriter.WriteElementString('Site', $SiteCodeText.Text)
 		$xmlWriter.WriteElementString('WinRMSSL', $WinRMOverSSLCheckbox.Checked)
 		$xmlWriter.WriteEndElement()
-		
+
 		# Export Download Options Settings
 		$xmlWriter.WriteStartElement('DownloadSettings')
 		$xmlWriter.WriteElementString('DeploymentPlatform', $PlatformComboBox.Text)
@@ -15337,7 +15337,7 @@ AABJRU5ErkJgggs='))
 		$xmlWriter.WriteElementString('OperatingSystem', $OSComboBox.Text)
 		$xmlWriter.WriteElementString('Architecture', $ArchitectureComboxBox.Text)
 		$xmlWriter.WriteEndElement()
-		
+
 		# Export Package Locations
 		if ($SpecifyCustomPath.Checked -eq $true) {
 			$xmlWriter.WriteStartElement('PackageSettings')
@@ -15349,13 +15349,13 @@ AABJRU5ErkJgggs='))
 			$xmlWriter.WriteElementString('RootEnabled', $true)
 			$xmlWriter.WriteEndElement()
 		}
-		
+
 		# Export Storage Locations
 		$xmlWriter.WriteStartElement('StorageSettings')
 		$xmlWriter.WriteElementString('Download', $DownloadPathTextBox.Text)
 		$xmlWriter.WriteElementString('Package', $PackagePathTextBox.Text)
 		$xmlWriter.WriteEndElement()
-		
+
 		# Export Manufacturer Selections
 		$xmlWriter.WriteStartElement('Manufacturer')
 		$xmlWriter.WriteElementString('Dell', $DellCheckBox.checked)
@@ -15363,7 +15363,7 @@ AABJRU5ErkJgggs='))
 		$xmlWriter.WriteElementString('Lenovo', $LenovoCheckBox.checked)
 		$xmlWriter.WriteElementString('Microsoft', $MicrosoftCheckBox.checked)
 		$xmlWriter.WriteEndElement()
-		
+
 		# Export Selected Models
 		$xmlWriter.WriteStartElement('Models')
 		# Loop for each seleted model
@@ -15374,22 +15374,22 @@ AABJRU5ErkJgggs='))
 			}
 		}
 		$xmlWriter.WriteEndElement()
-		
+
 		# Export Proxy Server Settings
 		$xmlWriter.WriteStartElement('ConfigMgrImport')
 		$xmlWriter.WriteElementString('ImportModels', $ConfigMgrImport.text)
 		$xmlWriter.WriteEndElement()
-		
+
 		# Export Distribution Point Settings
 		$xmlWriter.WriteStartElement('DistributionSettings')
-		
+
 		# Loop for each seleted Distribution Point
 		for ($Row = 0; $Row -lt $DPGridView.RowCount; $Row++) {
 			if ($DPGridView.Rows[$Row].Cells[0].Value -eq $true) {
 				$xmlWriter.WriteElementString('DistributionPointName', $DPGridView.Rows[$Row].Cells[1].Value)
 			}
 		}
-		
+
 		# Loop for each seleted Distribution Point Group
 		for ($Row = 0; $Row -lt $DPGGridView.RowCount; $Row++) {
 			if ($DPGGridView.Rows[$Row].Cells[0].Value -eq $true) {
@@ -15399,13 +15399,13 @@ AABJRU5ErkJgggs='))
 		$xmlWriter.WriteElementString('BinaryDifferentialReplication', $EnableBinaryDifCheckBox.Checked)
 		$XmlWriter.WriteElementString('ReplicationPriority', $DistributionPriorityCombo.Text)
 		$xmlWriter.WriteEndElement()
-		
+
 		# Export Proxy Server Settings
 		$xmlWriter.WriteStartElement('ProxySettings')
 		$xmlWriter.WriteElementString('UseProxy', $UseProxyServerCheckbox.Checked)
 		$xmlWriter.WriteElementString('Proxy', $ProxyServerInput.Text)
 		$xmlWriter.WriteEndElement()
-		
+
 		# Export Options Settings
 		$xmlWriter.WriteStartElement('Options')
 		$xmlWriter.WriteElementString('CleanUnused', $CleanUnusedCheckBox.checked)
@@ -15416,7 +15416,7 @@ AABJRU5ErkJgggs='))
 		$xmlWriter.WriteElementString('CompressionType', $CompressionType.Text)
 		$xmlWriter.WriteElementString('XMLLogicPackage', $CreateXMLLogicPackage.checked)
 		$xmlWriter.WriteEndElement()
-		
+
 		# Export MDT Settings
 		$xmlWriter.WriteStartElement('MDTSettings')
 		$xmlWriter.WriteElementString('ScriptLocation', $MDTScriptTextBox.Text)
@@ -15430,41 +15430,41 @@ AABJRU5ErkJgggs='))
 			$xmlWriter.WriteElementString('DeploymentShare', $ExportMDTShareName)
 		}
 		$xmlWriter.WriteEndElement()
-		
+
 		# Export MDM/MBM Settings
 		$xmlWriter.WriteStartElement('DiagSettings')
 		$xmlWriter.WriteElementString('ConfigMgrWebServiceURL', $ConfigMgrWebURL.text)
 		$xmlWriter.WriteEndElement()
-		
+
 		# Save XML Document
 		$xmlWriter.WriteEndDocument()
 		$xmlWriter.Flush()
 		$xmlWriter.Close()
 	}
-	
+
 	function Read-XMLSettings {
 		global:Write-LogEntry -Value "======== Reading Settings File ========" -Severity 1
-		
+
 		try {
-			# // Read in settings XML		
+			# // Read in settings XML
 			[xml]$global:DATSettingsXML = Get-Content -Path $(Join-Path -Path $global:SettingsDirectory -ChildPath "DATSettings.xml") -Raw
-			
+
 			# Set XML Object
 			$global:DATSettingsXML.GetType().FullName
-			
+
 			# ConfigMgr Site Settings
 			global:Write-LogEntry -Value "- Setting ConfigMgr Site Settings" -Severity 1
 			$SiteCodeText.Text = $global:DATSettingsXML.Settings.SiteSettings.Site
 			$SiteServerInput.Text = $global:DATSettingsXML.Settings.SiteSettings.Server
 			$WinRMOverSSLCheckbox.Checked = $global:DATSettingsXML.Settings.SiteSettings.WinRMSSL
-			
+
 			# OS & Download Settings
 			global:Write-LogEntry -Value "- Setting OS & Download Selections" -Severity 1
 			$OSComboBox.Text = $global:DATSettingsXML.Settings.DownloadSettings.OperatingSystem
 			$PlatformComboBox.Text = $global:DATSettingsXML.Settings.DownloadSettings.DeploymentPlatform
 			$ArchitectureComboxBox.Text = $global:DATSettingsXML.Settings.DownloadSettings.Architecture
 			$DownloadComboBox.Text = $global:DATSettingsXML.Settings.DownloadSettings.DownloadType
-			
+
 			# // Package Locations
 			if ($global:DATSettingsXML.Settings.PackageSettings.CustomEnabled -eq $true) {
 				global:Write-LogEntry -Value "- Setting Custom Package Location" -Severity 1
@@ -15476,12 +15476,12 @@ AABJRU5ErkJgggs='))
 				$PackageRoot.Enabled = $true
 				$PackageRoot.Checked = $true
 			}
-			
+
 			# // Storage Locations
 			global:Write-LogEntry -Value "- Setting Storage Locations" -Severity 1
 			$PackagePathTextBox.Text = $global:DATSettingsXML.Settings.StorageSettings.Package
 			$DownloadPathTextBox.Text = $global:DATSettingsXML.Settings.StorageSettings.Download
-			
+
 			# // Manufacturer Selections
 			global:Write-LogEntry -Value "- Setting Manufacturer Selections" -Severity 1
 			if ($global:DATSettingsXML.Settings.Manufacturer.Dell -eq "True") {
@@ -15496,11 +15496,11 @@ AABJRU5ErkJgggs='))
 			if ($global:DATSettingsXML.Settings.Manufacturer.Microsoft -eq "True") {
 				$MicrosoftCheckBox.Checked = $true
 			}
-			
+
 			# // Import ConfigMgr Models
 			global:Write-LogEntry -Value "- [Import ConfigMgr Models Settings]" -Severity 1
 			$ConfigMgrImport.Text = $global:DATSettingsXML.Settings.ConfigMgrImport.ImportModels
-			
+
 			if ($global:DATSettingsXML.Settings.DistributionSettings.BinaryDifferentialReplication -eq "True") {
 				$EnableBinaryDifCheckBox.Checked = $true
 			} else {
@@ -15508,8 +15508,8 @@ AABJRU5ErkJgggs='))
 			}
 			# Distribution Priority
 			$DistributionPriorityCombo.Text = $global:DATSettingsXML.Settings.DistributionSettings.ReplicationPriority
-			
-			# // Clean Up Options	
+
+			# // Clean Up Options
 			global:Write-LogEntry -Value "- Selecting Options" -Severity 1
 			if ($global:DATSettingsXML.Settings.Options.CleanUnused -eq "True") {
 				$CleanUnusedCheckBox.Checked = $true
@@ -15526,7 +15526,7 @@ AABJRU5ErkJgggs='))
 				$RemoveDriverSourceCheckbox.Enabled = $true
 				$RemoveDriverSourceCheckbox.Checked = $true
 			}
-			
+
 			if ($global:DATSettingsXML.Settings.Options.Compression -eq "True") {
 				$PackageCompressionCheckBox.Enabled = $true
 				$PackageCompressionCheckBox.Checked = $true
@@ -15536,7 +15536,7 @@ AABJRU5ErkJgggs='))
 				$CreateXMLLogicPackage.Enabled = $true
 				$CreateXMLLogicPackage.Checked = $true
 			}
-			
+
 			# // Proxy Server Settings
 			if ($global:DATSettingsXML.Settings.ProxySettings.UseProxy -eq "True") {
 				global:Write-LogEntry -Value "- Enabling proxy server options" -Severity 1
@@ -15544,14 +15544,14 @@ AABJRU5ErkJgggs='))
 				global:Write-LogEntry -Value "- Setting proxy server address to $($global:DATSettingsXML.Settings.ProxySetting.Proxy)" -Severity 1
 				$ProxyServerInput.Text = $global:DATSettingsXML.Settings.ProxySettings.Proxy
 			}
-			
+
 			# Import MDT Settings
 			$MDTScriptTextBox.Text = $global:DATSettingsXML.Settings.MDTSettings.ScriptLocation
 			$MDTDriverStructureCombo.SelectedIndex = $global:DATSettingsXML.Settings.MDTSettings.Structure
-			
+
 			# Import MDM/MBM Diagnostic Settings
 			$ConfigMgrWebURL.Text = $global:DATSettingsXML.Settings.DiagSettings.ConfigMgrWebServiceURL
-			
+
 			# Distribution Point Selections
 			global:Write-LogEntry -Value "- Setting Previously Selected Distribution Points / Distribution Point Groups" -Severity 1
 			foreach ($XMLSelectedDP in $global:DATSettingsXML.Settings.DistributionSettings.DistributionPointName) {
@@ -15570,14 +15570,14 @@ AABJRU5ErkJgggs='))
 					}
 				}
 			}
-			
+
 			# Connect to Configuratio Manager Site if selected platform is not MDT
 			if ($global:DATSettingsXML.Settings.DownloadSettings.DeploymentPlatform -match 'ConfigMgr') {
 				if ($global:ConfigMgrValidation -ne $true) {
 					Connect-ConfigMgr
 				}
 			}
-			
+
 			# Model Selections
 			global:Write-LogEntry -Value "- Setting Previously Selected Model(s)" -Severity 1
 			foreach ($Model in $global:DATSettingsXML.Settings.Models.ModelSelected) {
@@ -15586,9 +15586,9 @@ AABJRU5ErkJgggs='))
 		} catch {
 			global:Write-LogEntry -Value "[ERROR} - An error occurred while attempting to apply settings from DATSettings XML: $($_.Exception.Message)" -Severity 2
 		}
-		
+
 	}
-	
+
 	function Write-XMLModels {
 		param
 		(
@@ -15618,18 +15618,18 @@ AABJRU5ErkJgggs='))
 			[parameter(Mandatory = $true, ParameterSetName = "XMLModelFile")]
 			[String]$Platform
 		)
-		
+
 		if ((Test-Path -Path $XMLPath) -eq $false) {
 			New-Item -Path $XMLPath -ItemType Dir -Force
 		}
-		
+
 		# ModelDetails.XML location
 		$Path = Join-Path -Path "$XMLPath" -ChildPath "ModelDetails.xml"
-		
+
 		if ((Test-Path -Path $Path) -eq $false) {
 			# Create XML File Notice
 			global:Write-LogEntry -Value "XML Model List : Creating XML models file in location - $Path" -Severity 1
-			
+
 			# Set XML Structure
 			$XmlWriter = New-Object System.XML.XmlTextWriter($Path, $Null)
 			$xmlWriter.Formatting = 'Indented'
@@ -15637,13 +15637,13 @@ AABJRU5ErkJgggs='))
 			$XmlWriter.IndentChar = "`t"
 			$xmlWriter.WriteStartDocument()
 			$xmlWriter.WriteProcessingInstruction("xml-stylesheet", "type='text/xsl' href='style.xsl'")
-			
+
 			# Write Initial Header Comments
 			$XmlWriter.WriteComment('Created with the MSEndpointMgr Driver Automation Tool')
 			$xmlWriter.WriteStartElement('Details')
 			$XmlWriter.WriteAttributeString('current', $true)
-			
-			# Export Model Details 
+
+			# Export Model Details
 			$xmlWriter.WriteStartElement('ModelDetails')
 			$xmlWriter.WriteElementString('Make', $Make)
 			$xmlWriter.WriteElementString('Model', $Model)
@@ -15653,33 +15653,33 @@ AABJRU5ErkJgggs='))
 			$xmlWriter.WriteElementString('Platform', $Platform)
 			$xmlWriter.WriteEndElement()
 			global:Write-LogEntry -Value "XML Model List : Adding $Model to XML models file" -Severity 1
-			
+
 			# Save XML Document
 			$xmlWriter.WriteEndDocument()
 			$xmlWriter.Flush()
 			$xmlWriter.Close()
-			
+
 		} else {
 			# Read Existing XML Model List
 			$xmlDoc = [System.Xml.XmlDocument](Get-Content $Path -Raw);
-			
+
 			# Check For Existing Model Entry + Append
 			if ($Model -notin $xmlDoc.Details.ModelDetails.Model) {
 				# Create New Make/Model Entry
 				$newXmlModel = $xmlDoc.Details.AppendChild($xmlDoc.CreateElement("ModelDetails"));
-				
+
 				# Export Make Details
 				$newXmlModelElement = $newXmlModel.AppendChild($xmlDoc.CreateElement("Make"));
 				$newXmlModelTextNode = $newXmlModelElement.AppendChild($xmlDoc.CreateTextNode("$Make"));
-				
+
 				# Export Model Details
 				$newXmlModelElement = $newXmlModel.AppendChild($xmlDoc.CreateElement("Model"));
 				$newXmlModelTextNode = $newXmlModelElement.AppendChild($xmlDoc.CreateTextNode("$Model"));
-				
+
 				# Export Matching Value
 				$newXmlSKUElement = $newXmlModel.AppendChild($xmlDoc.CreateElement("SystemSKU"));
 				$newXmlSKUNode = $newXmlSKUElement.AppendChild($xmlDoc.CreateTextNode("$MatchingValues"));
-				
+
 				# Save XML Document
 				$xmlDoc.Save($Path);
 				global:Write-LogEntry -Value "XML Model List : Appending $Model to XML models file $Path" -Severity 1
@@ -15688,7 +15688,7 @@ AABJRU5ErkJgggs='))
 			}
 		}
 	}
-	
+
 	function Write-SoftPaqXML {
 		param
 		(
@@ -15708,10 +15708,10 @@ AABJRU5ErkJgggs='))
 			[ValidateNotNullOrEmpty()]
 			[string]$SoftPaqID
 		)
-		
+
 		# DATSettings.XML location
 		$Path = Join-Path -Path $Path -ChildPath "Setup.xml"
-		
+
 		# Set XML Structure
 		$XmlWriter = New-Object System.XMl.XmlTextWriter($Path, $Null)
 		$xmlWriter.Formatting = 'Indented'
@@ -15719,41 +15719,41 @@ AABJRU5ErkJgggs='))
 		$XmlWriter.IndentChar = "`t"
 		$xmlWriter.WriteStartDocument()
 		$xmlWriter.WriteProcessingInstruction("xml-stylesheet", "type='text/xsl' href='style.xsl'")
-		
+
 		# Write Initial Header Comments
 		$XmlWriter.WriteComment('Silent HP SoftPaq Installer Switches - Created with MSEndpointMgr Driver Automation Tool')
 		$xmlWriter.WriteStartElement('Settings')
 		$XmlWriter.WriteAttributeString('current', $true)
-		
+
 		# Write Installer Setup Details
 		$xmlWriter.WriteStartElement('Installer')
 		$xmlWriter.WriteElementString('ProgramName', $($SoftPaqID + " Installer"))
 		$xmlWriter.WriteElementString('SetupFile', $SetupFile)
 		$xmlWriter.WriteElementString('Switches', $InstallSwitches)
 		$xmlWriter.WriteEndElement()
-		
+
 		# Write Supported Model Details
 		$xmlWriter.WriteStartElement('Models')
 		$xmlWriter.WriteElementString('BaseBoards', $BaseBoardValues)
 		$xmlWriter.WriteEndElement()
-		
+
 		# Save XML Document
 		$xmlWriter.WriteEndDocument()
 		$xmlWriter.Flush()
 		$xmlWriter.Close()
 	}
-	
+
 	function Get-MSIProperties {
 		param (
 			[parameter(Mandatory = $true)]
 			[ValidateNotNullOrEmpty()]
 			[System.IO.FileInfo]$Path
 		)
-		
+
 		Process {
 			global:Write-LogEntry -Value "- $($Product): Attempting to open MSI database on file $($Path | Split-Path -Leaf) " -Severity 1
 			global:Write-LogEntry -Value "Path full name is $($Path.FullName)" -Severity 1
-			
+
 			try {
 				# Read property from MSI database
 				$WindowsInstaller = New-Object -ComObject WindowsInstaller.Installer
@@ -15763,13 +15763,13 @@ AABJRU5ErkJgggs='))
 				$View.GetType().InvokeMember("Execute", "InvokeMethod", $Null, $View, $Null)
 				$Record = $View.GetType().InvokeMember("Fetch", "InvokeMethod", $Null, $View, $Null)
 				$Value = $Record.GetType().InvokeMember("StringData", "GetProperty", $null, $Record, 1)
-				
+
 				# Commit database and close view
 				$MSIDatabase.GetType().InvokeMember("Commit", "InvokeMethod", $null, $MSIDatabase, $null)
 				$View.GetType().InvokeMember("Close", "InvokeMethod", $null, $View, $null)
 				$MSIDatabase = $null
 				$View = $null
-				
+
 				# Return the value
 				return $Value
 			} catch {
@@ -15782,7 +15782,7 @@ AABJRU5ErkJgggs='))
 			[System.GC]::Collect()
 		}
 	}
-	
+
 	function Invoke-ContentExtraction {
 		param
 		(
@@ -15790,23 +15790,23 @@ AABJRU5ErkJgggs='))
 			[ValidateSet("Drivers", "Firmware")]
 			[string]$PackageType
 		)
-		
+
 		# Driver Silent Extract Switches
 		$MicrosoftTemp = Join-Path -Path $global:TempDirectory -ChildPath "\$Model\Win$WindowsVersion$Architecture"
 		$MicrosoftTemp = $MicrosoftTemp -replace '/', '-'
-		
+
 		# Driver Silent Extract Switches
 		$MicrosoftSilentSwitches = "/a" + '"' + $($DownloadRoot + $Model + "\Driver Cab\" + $DriverCab) + '"' + '/QN TARGETDIR="' + $MicrosoftTemp + '"'
 		global:Write-LogEntry -Value "- $($Product): Extracting $Make $($PackageType) to $MicrosoftTemp" -Severity 1
 		global:Write-LogEntry -Value "- $($Product): Full extraction switch is $MicrosoftSilentSwitches" -Severity 1
 		$DriverProcess = Start-Process msiexec.exe -ArgumentList $MicrosoftSilentSwitches -PassThru
-		
+
 		# Wait for Microsoft Driver Process To Finish
 		While ((Get-Process).ID -eq $DriverProcess.ID) {
 			global:Write-LogEntry -Value "- $($Product): Waiting for extract process (Process ID: $($DriverProcess.ID)) to complete. Next check in 30 seconds" -Severity 1
 			Start-Sleep -seconds 30
 		}
-		
+
 		# Set Microsoft extracted folder
 		$MicrosoftExtractDirs = Get-ChildItem -Path $MicrosoftTemp -Directory -Recurse
 		$MicrosoftExtract = $MicrosoftExtractDirs.FullName | Split-Path -Parent | Select-Object -First 1
@@ -15821,7 +15821,7 @@ AABJRU5ErkJgggs='))
 			global:Write-ErrorOutput -Message "[Error] - Issues occurred during the $Make $Model extract process" -Severity 3
 		}
 	}
-	
+
 	function Invoke-PackageCreation {
 		param
 		(
@@ -15829,7 +15829,7 @@ AABJRU5ErkJgggs='))
 			[ValidateSet("Drivers", "Firmware")]
 			[string]$PackageType
 		)
-		
+
 		global:Write-LogEntry -Value "- $($Product): Checking for extracted $($PackageType.ToLower())" -Severity 1
 		global:Write-LogEntry -Value "- $($Product): Import into is $ImportInto" -Severity 1
 		if ($ImportInto -like "*Driver*") {
@@ -15850,7 +15850,7 @@ AABJRU5ErkJgggs='))
 					Set-Location -Path ($SiteCode + ":")
 					try {
 						#=====================
-						
+
 						Set-Location -Path $global:TempDirectory
 						if (((Test-Path -Path "$DriverPackageDest") -eq $false) -and ($Make -ne "Lenovo")) {
 							New-Item -ItemType Directory -Path "$DriverPackageDest"
@@ -15861,16 +15861,16 @@ AABJRU5ErkJgggs='))
 						} else {
 							$Manufacturer = $Make
 						}
-						
+
 						# Set Package Description
 						$PackageDescription = "(Models included:$global:SkuValue)"
-						
+
 						# Move Extracted Drivers To Driver Package Directory
 						global:Write-LogEntry -Value "- $($Product): Source directory $DriverExtractDest" -Severity 1
 						global:Write-LogEntry -Value "- $($Product): Destination directory $DriverPackageDest" -Severity 1
 						global:Write-LogEntry -Value "- $($Product): Creating Package for $Make $Model (Version $DriverRevision)" -Severity 1
 						Set-Location -Path ($SiteCode + ":")
-						
+
 						if (Get-CMCategory -CategoryType DriverCategories -name $DriverCategoryName) {
 							global:Write-LogEntry -Value "- $($Product): Category already exists" -Severity 1
 							$DriverCategory = Get-CMCategory -CategoryType DriverCategories -name $DriverCategoryName
@@ -15878,7 +15878,7 @@ AABJRU5ErkJgggs='))
 							global:Write-LogEntry -Value "- $($Product): Creating category $DriverCategoryName" -Severity 1
 							$DriverCategory = New-CMCategory -CategoryType DriverCategories -name $DriverCategoryName
 						}
-						
+
 						global:Write-LogEntry -Value "- $($Product): Creating driver package for $Make $Model (Version $DriverRevision)" -Severity 1
 						global:Write-LogEntry -Value "- $($Product): Driver package name is $CMDriverPackage" -Severity 1
 						global:Write-LogEntry -Value "- $($Product): Path to drivers is $DriverPackageDest" -Severity 1
@@ -15890,7 +15890,7 @@ AABJRU5ErkJgggs='))
 						$ConfigMgrDriverPackage = Get-CMDriverPackage -Fast -Name $CMDriverPackage | Select-Object PackageID, Version | Where-Object {
 							$_.Version -eq $DriverRevision
 						}
-						
+
 					} catch {
 						global:Write-ErrorOutput -Message "[Error] - $($_.Exception.Message) $($_.Exception.InnerException)" -Severity 3
 					}
@@ -15901,14 +15901,14 @@ AABJRU5ErkJgggs='))
 							$DriverImportStart = (Get-Date)
 							global:Write-LogEntry -Value "- $($Product): Import start time is $DriverImportStart" -Severity 1
 							$DriverNo = 1
-							
+
 							foreach ($DriverINF in $DriverINFFiles) {
 								$DriverInfo = Import-CMDriver -UncFileLocation "$($DriverINF.FullName)" -ImportDuplicateDriverOption AppendCategory -EnableAndAllowInstall $True -AdministrativeCategory $DriverCategory | Select-Object CI_ID
 								global:Write-LogEntry -Value "- $($Product): Adding driver $($DriverINF.FullName | Split-Path -Leaf) to driver pack" -Severity 1
 								Add-CMDriverToDriverPackage -DriverID $DriverInfo.CI_ID -DriverPackageName "$($CMDriverPackage)"
 								$DriverNo++
 							}
-							
+
 							$DriverImportEnd = (Get-Date)
 							global:Write-LogEntry -Value "- $($Product): Import end time is $DriverImportEnd" -Severity 1
 							$DriverImportDuration = $DriverImportEnd - $DriverImportStart
@@ -15940,7 +15940,7 @@ AABJRU5ErkJgggs='))
 				if ((Get-ChildItem -Recurse -Path "$DriverExtractDest" -Filter *.inf -File).Count -ne $null) {
 					global:Write-LogEntry -Value "- $($Product): Validated drivers exist in $DriverExtractDest - Processing driver packaging steps " -Severity 1
 					global:Write-LogEntry -Value "==================== $PRODUCT DRIVER PACKAGE  ====================" -Severity 1
-					
+
 					if ([string]::IsNullOrEmpty($ExistingPackageID)) {
 						Set-Location -Path $global:TempDirectory
 						if ((Test-Path -Path "$DriverPackageDest") -eq $false) {
@@ -15952,33 +15952,33 @@ AABJRU5ErkJgggs='))
 						} else {
 							$Manufacturer = $Make
 						}
-						
+
 						# Set Package Description
 						$PackageDescription = "(Models included:$global:SkuValue)"
-						
-						
+
+
 						# Move Extracted Drivers To Driver Package Directory
 						global:Write-LogEntry -Value "- $($Product): Source directory $DriverExtractDest" -Severity 1
 						global:Write-LogEntry -Value "- $($Product): Destination directory $DriverPackageDest" -Severity 1
-						
+
 						# Copy Drivers To Package Location
 						$DriverPackageCreated = New-DriverPackage -Make $Make -DriverExtractDest $DriverExtractDest -Architecture $Architecture -DriverPackageDest $DriverPackageDest -PackageCompression $PackageCompressionCheckBox.Checked -CompressionType $CompressionType.Text
-						
+
 						if ($DriverPackageCreated -eq $true) {
 							global:Write-LogEntry -Value "- $($Product): Drivers copied successfully, creating package." -Severity 1
 							global:Write-LogEntry -Value "- $($Product): Creating Package for $Make $Model (Version $DriverRevision)" -Severity 1
 							Set-Location -Path ($SiteCode + ":")
-							
+
 							# Create Driver Package
 							New-CMPackage -Name "$CMPackage" -path "$DriverPackageDest" -Manufacturer $Manufacturer -Description "$PackageDescription" -Version $DriverRevision
 							$MifVersion = $OperatingSystem + " " + $Architecture
 							Set-CMPackage -Name "$CMPackage" -MifName $Model -MifVersion $MifVersion
-							
+
 							# Check For Driver Package
 							$ConfiMgrPackage = Get-CMPackage -Name $CMPackage -Fast | Select-Object PackageID, Version, Name | Where-Object {
 								$_.Version -eq $DriverRevision
 							}
-											
+
 							global:Write-LogEntry -Value "- $($Product): Checking for driver package $CMPackage with version number $DriverRevision" -Severity 1
 							if ($ConfiMgrPackage.PackageID -ne $null) {
 								Move-CMObject -FolderPath $global:VendorDriverFolder -ObjectID $ConfiMgrPackage.PackageID
@@ -15988,8 +15988,8 @@ AABJRU5ErkJgggs='))
 									Set-CMPackage -ID $ConfiMgrPackage.PackageID -EnableBinaryDeltaReplication $true -Priority $DistributionPriorityCombo.Text
 								}
 								# =============== Distrubute Content =================
-								Distribute-Content -Product $Product -PackageID $ConfiMgrPackage.PackageID -ImportInto $ImportInto			
-								
+								Distribute-Content -Product $Product -PackageID $ConfiMgrPackage.PackageID -ImportInto $ImportInto
+
 							} else {
 								global:Write-ErrorOutput -Message "[Error] - Errors occurred while creating package" -Severity 3
 							}
@@ -16014,12 +16014,12 @@ AABJRU5ErkJgggs='))
 			} elseif ($PackageType -match "Firmware") {
 				# Modify package name
 				$CMPackage = ("BIOS - " + "$Make " + $Model)
-				
+
 				global:Write-LogEntry -Value "- $($Product): Firmware count in path $FirmwareExtractDest - $((Get-ChildItem -Recurse -Path "$FirmwareExtractDest" -Filter *.inf -File).count) " -Severity 1
 				if ((Get-ChildItem -Recurse -Path "$FirmwareExtractDest" -Filter *.inf -File).Count - $null) {
 					global:Write-LogEntry -Value "- $($Product): Validated drivers exist in $FirmwareExtractDest - Processing driver packaging steps " -Severity 1
 					global:Write-LogEntry -Value "==================== $PRODUCT FIRMWARE PACKAGE  ====================" -Severity 1
-					
+
 					if ([string]::IsNullOrEmpty($ExistingPackageID)) {
 						Set-Location -Path $global:TempDirectory
 						if ((Test-Path -Path "$FirmwareExtractDest") -eq $false) {
@@ -16031,10 +16031,10 @@ AABJRU5ErkJgggs='))
 						} else {
 							$Manufacturer = $Make
 						}
-						
+
 						# Set Package Description
 						$PackageDescription = "$Make $Model Windows $WindowsVersion $Architecture Firmware (Models included:$global:SkuValue) "
-						
+
 						# Move extracted files to firmware package Directory
 						global:Write-LogEntry -Value "- $($Product): Source directory $FirmwareExtractDest" -Severity 1
 						global:Write-LogEntry -Value "- $($Product): Destination directory $FirmwarePackageDest" -Severity 1
@@ -16046,16 +16046,16 @@ AABJRU5ErkJgggs='))
 						while ((Get-Job -Name "$Model-Firmware-Package").State -eq "Stopping") {
 							Start-Sleep -Seconds 1
 						}
-						
+
 						if ((Get-Job -Name "$Model-Firmware-Package").State -eq "Completed") {
 							Set-Location -Path ($SiteCode + ":")
-							
+
 							# Create Firmware Package
 							global:Write-LogEntry -Value "- $($Product): Creating package for $Make $Model (Version $DriverRevision)" -Severity 1
 							New-CMPackage -Name "$CMPackage" -path "$FirmwarePackageDest" -Manufacturer $Manufacturer -Description "$PackageDescription" -Version $DriverRevision
 							$MifVersion = $OperatingSystem + " " + $Architecture
 							Set-CMPackage -Name "$CMPackage" -MifName $Model -MifVersion $MifVersion
-							
+
 							# Check For Driver Package
 							$ConfiMgrPackage = Get-CMPackage -Name $CMPackage -Fast | Select-Object PackageID, Version, Name | Where-Object {
 								$_.Version -eq $DriverRevision
@@ -16095,23 +16095,23 @@ AABJRU5ErkJgggs='))
 			}
 		}
 	}
-	
+
 	function Read-XMLFile {
 		param
 		(
 			[parameter(Mandatory = $true, HelpMessage = "Set the path for the XML file.")]
 			[String]$XMLFile
 		)
-		
-		# // Read in settings XML		
+
+		# // Read in settings XML
 		[xml]$ModelDetails = Get-Content -Path $XMLFile -Raw
-		
+
 		# Set XML Object
 		$ModelDetails.GetType().FullName
 		$CustomPkgDataGrid.Rows.Add($ModelDetails.Details.ModelDetails.Make, $ModelDetails.Details.ModelDetails.Model, $ModelDetails.Details.ModelDetails.SystemSKU, $CustomPkgPlatform.SelectedItem, $ModelDetails.Details.ModelDetails.OperatingSystem, $ModelDetails.Details.ModelDetails.Architecture, 01, $($XMLFile | Split-Path -Parent))
-		
+
 	}
-	
+
 	function Invoke-SoftPaqCreation {
 		param
 		(
@@ -16137,14 +16137,14 @@ AABJRU5ErkJgggs='))
 			[ValidateNotNullOrEmpty()]
 			[string]$HPSoftPaqSwitches
 		)
-		
+
 		# Set Variables
 		$Product = "ConfigMgr"
 		$Make = "HP"
 		$HPSoftPaqTitle = "SoftPaq - $Make - $HPSoftPaqTitle"
-		
+
 		if (($Product -ne "Download Only") -and ((Test-Path -Path $(Join-Path -Path $HPSoftPaqPkgPath -ChildPath $HPSoftPaqFileName))) -eq $true) {
-			# ================= Create SoftPaq Update Package ==================			
+			# ================= Create SoftPaq Update Package ==================
 			Set-Location -Path ($SiteCode + ":")
 			$SoftPaqPackage = Get-CMPackage -Name $HPSoftPaqTitle -Fast | Select-Object SourceDate, Version | Sort-Object SourceDate -Descending | Select-Object -First 1
 			if (($SoftPaqPackage.Version -ne $HPSoftPaqVersion) -or ($SoftPaqPackage -eq $null)) {
@@ -16191,7 +16191,7 @@ AABJRU5ErkJgggs='))
 			}
 		}
 	}
-	
+
 	function Invoke-ContentDownload {
 		param
 		(
@@ -16222,7 +16222,7 @@ AABJRU5ErkJgggs='))
 			[ValidateNotNullOrEmpty()]
 			[string]$HPSoftPaqPkgPath
 		)
-		
+
 		# Content Download ScriptBlock
 		$HPSoftPaqDownloadJob = {
 			Param (
@@ -16239,7 +16239,7 @@ AABJRU5ErkJgggs='))
 				[parameter(Mandatory = $false)]
 				$global:ProxySettingsSet
 			)
-			
+
 			try {
 				# Start SoftPaq Driver Download
 				if ($global:ProxySettingsSet -eq $true) {
@@ -16251,7 +16251,7 @@ AABJRU5ErkJgggs='))
 				global:Write-ErrorOutput -Message "[Error] - $($_.Exception.Message)" -Severity 3
 			}
 		}
-		
+
 		try {
 			switch ($OperationalMode) {
 				"StandardPackages" {
@@ -16261,7 +16261,7 @@ AABJRU5ErkJgggs='))
 							global:Write-LogEntry -Value "- $($Product): Creating $("$DownloadRoot" + "$Model" + "\Driver Cab") folder " -Severity 1
 							New-Item -ItemType Directory -Path $("$DownloadRoot" + "$Model" + "\Driver Cab")
 						}
-						
+
 						global:Write-LogEntry -Value "- $($Product): Downloading $($DriverCab)" -Severity 1
 						global:Write-LogEntry -Value "- $($Product): Downloading from URL: $($DriverDownload)" -Severity 1
 						Start-BitsTransfer -DisplayName "$Model-DriverDownload" -Source $DriverDownload -Destination "$($DownloadRoot + $Model + '\Driver Cab\' + $DriverCab)" -Asynchronous
@@ -16276,7 +16276,7 @@ AABJRU5ErkJgggs='))
 							global:Write-LogEntry -Value "- [Error] - Unable to resume BitsTransfer job. Removing $Model-DriverDownload job" -Severity 1
 							Get-BitsTransfer -Name "$Model-DriverDownload" | Remove-BitsTransfer
 						}
-						
+
 						if ([string]::IsNullOrEmpty($global:BitsJobByteSize)) {
 							# Cater for Dell inconsistency in download URL
 							if ($Make -eq "Dell") {
@@ -16340,7 +16340,7 @@ AABJRU5ErkJgggs='))
 			global:Write-ErrorOutput -Message "[Error] - $($_.Exception.Message)" -Severity 3; Return $false
 		}
 	}
-	
+
 	function Invoke-Downloads {
 		param
 		(
@@ -16348,60 +16348,60 @@ AABJRU5ErkJgggs='))
 			[ValidateSet("ModelPackages", "OEMDriverPackages")]
 			$DownloadJobType = "ModelPackages"
 		)
-		
+
 		# Package summary
 		$DriverAutomationSummary = @()
-		
+
 		# Reset file size
 		$FileSize.Text = "--"
-		
+
 		# Reset Progress Bar
 		$ProgressBar.Value = "0"
 		$ModelProgressOverlay.Value = "0"
 		$ProgressListBox.ForeColor = 'Black'
-		
+
 		# Set Variables Retrieved From GUI
 		$ImportInto = [string]$PlatformComboBox.SelectedItem
 		global:Write-LogEntry -Value "- Importing Into Products: $ImportInto" -Severity 1
 		$DownloadType = [string]$DownloadComboBox.SelectedItem
 		global:Write-LogEntry -Value "- Download Type: $DownloadType" -Severity 1
 		$SiteCode = $SiteCodeText.Text
-		
-		# Set Models 
+
+		# Set Models
 		$ImportModels = New-Object -TypeName System.Collections.ArrayList
 		for ($Row = 0; $Row -lt $MakeModelDataGrid.RowCount; $Row++) {
 			if ($MakeModelDataGrid.Rows[$Row].Cells[0].Value -eq $true) {
 				$ImportModels.Add($MakeModelDataGrid.Rows[$Row].Cells[1].Value + " " + $MakeModelDataGrid.Rows[$Row].Cells[2].Value)
 			}
 		}
-		
+
 		# Set Initial Validation State
 		$ValidationErrors = 0
-		
+
 		# ============ Validation Selection Details and Prerequisites ==============
-		
-		# Reset Job Process Log Dialog 
+
+		# Reset Job Process Log Dialog
 		if (($ProgressListBox.ForeColor) -eq "Maroon") {
 			$ProgressListBox.Items.Clear()
 		}
-		
+
 		# Reset Intune BIOS Control
 		if ($ImportInto -eq "Intune") {
 			$IntuneBIOSDataGrid.Rows.Clear()
 		}
-		
+
 		# Validate Selected Models
 		if ((($ImportModels.Count) -lt "1") -and (($global:HPSoftPaqDownloads.Count) -lt "1")) {
 			global:Write-ErrorOutput -Message "[Error] - No models or softpaqs selected" -Severity 3
 			$ValidationErrors++
 		}
-		
+
 		# Validate Download Path
 		if ([string]::IsNullOrEmpty($DownloadPathTextBox.Text)) {
 			global:Write-ErrorOutput -Message "[Error] - Download path not specified on ConfigMgr Settings tab" -Severity 3
 			$ValidationErrors++
 		}
-		
+
 		# Validate Download and Package Paths are different
 		if ($DownloadPathTextBox.Text -ne $PackagePathTextBox.Text) {
 			# Validate Download Path For BIOS & Driver Downloads
@@ -16430,7 +16430,7 @@ AABJRU5ErkJgggs='))
 			global:Write-ErrorOutput -Message "[Error] - Download and package paths must be different." -Severity 3
 			$ValidationErrors++
 		}
-		
+
 		# Validate OS Selection
 		if (($OSComboBox).Text -ne $null) {
 			$WindowsVersion = (($OSComboBox).Text).Split(" ")[1]
@@ -16438,7 +16438,7 @@ AABJRU5ErkJgggs='))
 			global:Write-ErrorOutput -Message "[Error] - Operating System not specified" -Severity 3
 			$ValidationErrors++
 		}
-		
+
 		# Validate OS Architecture Selection
 		if (($ArchitectureComboxBox).Text -ne $null) {
 			switch -wildcard ($ArchitectureComboxBox.Text) {
@@ -16453,7 +16453,7 @@ AABJRU5ErkJgggs='))
 			global:Write-ErrorOutput -Message "[Error] - Operating System architecture not specified" -Severity 3
 			$ValidationErrors++
 		}
-		
+
 		# Validate MDT Selections
 		if ($ImportInto -match "MDT") {
 			$DeploymentShareCount = 0
@@ -16467,13 +16467,13 @@ AABJRU5ErkJgggs='))
 				$ValidationErrors++
 			}
 		}
-		
+
 		# Validate MDT PowerShell availability
 		if ($global:MDTValidation -eq $false) {
 			global:Write-ErrorOutput -Message "[Error] - MDT PowerShell cmdlets have not been loaded." -Severity 3
 			$ValidationErrors++
 		}
-		
+
 		# Content Download ScriptBlock
 		$ContentDownloadJob = {
 			Param (
@@ -16496,10 +16496,10 @@ AABJRU5ErkJgggs='))
 				[parameter(Mandatory = $false)]
 				[boolean]$SoftpaqDownload = $false
 			)
-			
+
 			try {
 				# Start Driver Download
-				
+
 				if ($SoftpaqDownload -eq $false) {
 					if ($global:ProxySettingsSet -eq $true) {
 						Start-BitsTransfer -DisplayName "$Model-DriverDownload" -Source $DriverDownloadURL.Trim() -Destination "$($DownloadRoot + $Model + '\Driver Cab\' + $DriverCab)" @global:BitsProxyOptions
@@ -16517,7 +16517,7 @@ AABJRU5ErkJgggs='))
 				global:Write-ErrorOutput -Message "[Error] - $($_.Exception.Message)" -Severity 3
 			}
 		}
-		
+
 		# Driver Download ScriptBlock
 		$DriverExtractJob = {
 			Param ([string]$DriverSourceCab,
@@ -16528,24 +16528,24 @@ AABJRU5ErkJgggs='))
 				global:Write-ErrorOutput -Message "[Error] - $($_.Exception.Message)" -Severity 3
 			}
 		}
-		
+
 		# Move HP Driver Function
 		$MoveDrivers = {
 			Param ($ExtractSource,
 				$ExtractDest)
-			
+
 			try {
 				if ((Test-Path -Path "$ExtractDest") -eq $false) {
 					New-Item -Path "$ExtractDest" -ItemType Dir
 				}
 				Get-ChildItem -Path "$ExtractSource" -Recurse | Move-Item -Destination "$ExtractDest" -Force
-				
+
 			} catch [System.Exception] {
 				global:Write-ErrorOutput -Message "[Error] - $($_.Exception.Message)" -Severity 3
 			}
 		}
-		
-		# Validate MDT PowerShell Commandlets / Install 
+
+		# Validate MDT PowerShell Commandlets / Install
 		if ((($ImportInto) -like ("MDT" -or "Both*")) -and ($ValidationErrors -eq 0)) {
 			# Validate MDT PS Commandlets
 			if ((Test-Path -Path $MDTPSCommandlets) -eq $true) {
@@ -16557,7 +16557,7 @@ AABJRU5ErkJgggs='))
 				$ValidationErrors++
 			}
 		}
-		
+
 		if ($ValidationErrors -eq 0 -and $DownloadJobType -eq "ModelPackages") {
 			global:Write-LogEntry -Value "======== Starting Download Processes ========" -Severity 1
 			if ($ProductListBox.SelectedItems -ge 1) {
@@ -16572,15 +16572,15 @@ AABJRU5ErkJgggs='))
 			if (-not ([string]::IsNullOrEmpty($PackagePath))) {
 				global:Write-LogEntry -Value "- Package Path specified: $($PackagePath)" -Severity 1
 			}
-			
-			
+
+
 			# Operating System Version
 			$OperatingSystem = ("Windows " + $($WindowsVersion))
-			
+
 			switch -wildcard ($OperatingSystem) {
 				"Windows 10*" {
 					$OSVersion = ([string]($OSComboBox).Text).Split(' ')[2]
-					
+
 					# Get Windows Build Number From Version Hash Table
 					$OSBuild = $WindowsBuildHashTable.Item("$OSVersion")
 					if ([string]::IsNullOrEmpty($OSBuild)) {
@@ -16588,12 +16588,12 @@ AABJRU5ErkJgggs='))
 					} else {
 						global:Write-LogEntry -Value "- Windows 10 build $OSBuild and version $OSVersion identified for driver match" -Severity 1
 					}
-					
-					
+
+
 				}
 				"Windows 11*" {
 					$OSVersion = ([string]($OSComboBox).Text).Split(' ')[2]
-					
+
 					# Get Windows Build Number From Version Hash Table
 					$OSBuild = $WindowsBuildHashTable.Item("Win11-$OSVersion")
 					if ([string]::IsNullOrEmpty($OSBuild)) {
@@ -16606,54 +16606,54 @@ AABJRU5ErkJgggs='))
 					$OSVersion = ([string]($OSComboBox).Text).Split(' ')[1]
 				}
 			}
-			
+
 			# Set Progress Bar Values
 			$TotalDownloadsCount = $ImportModels.Count
 			if ($global:HPSoftPaqDownloads.Count -ge "1") {
 				$TotalDownloadsCount = $TotalDownloadsCount + $global:HPSoftPaqDownloads.Count
 			}
 			$RemainingModels = $ImportModels.Count
-			
+
 			# Initialise Job Progress Bar
 			$ProgressBar.Maximum = $TotalDownloadsCount
 			$ModelProgressOverlay.Maximum = $TotalDownloadsCount
-			
+
 			foreach ($Model in $ImportModels) {
 				global:Write-LogEntry -Value "======== Processing $Model Downloads ========" -Severity 1
 				# Vendor Make
 				$Make = $($Model).split(" ")[0]
 				$Model = $($Model).TrimStart("$Make")
 				$Model = $Model.Trim()
-				
+
 				# Reset SKU variable
 				$global:SkuValue = $null
-				
+
 				global:Write-LogEntry -Value "- Starting Download, extract and import processes for $Make model: $($Model)" -Severity 1
 				$CurrentDownload.Text = "$Model"
 				$TotalDownloads.Text = "$($ImportModels.Count)"
-				
+
 				# =================== DEFINE VARIABLES =====================
-				
+
 				# Directory used for driver and BIOS downloads
 				$DownloadRoot = ($DownloadPath.Trimend("\") + "\$Make\")
-				
+
 				# Directory used by ConfigMgr for packages
 				if ($ImportInto -like "*ConfigMgr*") {
 					$PackageRoot = ($PackagePath.Trimend("\") + "\$Make\")
 				} elseif ($ImportInto -match "Download") {
 					$PackageRoot = $DownloadRoot
 				}
-				
+
 				# =================== VENDOR SPECIFIC SETTINGS ====================
-				
+
 				$SetDownloadPaths
-				
+
 				switch ($Make) {
 					"Dell" {
 						global:Write-LogEntry -Value "- Setting Dell variables" -Severity 1 -SkipGuiLog $true
 						if ($global:DellModelCabFiles -eq $null) {
 							[xml]$DellModelXML = Get-Content -Path $(Join-Path -Path $global:TempDirectory -ChildPath $DellXMLFile) -Raw
-							
+
 							# Set XML Object
 							$DellModelXML.GetType().FullName
 							$global:DellModelCabFiles = $DellModelXML.driverpackmanifest.driverpackage
@@ -16675,7 +16675,7 @@ AABJRU5ErkJgggs='))
 										((($_.SupportedOperatingSystems).OperatingSystem).osCode -match $WindowsVersion) -and ($_.SupportedSystems.Brand.Model.SystemID -match $DellSingleSKU)
 									}) | Sort-Object DateTime -Descending | Select-Object -First 1).path
 							$DriverCab = ($DriverDownload).Split("/") | Select-Object -Last 1
-							
+
 						} else {
 							$ModelURL = $DellDownloadBase + "/" + ($global:DellModelCabFiles | Where-Object {
 									((($_.SupportedOperatingSystems).OperatingSystem).osCode -match $WindowsVersion) -and ($_.SupportedSystems.Brand.Model.SystemID -match $global:SkuValue)
@@ -16685,7 +16685,7 @@ AABJRU5ErkJgggs='))
 								} | Sort-Object DateTime -Descending | Select-Object -First 1).path
 							$DriverCab = ($DriverDownload).Split("/") | Select-Object -Last 1
 						}
-						
+
 						$ModelURL = $ModelURL.Replace("\", "/")
 						if ($DriverCab -match ".cab") {
 							$DriverRevision = $Drivercab.Split("-") | Select-Object -Last 2 | Select-Object -First 1
@@ -16693,7 +16693,7 @@ AABJRU5ErkJgggs='))
 							$DriverRevision = (($DriverCab.Split("_") | Select-Object -Last 1).Trim(".exe")).Trim()
 						}
 						global:Write-LogEntry -Value "- Dell System Model ID is : $global:SkuValue" -Severity 1
-						
+
 					}
 					"HP" {
 						global:Write-LogEntry -Value "- Setting HP variables" -Severity 1 -SkipGuiLog $true
@@ -16717,7 +16717,7 @@ AABJRU5ErkJgggs='))
 							$_.ID -eq "$HPSoftPaq"
 						}
 						$ModelURL = $HPSoftPaqDetails.URL
-						
+
 						# Replace FTP for HTTP for Bits Transfer Job
 						$DriverDownload = ($HPSoftPaqDetails.URL).TrimStart("ftp:")
 						$DriverCab = $ModelURL | Split-Path -Leaf
@@ -16730,11 +16730,11 @@ AABJRU5ErkJgggs='))
 					"Lenovo" {
 						global:Write-LogEntry -Value "- Setting Lenovo variables" -Severity 1 -SkipGuiLog $true
 						Find-LenovoModelType -Model $Model -OS $OS
-						
+
 						try {
 							global:Write-LogEntry -Value "- $Make $Model matching model type: $global:LenovoModelType" -Severity 1 -SkipGuiLog $false
 							global:Write-LogEntry -Value "- Looking up version based on $OSVersion and OS based on Windows $WindowsVersion" -Severity 1
-							
+
 							switch -wildcard ($WindowsVersion) {
 								"1*" {
 									$DriverDownload = ($global:LenovoModelDrivers | Where-Object {
@@ -16751,9 +16751,9 @@ AABJRU5ErkJgggs='))
 									} | Select-Object -ExpandProperty "#text" -First 1
 								}
 							}
-							
+
 							global:Write-LogEntry -Value "- Driver Download is $DriverDownload and type is $DownloadType" -Severity 1
-							
+
 							if (-not ([string]::IsNullOrEmpty($DriverDownload)) -and $DownloadType -notmatch "BIOS") {
 								# Fix URL malformation
 								global:Write-LogEntry -Value "- Driver package URL - $DriverDownload" -Severity 1
@@ -16764,12 +16764,12 @@ AABJRU5ErkJgggs='))
 								global:Write-ErrorOutput -Message "[Error] - Unable to find driver for $Make $Model" -Severity 3
 							}
 							$global:SkuValue = Find-LenovoModelType -Model $Model
-							
+
 						} catch [System.Exception] {
 							global:Write-ErrorOutput -Message "[Error] - $($_.Exception.Message)" -Severity 3
 							global:Write-ErrorOutput -Message "[Error] - Unable to find driver for $Make $Model" -Severity 3
 						}
-						
+
 					}
 					"Microsoft" {
 						global:Write-LogEntry -Value "- Setting Microsoft variables" -Severity 1 -SkipGuiLog $true
@@ -16783,12 +16783,12 @@ AABJRU5ErkJgggs='))
 						$global:SkuValue = $Model
 					}
 				}
-				
+
 				# Trim SKU values
 				$global:SkuValue = ([string]$($($global:SkuValue.split(" ")).Split(",") | Select-Object -Unique)).Replace(" ", ",")
-				
+
 				# =================== INITIATE DOWNLOADS ===================
-				
+
 				if ($ImportInto -ne "MDT") {
 					# Product Type Display
 					switch -wildcard ($ImportInto) {
@@ -16805,12 +16805,12 @@ AABJRU5ErkJgggs='))
 							Set-Location -Path $Global:TempDirectory
 						}
 					}
-					
+
 					if ($PlatformComboBox.Text -match "Intune") {
 						#Write-XMLLogicPackage -XMLType Drivers -PackageType Intune
 						#Write-XMLLogicPackage -XMLType BIOS -PackageType Intune
 					}
-					
+
 					if ($DownloadType -ne "Drivers") {
 						global:Write-LogEntry -Value "======== $Make $MODEL BIOS PROCESSING STARTED ========" -Severity 1
 						$BIOSUpdatePackage = ("BIOS Update - " + "$Make" + " " + $Model)
@@ -16918,7 +16918,7 @@ AABJRU5ErkJgggs='))
 											$Flash64BitZip = Join-Path -Path $FlashUtilDir -ChildPath ($Dell64BIOSUtil | Split-Path -Leaf)
 											$Flash64BitTemp = Join-Path -Path $Global:TempDirectory -ChildPath ($Dell64BIOSUtil | Split-Path -Leaf)
 											$Flash64BitExe = "Flash64W.exe"
-											
+
 											if ($DellFlashExtracted -eq $false) {
 												if ((Test-Path -Path $FlashUtilDir) -eq $false) {
 													global:Write-LogEntry -Value "- Creating Directory - $FlashUtilDir" -Severity 1
@@ -16936,13 +16936,13 @@ AABJRU5ErkJgggs='))
 													global:Write-ErrorOutput -Message "[Error] - $($_.Exception.Message)" -Severity 3
 													global:Write-ErrorOutput -Message "[Error] - BIOS flash utility failed to download. Check log for more details" -Severity 3
 												}
-												
+
 												# Add compression file system assemblies
 												Add-Type -AssemblyName "system.io.compression.filesystem"
-												
+
 												global:Write-LogEntry -Value "- Reading Dell $($Dell64BIOSUtil | Split-Path -Leaf)" -Severity 1
 												$DellTempFlashVersionDir = ([io.compression.zipfile]::OpenRead("$($Flash64BitTemp)") | Select-Object -ExpandProperty Entries -First 1 | Select-Object -ExpandProperty FullName -First 1).Trim("/")
-												
+
 												if (Test-Path -Path $(Join-Path -Path $($Flash64BitTemp) -ChildPath "$DellTempFlashVersionDir\$Flash64BitExe")) {
 													global:Write-LogEntry -Value "- Current Dell Flash64w already extracted" -Severity 1
 													$DellFlashExtracted = $true
@@ -16967,14 +16967,14 @@ AABJRU5ErkJgggs='))
 											} else {
 												global:Write-LogEntry -Value "- Dell Flash 64 EXE already extracted" -Severity 1
 											}
-											
+
 											# Read verion information
-											
+
 											if (Test-Path -Path (Join-Path -Path $FlashUtilDir -ChildPath $Flash64BitExe)) {
 												$DellFlashVersion = (Get-Item -Path (Join-Path -Path $FlashUtilDir -ChildPath $Flash64BitExe) | Get-Item | Select-Object -ExpandProperty VersionInfo).ProductVersion
 											}
 											$DellTempFlashVersion = ((Get-Childitem -Path $Global:TempDirectory -Recurse -Filter $Flash64BitExe) | Get-Item | Select-Object -ExpandProperty VersionInfo).ProductVersion
-											
+
 											if ([boolean]([system.Version]$DellTempFlashVersion -gt [System.Version]$DellFlashVersion) -eq $true) {
 												global:Write-LogEntry -Value "- Latest Dell Flash 64 EXE is $([System.Version]$DellTempFlashVersion)" -Severity 1
 												global:Write-LogEntry -Value "- Creating new/updated Dell Flash 64 source" -Severity 1
@@ -16999,7 +16999,7 @@ AABJRU5ErkJgggs='))
 											Get-Item -Path (Join-Path -path $FlashUtilDir -ChildPath $Flash64BitExe) | Copy-Item -Destination "$($BIOSUpdateRoot)" -Force
 											if ($Product -match "ConfigMgr") {
 												if (($Product -ne "Download Only") -and ((Test-Path -Path "$($BIOSUpdateRoot + $BIOSFile)")) -eq $true) {
-													# ================= Create BIOS Update Package ==================			
+													# ================= Create BIOS Update Package ==================
 													Set-Location -Path ($SiteCode + ":")
 													$BIOSModelPackage = Get-CMPackage -Name $BIOSUpdatePackage -Fast | Select-Object SourceDate, Version | Sort-Object SourceDate -Descending | Select-Object -First 1
 													if (($BIOSModelPackage.Version -ne $BIOSVer) -or ($BIOSModelPackage -eq $null)) {
@@ -17245,7 +17245,7 @@ AABJRU5ErkJgggs='))
 										$BIOSCVADownload = $BIOSDownload.Replace(".exe", ".cva")
 										$BIOSCVAFile = $BIOSCVADownload | Split-Path -Leaf
 										$HPBIOSTemp = Join-Path $TempDirectory "HPBIOSTemp\$Model"
-										
+
 										if (($BIOSDownload -like "*.exe") -and ($Make -eq "HP")) {
 											global:Write-LogEntry -Value "- BIOS Download URL Found: $BIOSDownload" -Severity 1
 											# Check for destination directory, create if required and download the BIOS upgrade file
@@ -17332,13 +17332,13 @@ AABJRU5ErkJgggs='))
 							} else {
 								Update-IntuneBIOSControlValues -OEM HP
 							}
-							
+
 						}
 						Set-Location -Path $global:TempDirectory
-						
+
 						if ($AddToSummary -eq $true) {
 							global:Write-LogEntry -Value "- Adding details to summary output" -Severity 1
-							
+
 							# Add to summary information
 							$DriverAutomationItem = New-Object System.Object
 							$DriverAutomationItem | Add-Member -MemberType NoteProperty -Name "Event Generated" -Value "$(Get-Date)" -Force
@@ -17348,7 +17348,7 @@ AABJRU5ErkJgggs='))
 							$DriverAutomationItem | Add-Member -MemberType NoteProperty -Name "Package Type" -Value "BIOS" -Force
 							if (-not ([string]::IsNullOrEmpty($ConfigMgrPackage.PackageID))) {
 								$DriverAutomationItem | Add-Member -MemberType NoteProperty -Name "ConfigMgr PackageID" -Value $($ConfiMgrPackage.PackageID) -Force
-								
+
 							}
 							$DriverAutomationItem | Add-Member -MemberType NoteProperty -Name "Version" -Value $BIOSVer -Force
 							$DriverAutomationItem | Add-Member -MemberType NoteProperty -Name "Action" -Value "Addition" -Force
@@ -17356,46 +17356,46 @@ AABJRU5ErkJgggs='))
 						}
 						global:Write-LogEntry -Value "======== $Make $Model BIOS PROCESSING FINISHED ========" -Severity 1
 					}
-					
+
 					if ((![string]::IsNullOrEmpty($DriverDownload)) -and ($DriverDownload -notmatch "badlink")) {
 						if ($DownloadType -ne "BIOS") {
 							# Driver variables & switches
 							$DriverSourceCab = ($DownloadRoot + $Model + "\Driver Cab\" + $DriverCab)
 							$DriverPackageDir = ($DriverCab).Substring(0, $DriverCab.length - 4)
 							$DriverCabDest = Join-Path -Path $PackageRoot -ChildPath $DriverPackageDir
-							
+
 							# Cater for Dell driver packages (both x86 and x64 drivers contained within a single package)
 							if ($Make -eq "Dell") {
 								$DriverExtractDest = ("$DownloadRoot" + $Model + "\" + "Windows$WindowsVersion-$DriverRevision")
 								$DriverPackageDest = ("$PackageRoot" + "$Model" + "-" + "Windows$WindowsVersion-$Architecture-$DriverRevision")
 							} else {
-								
+
 								# Cater for Microsoft Surface model naming
 								if ($Model -match ":") {
 									$Model = $Model.Replace(":", "_")
 								}
-								
+
 								If ($OSBuild -eq $null) {
 									$DriverExtractDest = ("$DownloadRoot" + $Model + "\" + "Windows$WindowsVersion-$Architecture-$DriverRevision")
 									$DriverPackageDest = ("$PackageRoot" + "$Model" + "\" + "Windows$WindowsVersion-$Architecture-$DriverRevision")
 								} else {
 									$DriverExtractDest = ("$DownloadRoot" + $Model + "\" + "Windows$WindowsVersion-$OSVersion-$Architecture-$DriverRevision")
 									$DriverPackageDest = ("$PackageRoot" + "$Model" + "\" + "Windows$WindowsVersion-$OSVersion-$Architecture-$DriverRevision")
-									
+
 								}
 								global:Write-LogEntry -Value "- Driver extract location set - $DriverExtractDest" -Severity 1
 								global:Write-LogEntry -Value "- Driver package location set - $DriverPackageDest" -Severity 1
-								
+
 								# Replace HP Model Slash
 								$DriverExtractDest = $DriverExtractDest -replace '/', '-'
 								$DriverPackageDest = $DriverPackageDest -replace '/', '-'
-								
+
 							}
 						}
 						if ((([string]$DriverExtractDest | Measure-Object -Character | Select-Object -ExpandProperty Characters) -ge "100") -and ($DriverExtractDest -like "\\*")) {
 							global:Write-LogEntry -Value "Warning: The UNC pathes you have specified currently exceed 50 characters in length. This can cause issues during the driver extract phase. If you have issues, creating a new share so only the server and base share names are used." -Severity 2
 						}
-						
+
 						# Allow for both Driver & Standard Program Packages destinations
 						if ($ImportInto -like "*Driver*") {
 							$DriverPackageDest = $DriverPackageDest + "\DriverPkg\"
@@ -17407,7 +17407,7 @@ AABJRU5ErkJgggs='))
 						$DriverCategoryName = $Make + "-" + $Model + "-" + $OperatingSystem + "-" + $DriverRevision
 						if (($DownloadType -ne "BIOS") -and ($ImportInto -ne "MDT")) {
 							global:Write-LogEntry -Value "======== $Make $PRODUCT $Model DRIVER PROCESSING STARTED ========" -Severity 1
-							# =============== Driver Cab Download =================				
+							# =============== Driver Cab Download =================
 							global:Write-LogEntry -Value "- $($Product): Latest driver revision found - $DriverRevision" -Severity 1
 							if ($ImportInto -match "ConfigMgr") {
 								Set-Location -Path ($SiteCode + ":")
@@ -17417,7 +17417,7 @@ AABJRU5ErkJgggs='))
 									} else {
 										$CMPackage = ("Drivers - " + "$Make " + $Model + " - " + $OperatingSystem + " " + $OSVersion + " " + $Architecture)
 									}
-									
+
 									global:Write-LogEntry -Value "- $($Product): Checking ConfigMgr for driver packages matching - $CMPackage" -Severity 1
 									# Allow for test/pilot driver packages
 									if ($ImportInto -match "Pilot") {
@@ -17438,34 +17438,34 @@ AABJRU5ErkJgggs='))
 								}
 								Set-Location -Path $global:TempDirectory
 							}
-							
+
 							try {
 								if ([string]::IsNullOrEmpty($ExistingPackageID)) {
 									global:Write-LogEntry -Value "- $($Product): New driver package detected - Processing" -Severity 1
 									#global:Write-LogEntry -Value "BETA: Model URL = $ModelURL" -Severity 1
 									#global:Write-LogEntry -Value "BETA: Driver Download Value = $DriverDownload" -Severity 1
-									
+
 									if ((-not ([string]::IsNullOrEmpty($ModelURL))) -and ($DriverDownload -ne "badLink")) {
 										# Cater for HP / Model Issue
 										$Model = $Model -replace '/', '-'
 										$Model = $Model.Trim()
-										
+
 										# Cater for Microsoft model naming based on SKU
 										$Model = $Model.Replace(":", "_")
-										
+
 										Set-Location -Path $global:TempDirectory
-										
+
 										# Check for destination directory, create if required and download the driver package
 										global:Write-LogEntry -Value "- $($Product): Calling content download function" -Severity 1
 										Invoke-ContentDownload -OperationalMode StandardPackages
-										
+
 										# Cater for HP / Model Issue
 										$Model = $Model -replace '/', '-'
-										
+
 										if (((Test-Path -Path "$($DownloadRoot + "$Model" + '\Driver Cab\' + $DriverCab)") -eq $true) -and ($DriverCab -ne $null) -and (($global:BitsJobByteSize -eq $((Get-Item -Path $($DownloadRoot + $Model + '\Driver Cab\' + $DriverCab)).Length)) -or ($PreviousDownload -eq $true))) {
 											global:Write-LogEntry -Value "- $($Product): Calling driver extract function" -Severity 1
 											Invoke-ContentExtract
-											
+
 											if ($ImportInto -like "*Standard*") {
 												# Obtain Package Information
 												Set-Location -Path ($SiteCode + ":")
@@ -17481,9 +17481,9 @@ AABJRU5ErkJgggs='))
 													$_.Version -eq $DriverRevision
 												}
 											}
-											
+
 											Set-Location -Path $global:TempDirectory
-											
+
 										} else {
 											global:Write-LogEntry -Value "- $($Product): $DriverCab file download failed" -Severity 3
 										}
@@ -17494,13 +17494,13 @@ AABJRU5ErkJgggs='))
 										global:Write-LogEntry -Value "- $($Product): Driver package not found for $Model running Windows $WindowsVersion $Architecture. Skipping $Model" -Severity 2
 										$DriverAutomationItem | Add-Member -MemberType NoteProperty -Name "Action" -Value "[Error] - OS support not found" -Force
 									}
-									
+
 									$AddToSummary = $true
-									
+
 									<#
 									# Update summary information
 									global:Write-LogEntry -Value "- Adding details to summary output" -Severity 1
-									
+
 									# Add to summary information
 									$DriverAutomationItem = New-Object System.Object
 									$DriverAutomationItem | Add-Member -MemberType NoteProperty -Name "Event Generated" -Value "$(Get-Date)" -Force
@@ -17510,25 +17510,25 @@ AABJRU5ErkJgggs='))
 									$DriverAutomationItem | Add-Member -MemberType NoteProperty -Name "Package Type" -Value "DRIVER" -Force
 									if (-not ([string]::IsNullOrEmpty($ConfigMgrPackage.PackageID))) {
 										$DriverAutomationItem | Add-Member -MemberType NoteProperty -Name "ConfigMgr PackageID" -Value $($ConfiMgrPackage.PackageID) -Force
-										
+
 									}
 									$DriverAutomationItem | Add-Member -MemberType NoteProperty -Name "Version" -Value $DriverRevision -Force
-									
+
 									$DriverAutomationSummary += $DriverAutomationItem
 									#>
 								} else {
 									global:Write-LogEntry -Value "- $($Product): Driver package ($($ExistingPackageID.Name) - $($ExistingPackageID.Version) ($($ExistingPackageID.PackageID))) already exists." -Severity 1
-									
+
 								}
 								global:Write-LogEntry -Value "======== $Make $PRODUCT $MODEL DRIVER PROCESSING FINISHED ========" -Severity 1
 							} catch [System.Exception] {
 								global:Write-LogEntry -Value "[Error] - $($_.Exception.Message)" -Severity 3; $AddToSummary = $false
 							}
-							
+
 							if ($AddToSummary -eq $true) {
-								
+
 								global:Write-LogEntry -Value "- Adding details to summary output" -Severity 1
-								
+
 								# Add to summary information
 								$DriverAutomationItem = New-Object System.Object
 								$DriverAutomationItem | Add-Member -MemberType NoteProperty -Name "Event Generated" -Value "$(Get-Date)" -Force
@@ -17538,19 +17538,19 @@ AABJRU5ErkJgggs='))
 								$DriverAutomationItem | Add-Member -MemberType NoteProperty -Name "Package Type" -Value "DRIVER" -Force
 								if (-not ([string]::IsNullOrEmpty($ConfigMgrPackage.PackageID))) {
 									$DriverAutomationItem | Add-Member -MemberType NoteProperty -Name "ConfigMgr PackageID" -Value $($ConfiMgrPackage.PackageID) -Force
-									
+
 								}
 								$DriverAutomationItem | Add-Member -MemberType NoteProperty -Name "Version" -Value $DriverRevision -Force
 								$DriverAutomationItem | Add-Member -MemberType NoteProperty -Name "Action" -Value "Addition" -Force
 								$DriverAutomationSummary += $DriverAutomationItem
-								
+
 							}
-							
+
 						}
 						Set-Location -Path $global:TempDirectory
 					}
 				}
-				
+
 				if (($ImportInto -like "*Both*") -or ($ImportInto -eq "MDT")) {
 					global:Write-LogEntry -Value "======== $Make $PRODUCT $MODEL DRIVER PROCESSING STARTED ========" -Severity 1
 					Set-Location -Path $global:TempDirectory
@@ -17565,16 +17565,16 @@ AABJRU5ErkJgggs='))
 						# =================== MDT Driver Download =====================
 						global:Write-LogEntry -Value "========  $Product Driver Download ========" -Severity 1
 						global:Write-LogEntry -Value "- $($Product): Starting $Product driver download process" -Severity 1
-						# =================== DEFINE VARIABLES =====================					
+						# =================== DEFINE VARIABLES =====================
 						global:Write-LogEntry -Value "- $($Product): Driver package base location set to $DownloadRoot" -Severity 1
 						# Operating System Version
 						$OperatingSystem = ("Windows " + $WindowsVersion)
-						# =============== MDT Driver Cab Download =================					
+						# =============== MDT Driver Cab Download =================
 						# Cater for HP / Model Issue
 						$Model = $Model -replace '/', '-'
 						if (($ModelURL -ne $null) -and ($ModelURL -ne "badLink")) {
 							Invoke-ContentDownload -OperationalMode StandardPackages
-							
+
 							# Check for destination directory, create if required and download the driver cab
 							if ((Test-Path -Path "$($DownloadRoot + $Model + '\Driver Cab\' + $DriverCab)") -eq $false) {
 								if ((Test-Path -Path "($DownloadRoot + $Model + '\Driver Cab\')") -eq $false) {
@@ -17595,9 +17595,9 @@ AABJRU5ErkJgggs='))
 							} else {
 								global:Write-LogEntry -Value "- $($Product): Skipping $DriverCab.. Driver pack already extracted" -Severity 2
 							}
-							
+
 							if (((Test-Path -Path "$($DownloadRoot + $Model + '\Driver Cab\' + $DriverCab)") -eq $true) -and ($DriverCab -ne $null)) {
-								# =============== MDT Driver EXTRACT ====================							
+								# =============== MDT Driver EXTRACT ====================
 								if ($DownloadType -ne "BIOS") {
 									# Driver variables & switches
 									$DriverSourceCab = ($DownloadRoot + $Model + "\Driver Cab\" + $DriverCab)
@@ -17609,12 +17609,12 @@ AABJRU5ErkJgggs='))
 									$DriverExtractDest = ("$DownloadRoot" + $Model + "\" + "Windows$WindowsVersion-$DriverRevision")
 									$DriverPackageDest = ("$PackageRoot" + "$Model" + "-" + "Windows$WindowsVersion-$Architecture-$DriverRevision")
 								} else {
-									
+
 									# Cater for Microsoft Surface model naming
 									if ($Model -match ":") {
 										$Model = $Model.Replace(":", "_")
 									}
-									
+
 									If ($OSBuild -eq $null) {
 										$DriverExtractDest = ("$DownloadRoot" + $Model + "\" + "Windows$WindowsVersion-$Architecture-$DriverRevision")
 										$DriverPackageDest = ("$PackageRoot" + "$Model" + "\" + "Windows$WindowsVersion-$Architecture-$DriverRevision")
@@ -17629,11 +17629,11 @@ AABJRU5ErkJgggs='))
 									$DriverPackageDest = $DriverPackageDest -replace '/', '-'
 								}
 								if ((Test-Path -Path "$DriverExtractDest") -eq $false) {
-									# Extract Drivers From Driver							
+									# Extract Drivers From Driver
 									New-Item -ItemType Directory -Path "$DriverExtractDest"
 								}
 								Start-Sleep -Seconds 2
-								
+
 								if ((Get-ChildItem -Path "$DriverExtractDest" -Recurse -Filter *.inf -File).Count -eq 0) {
 									global:Write-LogEntry -Value "======== $PRODUCT DRIVER EXTRACT ========" -Severity 1
 									global:Write-LogEntry -Value "- $($Product): Expanding driver CAB source file: $DriverCab" -Severity 1
@@ -17652,7 +17652,7 @@ AABJRU5ErkJgggs='))
 										global:Write-LogEntry -Value "- $($Product): Extracting $Make drivers to $DriverExtractDest" -Severity 1
 										Start-Process -FilePath $($DownloadRoot + $Model + "\Driver Cab\" + $DriverCab) -ArgumentList $LenovoSilentSwitches -Verb RunAs
 										$DriverProcess = ($DriverCab).Substring(0, $DriverCab.length - 4)
-										
+
 										# Wait for Lenovo Driver Process To Finish
 										While ((Get-Process).name -contains $DriverProcess) {
 											global:Write-LogEntry -Value "- $($Product): Waiting for extract process (Process: $DriverProcess) to complete..  Next check in 30 seconds" -Severity 1
@@ -17672,7 +17672,7 @@ AABJRU5ErkJgggs='))
 											global:Write-LogEntry -Value "- $($Product): Waiting for extract process (Process ID: $($DriverProcess.ID)) To Complete..  Next check in 30 seconds" -Severity 1
 											Start-Sleep -seconds 30
 										}
-										# Move Microsoft Extracted Drivers To UNC Share 
+										# Move Microsoft Extracted Drivers To UNC Share
 										$MicrosoftExtractDirs = Get-ChildItem -Path $MicrosoftTemp -Directory -Recurse | Where-Object {
 											$_.Name -match "Drivers"
 										}
@@ -17690,7 +17690,7 @@ AABJRU5ErkJgggs='))
 										}
 									}
 								}
-								# =============== MDT Driver Import ====================							
+								# =============== MDT Driver Import ====================
 								Invoke-MDTImportProcess -OperatingSystem $OperatingSystem -DriverExtractDest $DriverExtractDest
 							} else {
 								global:Write-LogEntry -Value "- $($Product): Error downloading $DriverCab" -Severity 3
@@ -17699,15 +17699,15 @@ AABJRU5ErkJgggs='))
 					} else {
 						global:Write-ErrorOutput -Message "[Error] - MDT PowerShell Commandlets not found - Path specified $MDTPSLocation" -Severity 3
 					}
-					
+
 					global:Write-LogEntry -Value "======== $Make $PRODUCT $MODEL PROCESSING FINISHED ========" -Severity 1
 				}
-				
+
 				# Remove legacy driver packages
 				if ($RemoveLegacyDriverCheckbox.Checked -eq $true) {
 					Set-Location -Path ($SiteCode + ":")
 					global:Write-LogEntry -Value "======== Superseded Driver Package Option Processing ========" -Severity 1
-					
+
 					# Driver package logic
 					$ModelDriverPacks = Get-CMDriverPackage -Fast -name "*$Model -*$WindowsVersion*$Architecture*" | Select-Object Name, PackageID, SourceDate | Sort-Object SourceDate -Descending
 					$LatestDriverPack = $ModelDriverPacks | Sort-Object SourceDate -Descending | Select-Object -First 1
@@ -17724,16 +17724,16 @@ AABJRU5ErkJgggs='))
 						global:Write-LogEntry -Value "- $($Product): Removing $($LegacyDriverPack.Name) / Package ID $($LegacyDriverPack.PackageID)" -Severity 1
 						Remove-CMDriverPackage -id $LegacyDriverPack.PackageID -Force
 					}
-					
+
 					# Standard package logic
 					switch -wildcard ($PlatformComboBox.Text) {
 						*Pilot* {
 							$ModelDriverPacks = Get-CMPackage -name "*Pilot*$Model -*$WindowsVersion*$Architecture*" -Fast | Select-Object Name, PackageID, SourceDate, Version | Sort-Object SourceDate -Descending
-							
+
 						}
 						default {
 							$ModelDriverPacks = Get-CMPackage -name "*$Model -*$WindowsVersion*$Architecture*" -Fast | Select-Object Name, PackageID, SourceDate, Version | Sort-Object SourceDate -Descending
-							
+
 						}
 					}
 					$LatestDriverPackage = $ModelDriverPacks | Sort-Object SourceDate -Descending | Select-Object -First 1
@@ -17747,7 +17747,7 @@ AABJRU5ErkJgggs='))
 					}
 					Set-Location -Path $global:TempDirectory
 				}
-				
+
 				# Remove legacy BIOS packages
 				if ($RemoveLegacyBIOSCheckbox.Checked -eq $true) {
 					Set-Location -Path ($SiteCode + ":")
@@ -17764,7 +17764,7 @@ AABJRU5ErkJgggs='))
 					}
 					Set-Location -Path $global:TempDirectory
 				}
-				
+
 				$ProgressBar.Increment(1)
 				$ModelProgressOverlay.Increment(1)
 				$RemainingModels--
@@ -17772,13 +17772,13 @@ AABJRU5ErkJgggs='))
 				global:Write-LogEntry -Value "- Remaining models to process: $RemainingModels" -Severity 1
 			}
 		}
-		
+
 		# OEM Catalog Drivers
 		if ($ValidationErrors -eq 0 -and $DownloadJobType -eq "OEMDriverPackages") {
-			
+
 			# Set Manufacturer Name
 			$Make = "HP"
-			
+
 			# Set Progress Bar Values
 			$HPSoftPaqCount = 0
 			for ($Row = 0; $Row -lt $HPSoftpaqDataGrid.RowCount; $Row++) {
@@ -17786,30 +17786,30 @@ AABJRU5ErkJgggs='))
 					$HPSoftPaqCount++
 				}
 			}
-			
+
 			# Initialise Job Progress Bar
 			$ProgressBar.Maximum = $HPSoftPaqCount
 			$ModelProgressOverlay.Maximum = $HPSoftPaqCount
 			$TotalDownloads.Text = $HPSoftPaqCount
 			$RemainingDownloadCount = $HPSoftPaqCount
 			$RemainingDownloads.Text = $RemainingDownloadCount
-			
-			
+
+
 			# Directory used for driver and BIOS downloads
 			$DownloadRoot = [string](Join-Path -Path $($DownloadPathTextBox.text) -ChildPath "\$Make\")
-			
+
 			# Directory used by ConfigMgr for packages
 			if ($ImportInto -like "*ConfigMgr*") {
 				$PackageRoot = [string]$(Join-Path -Path $($PackagePathTextBox.text) -ChildPath "\$Make\")
 			} elseif ($ImportInto -match "Download") {
 				$PackageRoot = $DownloadRoot
 			}
-			
+
 			# Set Configuration Manager values
 			if ($ImportInto -match "ConfigMgr") {
 				Set-ConfigMgrFolder
 			}
-			
+
 			# Loop through all selected rows and download / package content
 			for ($Row = 0; $Row -lt $HPSoftpaqDataGrid.RowCount; $Row++) {
 				if ($HPSoftpaqDataGrid.Rows[$Row].Cells[0].Value -eq $true) {
@@ -17824,20 +17824,20 @@ AABJRU5ErkJgggs='))
 						[string]$HPSoftPaqPkgPath = $(Join-Path -Path $PackageRoot -ChildPath "SoftPaqs\$HPSoftPaqID")
 						[string]$HPSoftPaqFileName = $HPSoftPaqURL | Split-Path -Leaf
 						[string]$HPSoftPaqOSBuilds = $HPSoftpaqDataGrid.Rows[$Row].Cells[11].Value
-						
+
 						# Set Progress Bar Values
 						$CurrentDownload.Text = $HPSoftPaqTitle
 						$TotalDownloads.Text = $HPSoftPaqCount
-						
+
 						global:Write-LogEntry -Value "======== HP SoftPaq Download ========" -Severity 1
 						global:Write-LogEntry -Value "SoftPaq: Package path set to $HPSoftPaqPkgPath" -Severity 1
-						
+
 						Invoke-ContentDownload -OperationalMode DriverAppPackages -HPSoftPaqID $HPSoftPaqID -HPSoftPaqTitle $HPSoftPaqTitle -HPSoftPaqVersion $HPSoftPaqVersion -HPSoftPaqURL $HPSoftPaqURL -HPSoftPaqSwitches $HPSoftPaqSwitches -HPSoftPaqBaseBoards $HPSoftPaqBaseBoards -HPSoftPaqPkgPath $HPSoftPaqPkgPath
-						
+
 						# Write SoftPaq XML
 						global:Write-LogEntry -Value "SoftPaq: Writing HP silent install SoftPaq details into XML" -Severity 1
 						Write-SoftPaqXML -Path $HPSoftPaqPkgPath -SetupFile $HPSoftPaqFileName -InstallSwitches $HPSoftPaqSwitches -BaseBoardValues $HPSoftPaqBaseBoards -SoftPaqID $HPSoftPaqID
-						
+
 						# Call Packaging Function - Configuration Manager
 						if ($ImportInto -match "ConfigMgr") {
 							global:Write-LogEntry -Value "SoftPaq: Creating HP SoftPaq Package" -Severity 1
@@ -17851,7 +17851,7 @@ AABJRU5ErkJgggs='))
 							global:Write-LogEntry -Value "SoftPaq: OS Build(s) = $HPSoftPaqOSBuilds" -Severity 1
 							Invoke-SoftPaqCreation -HPSoftPaqID $HPSoftPaqID -HPSoftPaqTitle $HPSoftPaqTitle -HPSoftPaqVersion $HPSoftPaqVersion -HPSoftPaqPkgPath $HPSoftPaqPkgPath -HPSoftPaqFileName $HPSoftPaqFileName -HPSoftPaqOSBuilds $HPSoftPaqOSBuilds -HPSoftPaqSwitches $HPSoftPaqSwitches
 						}
-						
+
 						$RemainingDownloadCount--
 						$RemainingDownloads.Text = $RemainingDownloadCount
 						global:Write-LogEntry -Value "- Remaining SoftPaq downloads to process: $RemainingDownloadCount" -Severity 1
@@ -17863,7 +17863,7 @@ AABJRU5ErkJgggs='))
 				}
 			}
 		}
-		
+
 		if ($Product -match "ConfigMgr") {
 			# Rename legacy SoftPaqs
 			if ($HPCheckBox.Checked -eq $true) {
@@ -17874,7 +17874,7 @@ AABJRU5ErkJgggs='))
 								$_.Count -gt 1
 							}).Name
 					}) | Select-Object Name -Unique
-				
+
 				if ($LegacySoftPaqList.Count -gt 1) {
 					global:Write-LogEntry -Value "======== Retiring Superseded SoftPaqs =======" -Severity 1
 					foreach ($LegacySoftPaq in $LegacySoftPaqList.Name) {
@@ -17890,7 +17890,7 @@ AABJRU5ErkJgggs='))
 				}
 				Set-Location -Path $global:TempDirectory
 			}
-			
+
 			# Renaming Hewlett-Packard packages to HP
 			if ($HPCheckBox.Checked -eq $true) {
 				Set-Location -Path ($SiteCode + ":")
@@ -17916,7 +17916,7 @@ AABJRU5ErkJgggs='))
 				Set-Location -Path $global:TempDirectory
 			}
 		}
-		
+
 		# Clean up processes
 		if ($ValidationErrors -eq 0) {
 			if (($CleanUnusedCheckBox.Checked -eq $true) -or ($RemoveDriverSourceCheckbox.Checked -eq $true)) {
@@ -17948,7 +17948,7 @@ AABJRU5ErkJgggs='))
 					if ((($DownloadPathTextBox.Text) -ne $null) -and ((Test-Path -Path ($DownloadPathTextBox.text)) -eq $true)) {
 						global:Write-LogEntry -Value "- $($Product): Removing driver download and extracted source driver files from $($DownloadPathTextBox.Text)" -Severity 1
 						# Remove driver cabinets and extracted drivers
-						# Set-Location -Path ($DownloadPathTextBox.Text)		
+						# Set-Location -Path ($DownloadPathTextBox.Text)
 						$LegacySources = Get-ChildItem -Path ($DownloadPathTextBox.Text) -Recurse -Directory -Depth 2 | Where-Object {
 							$_.FullName -match "Driver Cab" -or $_.FullName -match "Windows"
 						}
@@ -17971,11 +17971,11 @@ AABJRU5ErkJgggs='))
 					}
 				}
 			}
-			
+
 			# Increment status counter
 			$ProgressBar.Increment(1)
 			$ModelProgressOverlay.Increment(1)
-			
+
 			# Create XML logic file if required
 			if ($CreateXMLLogicPackage.Checked -eq $true -and $ImportInto -match "ConfigMgr") {
 				global:Write-LogEntry -Value "======== Creating/Recreating XML Logic Files =======" -Severity 1
@@ -17989,23 +17989,23 @@ AABJRU5ErkJgggs='))
 				}
 				Write-XMLLogicPackage -Distribute
 			} elseif ($PlatformComboBox.Text -match "Intune") {
-				
+
 				# Update BIOS Control Datagrid
-				
+
 				$SelectionTabs.SelectedTab = $IntuneBIOSControl
 				Get-IntuneBIOSControlValues
-				
-				# Update to loop through and detect XML here			
+
+				# Update to loop through and detect XML here
 				#Write-XMLLogicPackage -XMLType Drivers -PackageType Intune -Distribute
 				#Write-XMLLogicPackage -XMLType BIOS -PackageType Intune -Distribute
 			}
-			
+
 			if ($DriverAutomationSummary.count -ge 1) {
 				$DriverAutomationSummary | export-csv -Path $DriverAutomationSummaryLog -NoTypeInformation -Append -Force
 			}
-			
+
 			$JobStatus.Text = "Completed"
-			
+
 			global:Write-LogEntry -Value "======== PROCESS SUMMARY ========" -Severity 1
 			if ($DriverAutomationSummary.count -ge 1) {
 				global:Write-LogEntry -Value "- Added / updated $(($DriverAutomationSummary | Where-Object {
@@ -18015,16 +18015,16 @@ AABJRU5ErkJgggs='))
 							$_."Package Type" -match "Driver"
 						}).count) Driver packages" -Severity 1
 				global:Write-LogEntry -Value "- Full details available here: $DriverAutomationSummaryLog" -Severity 1
-				
+
 			}
 			global:Write-LogEntry -Value "======== FINISHED PROCESSING ========" -Severity 1
-			
+
 		} elseif ($ValidationErrors -gt 0) {
 			global:Write-LogEntry -Value "======== Validation Error(s) ========" -Severity 3
 			global:Write-LogEntry -Value "$($ValidationErrors) validation errors have occurred. Please review the log located at $global:LogFilePath." -Severity 3
 		}
 	}
-	
+
 	# Used to create scheduled task jobs
 	function Schedule-Downloads {
 		if ((Get-ScheduledTask | Where-Object {
@@ -18049,7 +18049,7 @@ AABJRU5ErkJgggs='))
 			global:Write-LogEntry -Value "WARNING: Scheduled task already exists." -Severity 2
 		}
 	}
-	
+
 	function Invoke-ContentExtract {
 		global:Write-LogEntry -Value "- $($Product): $DriverCab - File exists processing driver package" -Severity 1
 		if (![string]::IsNullOrEmpty($global:BitsJobByteSize)) {
@@ -18086,7 +18086,7 @@ AABJRU5ErkJgggs='))
 						Start-Sleep -seconds 30
 					}
 				}
-				
+
 			}
 			if ($Make -eq "HP") {
 				Invoke-HPSoftPaqExpand -SoftPaqType Drivers
@@ -18117,7 +18117,7 @@ AABJRU5ErkJgggs='))
 		} elseif ($ImportInto -match "XML") {
 			# Output or Append XML
 			Write-XMLModels -XMLPath $DownloadPath -Make $Make -Model $Model -MatchingValues $([string]$global:SkuValue) -OperatingSystem $OSComboBox.SelectedItem -Architecture $ArchitectureComboxBox.SelectedItem -Platform "XML"
-			
+
 			global:Write-LogEntry -Value "======== DRIVER FALLBACK FOLDERS ========" -Severity 1
 			# Create driver fall back package folder structure
 			foreach ($OS in $($OSComboBox.Items)) {
@@ -18134,7 +18134,7 @@ AABJRU5ErkJgggs='))
 			}
 		}
 	}
-	
+
 	# Test Active Directory Credentials
 	function Test-Credentials {
 		try {
@@ -18165,18 +18165,18 @@ AABJRU5ErkJgggs='))
 			Return $false
 		}
 	}
-	
+
 	function Confirm-Settings {
-		
+
 		if ((($PlatformComboBox.SelectedText -ne $null -and $DownloadComboBox.SelectedText -ne $null -and $OSComboBox.SelectedText -ne $null -and $ArchitectureComboxBox.Text -ne $null))) {
 			$global:Validation = $true
-			
+
 		} else {
 			$global:Validation = $false
 		}
 		global:Write-LogEntry -Value "- Validation state is $($global:Validation)" -Severity 1
 	}
-	
+
 	function Confirm-ProxyAccess {
 		param (
 			[parameter(Mandatory = $true)]
@@ -18192,7 +18192,7 @@ AABJRU5ErkJgggs='))
 			[String[]][ValidateNotNullOrEmpty()]
 			[string]$Password
 		)
-		
+
 		global:Write-LogEntry -Value "======== PROXY SERVER VALIDATION ========" -Severity 1
 		$Proxy = New-Object System.Net.WebProxy($ProxyServer)
 		$SecurePassword = $Password | ConvertTo-SecureString -AsPlainText -Force
@@ -18202,7 +18202,7 @@ AABJRU5ErkJgggs='))
 		$WebClient = New-Object System.Net.WebClient
 		$WebClient.Proxy = $global:ProxyServer
 		global:Write-LogEntry -Value "Proxy: Proxy server set to $ProxyServer" -Severity 1
-		
+
 		Try {
 			global:Write-LogEntry -Value "Proxy: Testing authenticated proxy server access to $URL" -Severity 1
 			$Content = $WebClient.DownloadString("http://" + $($URL.Host))
@@ -18226,7 +18226,7 @@ AABJRU5ErkJgggs='))
 			global:Write-LogEntry -Value "Proxy: Unable to access URL: $URL. Error message: $($_.Exception.Message)" -Severity 3
 		}
 	}
-	
+
 	function Get-MDTEnvironment {
 		$MDTDeploymentShareNames.Clear()
 		$DeploymentShareGrid.Rows.Clear()
@@ -18274,14 +18274,14 @@ AABJRU5ErkJgggs='))
 			$MDTScriptTextBox.BackColor = 'Yellow'
 		}
 	}
-	
+
 	function Set-UpdateNotice {
 		$NewVersionLabel.visible = $true
 		$NewVersion.visible = $true
 		$NewVersion.text = $NewRelease
 		$GitHubLaunchButton.visible = $true
 	}
-	
+
 	function Update-ConfigMgrPkgList {
 		if (($PackageTypeCombo.Text -ne $null) -and ($DeploymentStateCombo.Text -ne $null)) {
 			try {
@@ -18315,7 +18315,7 @@ AABJRU5ErkJgggs='))
 				Set-Location -Path $global:TempDirectory
 				$PackageUpdatePanel.visible = $false
 				$PackageUpdateNotice.visible = $false
-				
+
 				# Sort data grid
 				$PackageGrid.Sort($PackageGrid.Columns[1], [System.ComponentModel.ListSortDirection]::Ascending)
 			} catch [System.Exception] {
@@ -18323,7 +18323,7 @@ AABJRU5ErkJgggs='))
 			}
 		}
 	}
-	
+
 	function Update-MakeModelList {
 		if (($PackageTypeCombo.Text -ne $null) -and ($DeploymentStateCombo.Text -ne $null)) {
 			try {
@@ -18355,7 +18355,7 @@ AABJRU5ErkJgggs='))
 			}
 		}
 	}
-	
+
 	function Move-ConfigMgrPkgs {
 		$PackageUpdateNotice.text = "Changing package state.."
 		$PackageUpdatePanel.visible = $true
@@ -18490,14 +18490,14 @@ AABJRU5ErkJgggs='))
 							$PackageGrid.CommitEdit('RowDeletion')
 						}
 						$RowCount--
-						
+
 						# Clear package name
 						$NewPackageName = $null
 					}
 				}
 			} Until ($RowCount -eq 0)
 			Update-ConfigMgrPkgList
-			
+
 			# Create XML logic file if required
 			if ($CreateXMLLogicPackage.Checked -eq $true -and $PlatformComboBox.Text -match "ConfigMgr") {
 				global:Write-LogEntry -Value "======== Updating XML Logic Files =======" -Severity 1
@@ -18513,7 +18513,7 @@ AABJRU5ErkJgggs='))
 			} elseif ($PlatformComboBox.Text -match "Intune") {
 				Write-XMLLogicPackage -XMLType Drivers -PackageType Intune
 			}
-			
+
 			Set-Location -Path $global:TempDirectory
 			$ConfigMgrPkgActionCombo.SelectedIndex = "-1"
 		} catch [System.Exception] {
@@ -18522,11 +18522,11 @@ AABJRU5ErkJgggs='))
 		$PackageUpdatePanel.visible = $false
 		$PackageUpdateNotice.visible = $false
 	}
-	
+
 	function Create-CustomPkg {
-		
+
 		$ConfigMgrPkg = {
-			
+
 			# Create ConfigMgr Package
 			$PackageRoot = Join-Path -Path $PackagePathTextBox.Text.Trimend("\") -ChildPath "\$Make\"
 			$SiteCode = $SiteCodeText.Text
@@ -18583,14 +18583,14 @@ AABJRU5ErkJgggs='))
 			}
 			Set-Location -Path $global:TempDirectory
 		}
-		
+
 		$MDTPkg = {
 			# Create MDT Package
 			$Product = "MDT"
 			Get-MDTDeploymentShares
 			Invoke-MDTImportProcess -DriverExtractDest $PackageSource -OperatingSystem $OperatingSystem
 		}
-		
+
 		$XMLPkg = {
 			# Create / Add XML Package
 			$Product = "XML"
@@ -18613,7 +18613,7 @@ AABJRU5ErkJgggs='))
 		# Initialise Job Progress Bar
 		$ProgressBar.Maximum = $CustomPkgDataGrid.Rows.Count
 		$ModelProgressOverlay.Maximum = $CustomPkgDataGrid.Rows.Count
-		
+
 		global:Write-LogEntry -Value "======== Processing Custom Packages ========" -Severity 1
 		Do {
 			for ($Row = 0; $Row -lt $CustomPkgDataGrid.Rows.Count; $Row++) {
@@ -18640,7 +18640,7 @@ AABJRU5ErkJgggs='))
 								$Make = "Dell"
 							}
 						}
-						
+
 						if (![string]::IsNullOrEmpty($CustomPkgDataGrid.Rows[$Row].Cells["Model"].Value)) {
 							$Model = $($CustomPkgDataGrid.Rows[$Row].Cells["Model"].Value)
 							if (![string]::IsNullOrEmpty($CustomPkgDataGrid.Rows[$Row].Cells["BaseBoard"].Value)) {
@@ -18724,16 +18724,16 @@ AABJRU5ErkJgggs='))
 						global:Write-LogEntry -Value "- [Warning] - Model field entry on row $Row is empty." -Severity 2
 					}
 				}
-				
+
 				$ProgressBar.Increment(1)
 				$ModelProgressOverlay.Increment(1)
 				$RemainingModels--
 			}
 		} While ($Row -lt $CustomPkgDataGrid.Rows.Count)
 	}
-	
+
 	function Import-CSVModels {
-		
+
 		$CSVFileBrowse = New-Object system.windows.forms.openfiledialog
 		$CSVFileBrowse.MultiSelect = $false
 		$CSVFileBrowse.Filter = "CSV Files (*.csv) | *.csv"
@@ -18788,7 +18788,7 @@ AABJRU5ErkJgggs='))
 			global:Write-ErrorOutput -Message "[Error] - $($_.Exception.Message)" -Severity 3
 		}
 	}
-	
+
 	function Invoke-MDTImportProcess {
 		param (
 			[parameter(Mandatory = $false)]
@@ -18797,25 +18797,25 @@ AABJRU5ErkJgggs='))
 			[parameter(Mandatory = $false)]
 			[String[]][ValidateNotNullOrEmpty()]
 			[String]$OperatingSystem
-			
+
 		)
 		# Get Windows Build Number From Version Hash Table
-		
+
 		switch ($OperatingSystem) {
 			"*Windows 10*" {
 				$OSVersion = ($OperatingSystem).Split(" ") | Select-Object -Last 1
-				
+
 				# Lookup Windows build number information
 				$OSBuild = $WindowsBuildHashTable.Item("$OSVersion")
 			}
 			"*Windows 11*" {
 				$OSVersion = ($OperatingSystem).Split(" ") | Select-Object -Last 1
-				
+
 				# Lookup Windows build number information
 				$OSBuild = $WindowsBuildHashTable.Item("Win11-$OSVersion")
 			}
 		}
-		
+
 		global:Write-LogEntry -Value "======== $PRODUCT Driver Import ========" -Severity 1
 		global:Write-LogEntry -Value "- $($Product): Starting MDT Driver Import Process" -Severity 1
 		foreach ($MDTDeploymentShare in $global:MDTDeploymentShares) {
@@ -18849,10 +18849,10 @@ AABJRU5ErkJgggs='))
 				}
 			}
 			$Make = Set-Manufacturer -Make $Make
-			# =============== MDT Driver Import ====================	
+			# =============== MDT Driver Import ====================
 			$OperatingSystemDir = ($OperatingSystem.TrimEnd() + " " + $Architecture)
 			global:Write-LogEntry -Value "- $($Product): Creating $($MDTDriverStructureCombo.SelectedItem) folder structure" -Severity 1
-			
+
 			# Folder structure path selection
 			switch -wildcard ($MDTDriverStructureCombo.SelectedItem) {
 				"OperatingSystemDir\*" {
@@ -18900,11 +18900,11 @@ AABJRU5ErkJgggs='))
 					}
 				}
 			}
-			
+
 			global:Write-LogEntry -Value "- $($Product): Importing MDT driver pack for $Make $Model - Revision $DriverRevision" -Severity 1
 			global:Write-LogEntry -Value "- $($Product): MDT Driver Path = $MDTDriverPath" -Severity 1
 			try {
-				# =============== MDT Driver Import ====================				
+				# =============== MDT Driver Import ====================
 				if ($Make -match "Dell") {
 					$DriverFolder = (Get-ChildItem -Path "$DriverExtractDest" -Recurse -Directory | Where-Object {
 							$_.Name -eq "$Architecture"
@@ -18922,9 +18922,9 @@ AABJRU5ErkJgggs='))
 			}
 		}
 	}
-	
+
 	function Get-MDTDeploymentShares {
-		
+
 		$global:MDTDeploymentShares = $($DeploymentShareGrid.Rows | Where-Object {
 				$_.Cells[0].Value -eq $true
 			} | ForEach-Object {
@@ -18940,15 +18940,15 @@ AABJRU5ErkJgggs='))
 			global:Write-LogEntry -Value "Warning: No MDT deployment shares have been selected" -Severity 2
 		}
 	}
-	
+
 	function Enable-DriverFBPkg {
 		if ((![string]::IsNullOrEmpty($FallbackOSCombo.Text)) -and (![string]::IsNullOrEmpty($FallbackArcCombo.Text))) {
 			$CreateFallbackButton.Enabled = $true
 		}
 	}
-	
+
 	function Create-DriverFBPkg {
-		
+
 		try {
 			$WindowsVersion = $FallbackOSCombo.Text
 			switch -wildcard ($FallbackArcCombo.Text) {
@@ -18960,7 +18960,7 @@ AABJRU5ErkJgggs='))
 				}
 			}
 			$Manufacturer = $FallbackManufacturer.Text
-			
+
 			# Create ConfigMgr Package
 			$PackageRoot = Join-Path -Path $(($PackagePathTextBox.Text).Trimend("\")) -ChildPath "Driver Fallback"
 			$DriverPackageDest = Join-Path -Path $PackageRoot -ChildPath "$Manufacturer\$WindowsVersion-$Architecture"
@@ -18999,13 +18999,13 @@ AABJRU5ErkJgggs='))
 			global:Write-ErrorOutput -Message "[Error] - $($_.Exception.Message)" -Severity 3
 		}
 	}
-	
+
 	function Test-ConfigMgrWebSVC {
-		
+
 		# WebService Variables
 		[uri]$URL = $ConfigMgrWebURL.Text
 		[string]$SecretKeyValue = $SecretKey.Text
-		
+
 		# Get ConfigMgr WebService information
 		try {
 			$WebServiceDetails = Invoke-WebRequest -Uri $URL
@@ -19023,10 +19023,10 @@ AABJRU5ErkJgggs='))
 				global:Write-LogEntry -Value "Connecting to the ConfigMgr WebService using URL - $URL" -Severity 1
 				# Construct new web service proxy
 				$WebService = New-WebServiceProxy -Uri $URL -ErrorAction Stop
-				# Upatte WebService info			
+				# Upatte WebService info
 				$WebServiceIntro = ($WebServicedetails.ParsedHtml.body.getElementsByClassName('intro') | Select-Object -ExpandProperty InnerText)
 				if ($WebServiceIntro -like "*(v*)*") {
-					# Legacy Web Service 
+					# Legacy Web Service
 					$WebServiceBuild = $WebServiceIntro.Split("(")[1].TrimEnd(")")
 				} else {
 					# Web Service 1.5.0 onwards
@@ -19047,22 +19047,22 @@ AABJRU5ErkJgggs='))
 			global:Write-LogEntry -Value "WebService status description - $($WebServiceError.Response.StatusDescription)" -Severity 1
 			$WebServiceStatusDescription.Text = $WebServiceError.Response.StatusDescription
 		}
-		
+
 		# Call ConfigMgr WebService for a list of packages
 		try {
 			$WebServiceDriverPackages = $WebService.GetCMPackage($SecretKeyValue, "Driver") | Sort-Object PackageName
 			$WebServiceBIOSPackages = $WebService.GetCMPackage($SecretKeyValue, "BIOS") | Sort-Object PackageName
-			
+
 			if (($WebServiceDriverPackages.Count -gt 0) -or ($WebServiceBIOSPackages.Count -gt 0)) {
 				$DriverPackageCount.Text = $WebServiceDriverPackages.Count
 				global:Write-LogEntry -Value "Retrieved a total of $($WebServiceDriverPackages.Count) driver packages from web service" -Severity 1
-				
+
 				foreach ($Package in $WebServiceDriverPackages) {
 					$WebServiceDataGrid.Rows.Add($Package.PackageName, $Package.PackageVersion, $Package.PackageID)
 				}
 				global:Write-LogEntry -Value "Retrieved a total of $($WebServiceBIOSPackages.Count) BIOS packages from web service" -Severity 1
 				$BIOSPackageCount.Text = $WebServiceBIOSPackages.Count
-				
+
 				foreach ($Package in $WebServiceBIOSPackages) {
 					$WebServiceDataGrid.Rows.Add($Package.PackageName, $Package.PackageVersion, $Package.PackageID)
 				}
@@ -19073,14 +19073,14 @@ AABJRU5ErkJgggs='))
 			global:Write-LogEntry -Value "An error occured while calling ConfigMgr WebService for a list of available packages. Error message: $($_.Exception.Message)" -Severity 3
 		}
 	}
-	
+
 	function Select-KnownModels {
 		param (
 			[parameter(Mandatory = $true)]
 			[String[]][ValidateNotNullOrEmpty()]
 			[String]$SearchMake
 		)
-		
+
 		switch ($SearchMake) {
 			"Dell" {
 				if ($DellKnownBaseBoardValues.Count -gt 0) {
@@ -19101,14 +19101,14 @@ AABJRU5ErkJgggs='))
 				[System.Collections.ArrayList]$SearchList = $MicrosoftKnownProducts
 			}
 		}
-		
+
 		$XMLDownloadStatus.Text = "Selecting $SearchMake models known in WMI"
 		global:Write-LogEntry -Value "Selecting $SearchMake models known in WMI" -Severity 1
-		
+
 		for ($Row = 0; $Row -lt $MakeModelDataGrid.RowCount; $Row++) {
 			$MakeModelDataGrid.rows[$row].Selected = $false
 			if ($MakeModelDataGrid.Rows[$Row].Cells[1].Value -match $SearchMake) {
-				
+
 				switch ($SearchMake) {
 					"HP" {
 						if ([boolean]($SearchList -match $MakeModelDataGrid.Rows[$Row].Cells[7].Value)) {
@@ -19162,9 +19162,9 @@ AABJRU5ErkJgggs='))
 			}
 		}
 	}
-	
+
 	function Set-RegPreferences {
-		
+
 		if (-not (Test-Path -Path $global:RegistryPath)) {
 			global:Write-LogEntry -Value "======== CREATING REGISTRY ENTRIES ========" -Severity 1
 			New-Item -Path $global:RegistryPath -Force
@@ -19210,7 +19210,7 @@ AABJRU5ErkJgggs='))
 			}
 		}
 	}
-	
+
 	function Set-AdminControl {
 		param (
 			[parameter(Mandatory = $false)]
@@ -19244,7 +19244,7 @@ AABJRU5ErkJgggs='))
 			Set-RegPreferences
 		}
 	}
-	
+
 	function Update-OSModelSuppport {
 		if ($OSComboBox.SelectedItem -eq "Windows 10" -or $OSComboBox.SelectedItem -eq "Windows 11") {
 			$DellCheckBox.Enabled = $true
@@ -19267,7 +19267,7 @@ AABJRU5ErkJgggs='))
 			$MicrosoftCheckBox.Checked = $false
 			$HPCheckBox.Enabled = $false
 			$HPCheckBox.Checked = $false
-			
+
 		} elseif ($OSComboBox.SelectedItem -like "Windows 10 *" -or $OSComboBox.SelectedItem -like "Windows 11 *") {
 			$DellCheckBox.Enabled = $false
 			$HPCheckBox.Enabled = $true
@@ -19280,7 +19280,7 @@ AABJRU5ErkJgggs='))
 					$MicrosoftCheckBox.Checked = $false
 				}
 			}
-			
+
 			if ($HPCheckBox.Checked -eq $true) {
 				# Cater for already checked tickbox
 			} else {
@@ -19324,7 +19324,7 @@ AABJRU5ErkJgggs='))
 		}
 		Enable-FindModels
 	}
-	
+
 	function Search-ModelList {
 		param (
 			[parameter(Mandatory = $false)]
@@ -19364,7 +19364,7 @@ AABJRU5ErkJgggs='))
 			global:Write-LogEntry -Value "- Please enter text to search for into the model search field" -Severity 2
 		}
 	}
-	
+
 	function Search-HPDriverList {
 		if (([string]$HPSearchText.Text::IsNullOrEmpty) -ne $true) {
 			#Highlight search results for HP catalogue
@@ -19388,7 +19388,7 @@ AABJRU5ErkJgggs='))
 			global:Write-LogEntry -Value "[Error] - Search text criteria required" -Severity 2
 		}
 	}
-	
+
 	function Find-AvailableModels {
 		if (($global:ConfigMgrValidation -ne $true) -and ($PlatformComboBox.Text -match "ConfigMgr")) {
 			Connect-ConfigMgr
@@ -19406,7 +19406,7 @@ AABJRU5ErkJgggs='))
 		}
 		$ModelResults.Text = "Found ($ModelCount) models"
 	}
-	
+
 	function Enable-FindModels {
 		If (($LenovoCheckBox.Checked -eq $false) -and ($DellCheckBox.Checked -eq $false) -and ($MicrosoftCheckBox.Checked -eq $false) -and ($HPCheckBox.Checked -eq $false)) {
 			$FindModelsButton.Enabled = $false
@@ -19414,10 +19414,10 @@ AABJRU5ErkJgggs='))
 			$FindModelsButton.Enabled = $true
 		}
 	}
-	
+
 	function Update-PlatformOptions {
 		$CleanUnusedCheckBox.Enabled = $false
-		
+
 		switch -wildcard ($PlatformComboBox.Text) {
 			"*MDT*" {
 				$DownloadComboBox.Text = "Drivers"
@@ -19469,12 +19469,12 @@ AABJRU5ErkJgggs='))
 				Set-ConfigMgrOptions -OptionsEnabled $false
 			}
 			"*Intune*"{
-				
+
 				# Pre-select values
 				$DownloadComboBox.Text = "BIOS"
 				$DownloadComboBox.Enabled = $false
-				
-				
+
+
 				# Set-ConfigMgrOptions -OptionsEnabled $false
 				# Disable Tabs
 				$SelectionTabs.TabPages["ConfigMgrTab"].Enabled = $false
@@ -19483,7 +19483,7 @@ AABJRU5ErkJgggs='))
 				$SelectionTabs.TabPages["ConfigWSDiagTab"].Enabled = $false
 				$SelectionTabs.TabPages["CustPkgTab"].Enabled = $false
 				$SelectionTabs.TabPages["OEMCatalogs"].Enabled = $false
-				
+
 				if ($global:IntuneOnly -eq $true) {
 					# Remove Tabs
 					$SelectionTabs.TabPages.Remove($ConfigMgrTab)
@@ -19494,22 +19494,22 @@ AABJRU5ErkJgggs='))
 					$SelectionTabs.TabPages.Remove($OEMCatalogs)
 					$PlatformComboBox.Enabled = $false
 				}
-				
-				
+
+
 				# Update Theme
 				$MainForm.Backcolor = "0, 114, 198"
-				
-				
-				
+
+
+
 			}
 		}
-		
+
 		$StartDownloadButton.Enabled = $true
-		
+
 	}
-	
+
 	function Set-7ZipOptions {
-		
+
 		# Check if 7ZIP is installed
 		$7ZipFileManagerKey = "HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\App Paths\7zFM.exe"
 		global:Write-LogEntry -Value "======== Checking for 7-Zip Installation ========" -Severity 1
@@ -19522,7 +19522,7 @@ AABJRU5ErkJgggs='))
 			$global:7ZIPLocation = $null
 		}
 	}
-	
+
 	function Write-XMLLogicPackage {
 		param
 		(
@@ -19537,14 +19537,14 @@ AABJRU5ErkJgggs='))
 			[string]$PushType,
 			[switch]$Distribute
 		)
-		
+
 		Set-Location -Path $global:TempDirectory
-		
+
 		if ($CMPackages.Count -gt 0) {
 			global:Write-LogEntry -Value "======== MSEndpointMgr XML Logic Package ========" -Severity 1
 		}
-		
-		# Set package path	
+
+		# Set package path
 		switch ($PackageType) {
 			"ConfigMgr" {
 				$LogicPackagePath = Join-Path -Path $PackagePathTextBox.Text -ChildPath "MSEndpointMgr\XML Logic Package"
@@ -19553,7 +19553,7 @@ AABJRU5ErkJgggs='))
 				$LogicPackagePath = Join-Path -Path $DownloadPathTextBox.Text -ChildPath "MSEndpointMgr\XML Logic Package"
 			}
 		}
-		
+
 		# Obtain ConfigMgr packages if required, and set XML output name
 		switch ($XMLType) {
 			"Drivers" {
@@ -19581,13 +19581,13 @@ AABJRU5ErkJgggs='))
 				$XMLFileName = "SoftPaqPackages.xml"
 			}
 		}
-		
+
 		if ((Test-Path -Path $LogicPackagePath) -eq $false) {
 			global:Write-LogEntry -Value "XML Logic Package: Creating package folder" -Severity 1
 			New-Item -Path $LogicPackagePath -ItemType Dir | Out-Null
 		}
 		$LogicFilePath = Join-Path -Path $LogicPackagePath -ChildPath "$XMLFileName"
-		
+
 		# Set XML Structure
 		$XmlWriter = New-Object System.XML.XmlTextWriter($LogicFilePath, $Null)
 		$xmlWriter.Formatting = 'Indented'
@@ -19596,28 +19596,28 @@ AABJRU5ErkJgggs='))
 		$xmlWriter.WriteStartDocument()
 		$XmlWriter.WriteComment('Created with the MSEndpointMgr Driver Automation Tool - DO NOT DELETE')
 		$xmlWriter.WriteProcessingInstruction("xml-stylesheet", "type='text/xsl' href='style.xsl'")
-		
+
 		# Write Initial Header Comments
 		$xmlWriter.WriteStartElement('ArrayOfCMPackage')
 		$XmlWriter.WriteAttributeString('xmlns:xsd', "http://www.w3.org/2001/XMLSchema")
 		$XmlWriter.WriteAttributeString('xmlns:xsi', "http://www.w3.org/2001/XMLSchema-Instance")
 		$XmlWriter.WriteAttributeString('xmlns', "http://www.msendpointmgr.com")
-		
+
 		switch ($PackageType) {
 			"ConfigMgr" {
 				Set-Location -Path ($SiteCode + ":")
-				
+
 				if ($Distribute -ne $true) {
-					
-					
-					
+
+
+
 					Set-Location -Path $global:TempDirectory
-					
+
 					$XMLBody = {
 						# Write CM Package  Header Comments
 						$xmlWriter.WriteStartElement('CMPackage')
-						
-						# Export Model Details 
+
+						# Export Model Details
 						global:Write-LogEntry -Value "XML Logic Package: Adding package $($Package.PackageID) to XML logic file" -Severity 1 -SkipGuiLog $true
 						global:Write-LogEntry -Value "Package name is $($Package.Name)" -Severity 1 -SkipGuiLog $true
 						global:Write-LogEntry -Value "Package ID is $($Package.PackageID)" -Severity 1 -SkipGuiLog $true
@@ -19625,16 +19625,16 @@ AABJRU5ErkJgggs='))
 						global:Write-LogEntry -Value "Package manufacturer is $($Package.Manufacturer)" -Severity 1 -SkipGuiLog $true
 						global:Write-LogEntry -Value "Package Version is $($Package.Version)" -Severity 1 -SkipGuiLog $true
 						global:Write-LogEntry -Value "Package source date is $($Package.SourceDate)" -Severity 1 -SkipGuiLog $true
-						
+
 						$xmlWriter.WriteElementString('Name', $Package.Name)
 						$xmlWriter.WriteElementString('PackageID', $Package.PackageID)
 						$xmlWriter.WriteElementString('Description', $Package.Description)
 						$xmlWriter.WriteElementString('Manufacturer', $Package.Manufacturer)
 						$xmlWriter.WriteElementString('Version', $Package.Version)
 						$xmlWriter.WriteElementString('SourceDate', $Package.SourceDate)
-						
+
 					}
-					
+
 					switch ($XMLType) {
 						"SoftPaqs" {
 							foreach ($Package in $CMPackages) {
@@ -19644,13 +19644,13 @@ AABJRU5ErkJgggs='))
 									$SetupFile = [string]($SoftPaqInfo.Settings.Installer.SetupFile)
 									$SetupSwitches = [string]($SoftPaqInfo.Settings.Installer.Switches)
 									$ProgramName = [string]($SoftPaqInfo.Settings.Installer.ProgramName)
-									
+
 									if ((-not ([string]::IsNullOrEmpty($BaseBoardSupport))) -and (-not ([string]::IsNullOrEmpty($ProgramName)))) {
 										# Write XML Addition
-										
-										# Export Model Details 
+
+										# Export Model Details
 										global:Write-LogEntry -Value "XML Logic Package: Adding package $($Package.PackageID) to XML logic file" -Severity 1 -SkipGuiLog $true
-										
+
 										& $XMLBody
 										$xmlWriter.WriteElementString('SupportedOSes', [string]$($((($Package.Description).Split("(") | Select-Object -Last 1).TrimEnd(")"))))
 										$XmlWriter.WriteElementString('SupportedBaseBoards', $BaseBoardSupport)
@@ -19664,8 +19664,8 @@ AABJRU5ErkJgggs='))
 						}
 						"BIOS" {
 							foreach ($Package in $CMPackages) {
-								# Write XML Addition					
-								# Export Model Details 
+								# Write XML Addition
+								# Export Model Details
 								global:Write-LogEntry -Value "XML Logic Package: Adding package $($Package.PackageID) to XML logic file" -Severity 1 -SkipGuiLog $true
 								& $XMLBody
 								$xmlWriter.WriteEndElement()
@@ -19673,26 +19673,26 @@ AABJRU5ErkJgggs='))
 						}
 						"Drivers" {
 							foreach ($Package in $CMPackages) {
-								# Write XML Addition					
-								# Export Model Details 
+								# Write XML Addition
+								# Export Model Details
 								global:Write-LogEntry -Value "XML Logic Package: Adding package $($Package.PackageID) to XML logic file" -Severity 1 -SkipGuiLog $true
 								& $XMLBody
 								$xmlWriter.WriteEndElement()
 							}
 						}
 					}
-					
+
 					# Save XML Document
 					$xmlWriter.WriteEndDocument()
 					$xmlWriter.Flush()
 					$xmlWriter.Close()
-					
+
 				} else {
-					
+
 					# Create Configuration Manager package containing XML and distribute
 					$XMLPackageName = "MSEndpointMgr XML Logic Package"
 					$XMLPackageVersion = Get-Date -Format yyyydd
-					
+
 					Set-Location -Path ($SiteCode + ":")
 					if ([boolean](Get-CMPackage -Name $XMLPackageName -fast) -eq $false) {
 						# Create XML logic package
@@ -19716,16 +19716,16 @@ AABJRU5ErkJgggs='))
 						Get-CMPackage -Name $XMLPackageName -Fast | Invoke-CMContentRedistribution
 					}
 				}
-				
+
 				Set-Location -Path $global:TempDirectory
 			} "Intune" {
-				
+
 				# Set XML Body
 				$XMLBody = {
 					# Write CM Package  Header Comments
 					$xmlWriter.WriteStartElement('CMPackage')
-					
-					# Export Model Details 
+
+					# Export Model Details
 					global:Write-LogEntry -Value "Intune BIOS Control: Adding package $($ControlPackage.PackageID) to XML control file" -Severity 1 -SkipGuiLog $true
 					global:Write-LogEntry -Value "Control name is $($ControlPackage.Name)" -Severity 1 -SkipGuiLog $true
 					global:Write-LogEntry -Value "Control description is $($ControlPackage.Description)" -Severity 1 -SkipGuiLog $true
@@ -19733,7 +19733,7 @@ AABJRU5ErkJgggs='))
 					global:Write-LogEntry -Value "Control version is $($ControlPackage.Version)" -Severity 1 -SkipGuiLog $true
 					global:Write-LogEntry -Value "Control SKU's are $($ControlPackage.SKUs)" -Severity 1 -SkipGuiLog $true
 					global:Write-LogEntry -Value "Control source date is $($ControlPackage.SourceDate)" -Severity 1 -SkipGuiLog $true
-					
+
 					$xmlWriter.WriteElementString('Name', $ControlPackage.Name)
 					$xmlWriter.WriteElementString('Description', $ControlPackage.Description)
 					$xmlWriter.WriteElementString('Manufacturer', $ControlPackage.Manufacturer)
@@ -19741,10 +19741,10 @@ AABJRU5ErkJgggs='))
 					$xmlWriter.WriteElementString('SKUs', $ControlPackage.SKUs)
 					$xmlWriter.WriteElementString('SourceDate', $ControlPackage.SourceDate)
 				}
-				
+
 				$RowCount = $IntuneBIOSDataGrid.RowCount
 				global:Write-LogEntry -Value "Control File: Writing a total of $RowCount BIOS control elements to XML" -Severity 1
-				
+
 				Do {
 					for ($Row = 0; $Row -lt $IntuneBIOSDataGrid.RowCount; $Row++) {
 						$ControlPackage = New-Object -TypeName PSObject
@@ -19773,22 +19773,22 @@ AABJRU5ErkJgggs='))
 						}
 						#$ControlPackage | Add-Member -MemberType NoteProperty -Name "SKUs" -Value $([string]($IntuneBIOSDataGrid.Rows[$Row].Cells[6].Value)) -Force
 						$ControlPackage | Add-Member -MemberType NoteProperty -Name "SourceDate" -Value (Get-Date) -Force
-						
+
 						& $XMLBody
 						$xmlWriter.WriteEndElement()
 						if ($IntuneBIOSDataGrid.Rows[$Row].Cells[0].Value -eq $true) {
-							
-							
+
+
 						}
 						$RowCount--
 					}
 				} Until ($RowCount -eq 0)
-				
+
 				# Save XML Document
 				$xmlWriter.WriteEndDocument()
 				$xmlWriter.Flush()
 				$xmlWriter.Close()
-				
+
 				# Upload to Azure
 				global:Write-LogEntry -Value "======== Azure Control Files Update Process ========" -Severity 1
 				global:Write-LogEntry -Value "Obtaining Azure storage information from the registry" -Severity 1
@@ -19800,7 +19800,7 @@ AABJRU5ErkJgggs='))
 				$AzureStorageAccountName = $AzureStorageRegValues | Select-Object -ExpandProperty StorageAccountName
 				$AzureStorageKey = $AzureStorageRegValues | Select-Object -ExpandProperty Key
 				$AzureStorageURL = $AzureStorageRegValues | Select-Object -ExpandProperty StorageURL
-				
+
 				# Decrypt
 				global:Write-LogEntry -Value "Creating Azure security information" -Severity 1
 				$secureDecryptedPassword = ConvertTo-SecureString $AzureStorageAccountKey -Key $AzureStorageKey
@@ -19808,8 +19808,8 @@ AABJRU5ErkJgggs='))
 				$CurrentStorageAccountKey = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR1)
 				global:Write-LogEntry -Value "Creating Azure storage context information" -Severity 1
 				$StorageContext = New-AzStorageContext -StorageAccountName $AzureStorageAccountName -StorageAccountKey $CurrentStorageAccountKey -ErrorAction Ignore
-				
-				# File Uploads with 
+
+				# File Uploads with
 				global:Write-LogEntry -Value "Uploading XML files to Azure Storage Blob - $AzureStorageURL" -Severity 1
 				try {
 					$XMLFiles = Get-ChildItem -Path "$LogicPackagePath" -Filter *.xml
@@ -19829,39 +19829,39 @@ AABJRU5ErkJgggs='))
 			}
 		}
 	}
-	
+
 	function Update-DriverPackage {
-		
+
 		# Package summary
 		$DriverAutomationSummary = @()
-		
+
 		# Log process log tab and set product variable
 		Invoke-RunningLog
 		$Product = "ConfigMgr"
 		$RowCount = 0
-		
+
 		for ($Row = 0; $Row -lt $PackageGrid.RowCount; $Row++) {
 			if ($PackageGrid.Rows[$Row].Cells[0].Value -eq $true) {
 				$RowCount++
 			}
 		}
-		
+
 		# Start patching process
 		global:Write-LogEntry -Value "======== PATCHING DRIVERS ========" -Severity 1
 		global:Write-LogEntry -Value "- $($Product): $RowCount driver package(s) to process" -Severity 1
-		
+
 		for ($Row = 0; $Row -lt $PackageGrid.RowCount; $Row++) {
 			if ($PackageGrid.Rows[$Row].Cells[0].Value -eq $true) {
-				
+
 				# Set Varaibles
 				$PackageID = $PackageGrid.Rows[$Row].Cells[3].Value
 				[string]$DriverPatchPath = $PackageGrid.Rows[$Row].Cells[6].Value
 				$PatchSuccessful = $false
 				global:Write-LogEntry -Value "- $($Product): Processing package $PackageID from selected rows" -Severity 1
-				
+
 				if (-not ([string]::IsNullOrEmpty($DriverPatchPath))) {
 					global:Write-LogEntry -Value "- $($Product): Patching driver package $PackageID with drivers from source directory $DriverPatchPath" -Severity 1
-					
+
 					if ((Test-Path -Path $DriverPatchPath) -eq $true) {
 						# Check source directory for drivers
 						global:Write-LogEntry -Value "- $($Product): Checking patch directory for driver inf sources" -Severity 1
@@ -19886,7 +19886,7 @@ AABJRU5ErkJgggs='))
 							Set-Location -Path $Global:TempDirectory
 							global:Write-LogEntry -Value "- $($Product): Package is stored in the following location - $($DriverPackage.PkgSourcePath)" -Severity 1
 							global:Write-LogEntry -Value "- $($Product): Checking packge content type (WIM|ZIP|Expanded)" -Severity 1
-							
+
 							# Catch driver package format
 							if ([boolean]((Get-ChildItem -Path $($DriverPackage.PkgSourcePath)).Name -match ".WIM")) {
 								$PackageFormat = "WIM"
@@ -19899,7 +19899,7 @@ AABJRU5ErkJgggs='))
 							}
 							global:Write-LogEntry -Value "- $($Product): Package format identified as $PackageFormat" -Severity 1
 							global:Write-LogEntry -Value "- $($Product): Starting patching process. Please wait" -Severity 1
-							
+
 							switch ($PackageFormat) {
 								"WIM" {
 									$WIMMountPath = $global:TempDirectory + "\$($DriverPackage.PackageID)"
@@ -19911,7 +19911,7 @@ AABJRU5ErkJgggs='))
 									}
 									global:Write-LogEntry -Value "- $($Product): Mounting WIM image ($WIMImage) to directory - $WIMMountPath" -Severity 1
 									Mount-WindowsImage -Path "$WIMMountPath" -ImagePath "$WIMImage" -Index 1
-									
+
 									# Copy updated drivers
 									$PatchPath = Join-Path -Path $WIMMountPath -ChildPath "Patch"
 									if ((Test-Path -Path $PatchPath) -eq $false) {
@@ -19921,7 +19921,7 @@ AABJRU5ErkJgggs='))
 									}
 									global:Write-LogEntry -Value "- $($Product): Copying patch files to $PatchPath" -Severity 1
 									Get-ChildItem -Path $DriverPatchPath | Copy-Item -Recurse -Container -Destination $PatchPath -Force
-									
+
 									# Save WIM
 									global:Write-LogEntry -Value "- $($Product): Saving WIM file" -Severity 1
 									Dismount-WindowsImage -Path $WIMMountPath -Save
@@ -19934,7 +19934,7 @@ AABJRU5ErkJgggs='))
 									Compress-Archive -Path $DriverPatchPath -DestinationPath $ZIPFilePath -Update
 									global:Write-LogEntry -Value "- $($Product): File(s) added successfully" -Severity 1
 									$PatchSuccessful = $true
-									
+
 								}
 								"Expanded" {
 									# Copy updated drivers
@@ -19954,7 +19954,7 @@ AABJRU5ErkJgggs='))
 									global:Write-LogEntry -Value "- $($Product): Please re-package your drivers using the WIM or ZIP formats for continued compression support." -Severity 1
 								}
 							}
-							
+
 							if ($PatchSuccessful) {
 								# Redistribute Package
 								Set-Location -Path ($SiteCode + ":")
@@ -19962,7 +19962,7 @@ AABJRU5ErkJgggs='))
 								Update-CMDistributionPoint -PackageID $DriverPackage.PackageID
 								global:Write-LogEntry -Value "- $($Product): Package distribution successfully queued" -Severity 1
 								Set-Location -Path $Global:TempDirectory
-								
+
 								# Add to summary information
 								$DriverAutomationItem = New-Object System.Object
 								$DriverAutomationItem | Add-Member -MemberType NoteProperty -Name "Event Generated" -Value "$(Get-Date)" -Force
@@ -19976,7 +19976,7 @@ AABJRU5ErkJgggs='))
 								$DriverAutomationItem | Add-Member -MemberType NoteProperty -Name "Version" -Value "$($DriverPackage.Version)" -Force
 								$DriverAutomationItem | Add-Member -MemberType NoteProperty -Name "Action" -Value "Patch" -Force
 								$DriverAutomationSummary += $DriverAutomationItem
-								
+
 								if ($DriverAutomationSummary.count -ge 1) {
 									global:Write-LogEntry -Value "- Patched $(($DriverAutomationSummary | Where-Object {
 												$_."Package Type" -match "Driver"
@@ -19985,7 +19985,7 @@ AABJRU5ErkJgggs='))
 									$DriverAutomationSummary | export-csv -Path $DriverAutomationSummaryLog -NoTypeInformation -Append -Force
 								}
 							}
-							
+
 							#$PatchSuccessful = $true
 						} catch {
 							if ($PackageFormat -eq "WIM" -and $PatchSuccessful -eq $false) {
@@ -20004,11 +20004,11 @@ AABJRU5ErkJgggs='))
 				global:Write-LogEntry -Value " " -Severity 1
 			}
 		}
-		
+
 		global:Write-LogEntry -Value "======== PATCHING PROCESS FINISHED ========" -Severity 1
 		$ConfigMgrPkgActionCombo.SelectedIndex = "-1"
 	}
-	
+
 	function New-DriverPackage {
 		param
 		(
@@ -20019,7 +20019,7 @@ AABJRU5ErkJgggs='))
 			$PackageCompression,
 			$CompressionType
 		)
-		
+
 		try {
 			if ($PackageCompression -eq $true) {
 				global:Write-LogEntry -Value "- $($Product): Package compression is $($PackageCompressionCheckBox.Checked)" -Severity 1
@@ -20091,7 +20091,7 @@ AABJRU5ErkJgggs='))
 						Return $false
 					}
 				}
-				
+
 			} else {
 				if ($Make -eq "Dell") {
 					$CopyFileCount = (Get-ChildItem -Path "$DriverExtractDest" -File).Count
@@ -20110,20 +20110,20 @@ AABJRU5ErkJgggs='))
 			Return $false
 		}
 	}
-	
+
 	function Get-HPSoftPaqDrivers {
-		
+
 		# Clear datagrid prior to search
 		$HPSoftpaqDataGrid.Rows.Clear()
 		Start-Sleep -Milliseconds 100
-		
+
 		try {
-			
+
 			global:Write-LogEntry -Value "======== Updating HP SoftPaq List ========" -Severity 1
-			
+
 			# Get OS Version
 			$OSVersion = [string]((($OSComboBox).Text).Split(' ')[2]).Trim()
-			
+
 			# Set Configuration Manager values
 			if ($PlatformComboBox.Text -match "ConfigMgr") {
 				Set-Location -Path ($SiteCode + ":")
@@ -20133,7 +20133,7 @@ AABJRU5ErkJgggs='))
 				global:Write-LogEntry -Value "- Discovered $($HPModelSoftPaqs.Count) SoftPaqs already created in ConfigMgr" -Severity 1
 				Set-Location -Path $global:TempDirectory
 			}
-			
+
 			# Obtain HP baseboard value for filtering
 			if ($global:HPModelSoftPaqs -eq $null) {
 				[xml]$global:HPModelXML = Get-Content -Path $(Join-Path -Path $global:TempDirectory -ChildPath $HPXMLFile) -Raw
@@ -20141,7 +20141,7 @@ AABJRU5ErkJgggs='))
 				$global:HPModelXML.GetType().FullName
 				$global:HPModelSoftPaqs = $global:HPModelXML.NewDataSet.HPClientDriverPackCatalog.ProductOSDriverPackList.ProductOSDriverPack
 			}
-			
+
 			global:Write-LogEntry -Value "SoftPaq: HP XML file location is $($global:TempDirectory)\$HPXMLFile)" -Severity 1
 			$HPSoftpaqGridNotice.Text = "Running Search Query"
 			if ((-not ([string]::IsNullOrEmpty($HPCatalogModels.Text))) -and $HPCatalogModels.Text -notmatch "Generic") {
@@ -20158,12 +20158,12 @@ AABJRU5ErkJgggs='))
 				$HPSoftpaqGridStatus.Text = "Searching for all generic HP SoftPaqs"
 				global:Write-LogEntry -Value "SoftPaq: Displaying all generic SoftPaq matches" -Severity 1
 			}
-			
+
 			# Notify user of running search
 			$HPSoftPaqGridPopup.Visible = $true
 			$HPSoftpaqGridNotice.Visible = $true
 			$HPSoftPaqGridStatus.Visible = $true
-			
+
 			# Run query based on HP baseboard value of the selected model
 			switch ($HPSoftPaqBaseBoard) {
 				"HP" {
@@ -20181,7 +20181,7 @@ AABJRU5ErkJgggs='))
 					}
 				}
 			}
-			
+
 			# Select required properties
 			$global:HPAvailableSoftPaqs = $global:HPAvailableSoftPaqs | Select-Object -Property @{
 				l = "Title"; e = {
@@ -20224,17 +20224,17 @@ AABJRU5ErkJgggs='))
 					[string]($_.InstallableItem.ApplicabilityRules.IsInstalled.And.Or.And.RegsZ.Data | Sort-Object -Unique)
 				}
 			}
-			
+
 			# Limit to unique entries
 			$global:HPAvailableSoftPaqs = ($global:HPAvailableSoftPaqs | Sort-Object Title -Unique)
-			
+
 			# Add matched Softpaq downloads to the HP SoftPaq datagrid
 			if ($HPSoftPaqBaseBoard -ne "HP") {
 				global:Write-LogEntry -Value "- Adding $($global:HPAvailableSoftPaqs.Count) available SoftPaq downloads for selected model `"$($HPCatalogModels.text)` on Windows 10 $OSVersion" -Severity 1
 			} else {
 				global:Write-LogEntry -Value "- Adding $($global:HPAvailableSoftPaqs.Count) generic SoftPaq downloads for Windows 10 $OSVersion" -Severity 1
 			}
-			
+
 			foreach ($SoftPaq in $global:HPAvailableSoftPaqs) {
 				# Version information
 				if ([string]$SoftPaq.Title -like "*]*") {
@@ -20242,7 +20242,7 @@ AABJRU5ErkJgggs='))
 				} else {
 					$HPSoftPaqVersion = "Not Available"
 				}
-				# Extract baseboard values from WQLQuery	
+				# Extract baseboard values from WQLQuery
 				$HPBaseBoardModels = [string]($SoftPaq.WQLQuery | Select-String -Pattern '\%(\w+)\%' -AllMatches | ForEach-Object {
 						$_.Matches
 					} | Sort-Object -Unique)
@@ -20255,7 +20255,7 @@ AABJRU5ErkJgggs='))
 					foreach ($Package in $HPModelSoftPaqs) {
 						global:Write-LogEntry -Value "Attempting to match $HPSoftPaqTitle and $HPSoftPaqVersion" -Severity 1 -SkipGuiLog $true
 						global:Write-LogEntry -Value "To $($Package.Name) version $($Package.Version) " -Severity 1 -SkipGuiLog $true
-						
+
 						if (($Package.Version -eq $HPSoftPaqVersion) -and ($Package.Name -match $HPSoftPaqTitle)) {
 							global:Write-LogEntry -Value "Match found with $($Package.Name) $($Package.Version)" -Severity 1 -SkipGuiLog $true
 							$HPSoftPaqExists = $true
@@ -20272,41 +20272,41 @@ AABJRU5ErkJgggs='))
 				} else {
 					$HPSoftPaqPackageIcon = $UnCheckedIcon
 				}
-				# Add entry to HP data Softpaq datagrid		
+				# Add entry to HP data Softpaq datagrid
 				$HPSoftpaqDataGrid.Rows.Add($False, [string]($SoftPaq.Softpaq).ToUpper(), $HPSoftPaqTitle, $HPSoftPaqVersion, [datetime]$SoftPaq.Modified, [string]$SoftPaq.Severity, $HPSoftPaqPackageIcon, [string]$SoftPaq.URL, [string]$SoftPaq.Arguements, $HPBaseBoardModels, [string]$HPSoftPaqExists, [string]$SoftPaq.SupportedBuilds)
 			}
 			$HPSoftpaqDataGrid.CommitEdit('CurrentCellChange')
 			# Wait for last entry
 			Start-Sleep -Milliseconds 100
-			
+
 			# Flag critical updates
 			global:Write-LogEntry -Value "- Highlighting critical SoftPaq updates" -Severity 1
 			Set-SoftPaqSelections
 			Start-Sleep -Milliseconds 250
-			
+
 			# Sort datagrid view
 			global:Write-LogEntry -Value "- Sorting SoftPaqs by date modified" -Severity 1
 			$HPSoftpaqDataGrid.Sort($HPSoftpaqDataGrid.Columns[4], [System.ComponentModel.ListSortDirection]::Descending)
-			
+
 			# Remove search notification
 			$HPSoftpaqGridNotice.Visible = $false
 			$HPSoftPaqGridStatus.Visible = $false
 			$HPSoftPaqGridPopup.Visible = $false
-			
+
 			$SoftpaqResults.Text = "$($HPSoftpaqDataGrid.Rows.Count) items"
-			
+
 		} catch [System.Exception] {
 			Write-Warning -Message "[Error] - $($_.Exception.Message)"
 		}
 	}
-	
+
 	function Set-SoftPaqSelections {
 		# Obtain current list of SoftPaq packages from Configuration Mananger
 		foreach ($SoftPaqRow in $HPSoftpaqDataGrid.rows) {
 			if ($SoftPaqRow.Cells[5].Value -match "Critical") {
 				$SoftPaqRow.DefaultCellStyle.ForeColor = 'Maroon'
 			}
-			
+
 			if ($SoftPaqRow.Cells[10].Value -eq $true) {
 				$SoftPaqRow.DefaultCellStyle.ForeColor = 'Green'
 				$SoftPaqRow.Cells[0].ReadOnly = $true
@@ -20314,18 +20314,18 @@ AABJRU5ErkJgggs='))
 		}
 		#$HPSoftpaqDataGrid.CommitEdit('CurrentCellChange')
 	}
-	
+
 	function Invoke-RunningLog {
 		# Resetting error state
 		$ErrorsOccurred.ForeColor = "Green"
 		$ErrorsOccurred.Text = "No"
 		$JobStatus.Text = "Running"
-		
+
 		# Select log tab and
 		$SelectionTabs.SelectedTab = $LogTab
-		
+
 	}
-	
+
 	function Update-DataGrid {
 		param
 		(
@@ -20338,7 +20338,7 @@ AABJRU5ErkJgggs='))
 			[parameter(Mandatory = $false)]
 			[int]$SortColumn
 		)
-		
+
 		try {
 			# Perform actions on passed through datagrid object depending on the selected switch
 			switch ($Action) {
@@ -20361,18 +20361,18 @@ AABJRU5ErkJgggs='))
 					}
 				}
 			}
-			
+
 			# Sort by column index where available
 			if ($SortColumn -ne $null) {
 				$GridViewName.Sort($GridViewName.Columns[$SortColumn], [System.ComponentModel.ListSortDirection]::Descending)
 			}
 			$GridViewName.CommitEdit('CurrentCellChange')
-			
+
 		} catch [System.Exception] {
 			global:Write-LogEntry -Value "[Error] - $($_.Exception.Message)" -Severity 2
 		}
 	}
-	
+
 	function Remove-Variables {
 		Remove-Variable -Name "DellCatalogXML" -Scope Global -ErrorAction SilentlyContinue
 		Remove-Variable -Name "DellModelXML" -Scope Global -ErrorAction SilentlyContinue
